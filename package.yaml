@@ -47,6 +47,7 @@ executables:
     - seminal-haskell
     - ghc-lib
     - haskell-src-exts
+    - ghc-paths
 
 tests:
   seminal-haskell-test:
