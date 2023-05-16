@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "seminal-haskell:lib"
+
+    - path: "./app/Main.hs"
+      component: "seminal-haskell:exe:seminal-haskell"
+
+    - path: "./app/Paths_seminal_haskell.hs"
+      component: "seminal-haskell:exe:seminal-haskell"
+
+    - path: "./test"
+      component: "seminal-haskell:test:seminal-haskell-test"

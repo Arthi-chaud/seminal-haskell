@@ -6,7 +6,7 @@ cabal-version: 1.12
 
 name:           seminal-haskell
 version:        0.0.1
-description:    Please see the README on GitHub at <https://github.com/Arthi-chaud/seminal-haskell#readme>
+description:    Enhance Type Error Messages
 homepage:       https://github.com/Arthi-chaud/seminal-haskell#readme
 bug-reports:    https://github.com/Arthi-chaud/seminal-haskell/issues
 author:         Arthur Jamet
@@ -58,6 +58,12 @@ test-suite seminal-haskell-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      HUnit
+    , base >=4.7 && <5
+    , directory
+    , filepath
     , seminal-haskell
+    , test-framework
+    , test-framework-hunit
+    , text
   default-language: Haskell2010

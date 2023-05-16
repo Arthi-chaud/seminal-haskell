@@ -1,0 +1,22 @@
+name: Documentation
+on:
+  push:
+    branches:
+      - main
+      - ci
+permissions:
+  contents: write
+jobs:
+  DeployDocumentation:
+    concurrency: ci-${{ github.ref }}
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - name: Install stack
+        run: curl -sSL https://get.haskellstack.org/ | sh -s - -f
+      - name: Generate Haddock documentation
+        run: stack haddock --no-haddock-deps --haddock-arguments --odir="haddock"
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: haddock
