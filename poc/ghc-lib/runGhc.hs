@@ -5,11 +5,15 @@ import GHC.Paths (libdir)
 import System.Environment (getArgs)
 import Data.List (singleton, find)
 import GHC.Utils.Outputable
-import GHC.Plugins (msHsFilePath, panic)
-
-sourcePath = "../assets/test.hs"
+import GHC.Plugins (msHsFilePath, panic, nameStableString)
+import Control.Monad.IO.Class
+import Language.Haskell.TH.Syntax
 
 main = do
+    filePath:_ <- getArgs
+    compile filePath
+
+compile filePath = do
     runGhc ghcFolder action
     -- Error Handling to do by hand:
     -- if compilation fails, throws
@@ -25,7 +29,7 @@ main = do
 
             -- Transform File Path into 'input' for GHC
             -- Do not know what the Nothing (Maybe Phase) is
-            target <- guessTarget sourcePath Nothing
+            target <- guessTarget filePath Nothing
             setTargets $ singleton target
             -- Attempt to load programm
             -- Get targets from parameters sent to 'setTargets'
@@ -34,8 +38,9 @@ main = do
             modGraph <- depanal [] True
             -- Finding module Name in source file
             -- SRC: https://github.com/ghc/ghc/blob/994bda563604461ffb8454d6e298b0310520bcc8/compiler/GHC.hs#LL1287C25-L1287C37
-            case find ((== sourcePath) . msHsFilePath) (mgModSummaries modGraph) of
+            case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
                 Just modsum -> do
+                    liftIO $ print $ ms_mod_name modsum
                     -- Get AST of module
                     p <- parseModule modsum
                     -- Typecheck Module
