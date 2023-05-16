@@ -3,8 +3,11 @@
 import GHC
 import GHC.Paths (libdir)
 import System.Environment (getArgs)
-import Data.List (singleton)
+import Data.List (singleton, find)
 import GHC.Utils.Outputable
+import GHC.Plugins (msHsFilePath, panic)
+
+sourcePath = "../assets/test.hs"
 
 main = do
     runGhc ghcFolder action
@@ -22,30 +25,33 @@ main = do
 
             -- Transform File Path into 'input' for GHC
             -- Do not know what the Nothing (Maybe Phase) is
-            target <- guessTarget "../assets/test.hs" Nothing
+            target <- guessTarget sourcePath Nothing
             setTargets $ singleton target
             -- Attempt to load programm
             -- Get targets from parameters sent to 'setTargets'
-            load LoadAllTargets
-            -- Get summary of module using its name
-            -- mkModuleName raises String to ModuleName
-            -- TODO find module name
-            modsum <- getModSummary $ mkModuleName "Main"
-            -- Get AST of module
-            p <- parseModule modsum
-            -- Typecheck Module
-            t <- typecheckModule p
-            -- Desugar Module
-            d <- desugarModule t
-            -- Compile Module
-            -- Might create .hi files
-            l <- loadModule d
-            -- Might be names of resolved symbols 
-            n <- getNamesInScope
-            -- https://hackage.haskell.org/package/ghc-9.2.7/docs/GHC-Unit-Module-ModGuts.html#t:ModGuts
-            -- 'Digest' the compiled module
-            c <- return $ coreModule d
-            -- Get the module dependency graph
-            g <- getModuleGraph
-            -- print $ showModule modsum
-            return (parsedSource d,"/n-----/n",  typecheckedSource d)
+            -- Forcing evaluation, dont know if needed
+            _ <- load LoadAllTargets
+            modGraph <- depanal [] True
+            -- Finding module Name in source file
+            -- SRC: https://github.com/ghc/ghc/blob/994bda563604461ffb8454d6e298b0310520bcc8/compiler/GHC.hs#LL1287C25-L1287C37
+            case find ((== sourcePath) . msHsFilePath) (mgModSummaries modGraph) of
+                Just modsum -> do
+                    -- Get AST of module
+                    p <- parseModule modsum
+                    -- Typecheck Module
+                    t <- typecheckModule p
+                    -- Desugar Module
+                    d <- desugarModule t
+                    -- Compile Module
+                    -- Might create .hi files
+                    l <- loadModule d
+                    -- Might be names of resolved symbols 
+                    n <- getNamesInScope
+                    -- https://hackage.haskell.org/package/ghc-9.2.7/docs/GHC-Unit-Module-ModGuts.html#t:ModGuts
+                    -- 'Digest' the compiled module
+                    let c = coreModule d
+                    -- Get the module dependency graph
+                    g <- getModuleGraph
+                    -- print $ showModule modsum
+                    return (parsedSource d,"/n-----/n",  typecheckedSource d)
+                Nothing -> panic "Module Name not found"
