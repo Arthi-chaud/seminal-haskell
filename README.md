@@ -1,6 +1,6 @@
 # seminal-haskell
 
-seminal-haskell is a Seminal implementation for Haskell
+seminal-haskell is a Seminal implementation for Haskell. The goal is to make type error messages more friendly for developers.
 
 ## Seminal
 

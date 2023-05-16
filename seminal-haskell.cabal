@@ -44,6 +44,7 @@ executable seminal-haskell
   build-depends:
       base >=4.7 && <5
     , ghc-lib
+    , ghc-paths
     , haskell-src-exts
     , seminal-haskell
   default-language: Haskell2010
