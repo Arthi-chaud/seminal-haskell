@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2.3.4
-      - name: Install stack
-        run: curl -sSL https://get.haskellstack.org/ | sh -s - -f
+      - uses: ./.github/actions/install-stack
+      - uses: ./.github/actions/cache
       - name: Run unit tests
         run: stack test

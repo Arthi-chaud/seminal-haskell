@@ -1,0 +1,10 @@
+inputs:
+  os:  # id of input
+    description: 'OS of the runner'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Install Stack
+      shell: bash
+      run: curl -sSL https://get.haskellstack.org/ | sh -s - -f
