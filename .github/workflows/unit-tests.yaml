@@ -7,6 +7,13 @@ jobs:
   run:
     runs-on: ubuntu-20.04
     steps:
+      - name: Wait for tests to succeed
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          check-name: 'Build'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 30
       - uses: actions/checkout@v2.3.4
       - uses: ./.github/actions/install-stack
       - uses: ./.github/actions/cache
