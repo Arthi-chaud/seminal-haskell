@@ -24,7 +24,8 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Changes
+      Seminal
   other-modules:
       Paths_seminal_haskell
   hs-source-dirs:
