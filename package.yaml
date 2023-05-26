@@ -49,6 +49,7 @@ executables:
     - ghc-lib-parser
     - haskell-src-exts
     - exceptions
+    - time
     - ghc-paths
 
 tests:

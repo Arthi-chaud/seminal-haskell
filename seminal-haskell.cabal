@@ -49,6 +49,7 @@ executable seminal-haskell
     , ghc-paths
     , haskell-src-exts
     , seminal-haskell
+    , time
   default-language: Haskell2010
 
 test-suite seminal-haskell-test
