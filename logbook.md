@@ -37,3 +37,7 @@
 - Start to list possible changes to apply, using a list provided from the OCaml implementation
 - Improve PoC: Parse module declarations and associated value's type
 
+### May 27
+
+- Improve PoC: On compilation error, guess if type or value is in scope
+

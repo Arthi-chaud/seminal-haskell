@@ -1,1 +1,1 @@
-module Seminal where
+module Seminal () where
