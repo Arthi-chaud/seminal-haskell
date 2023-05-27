@@ -34,6 +34,13 @@ ghc-options:
 
 library:
   source-dirs: src
+  dependencies:
+  - directory
+  - ghc-lib
+  - ghc-lib-parser
+  - exceptions
+  - time
+  - ghc-paths
 
 executables:
   seminal-haskell:
@@ -45,12 +52,6 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - seminal-haskell
-    - ghc-lib
-    - ghc-lib-parser
-    - haskell-src-exts
-    - exceptions
-    - time
-    - ghc-paths
 
 tests:
   seminal-haskell-test:
