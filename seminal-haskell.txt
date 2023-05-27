@@ -6,5 +6,46 @@
 @package seminal-haskell
 @version 0.0.1
 
-module Lib
-someFunc :: IO ()
+module Changes
+data Change
+GenericReplacement :: Change
+AddArg :: Change
+DelArg :: Change
+SwapArg :: Change
+ArrayToTuple :: Change
+TupleToArray :: Change
+ArgsToTuple :: Change
+RemoveCaseMatch :: Change
+SetCaseToUndef :: Change
+RemoveFuncMatch :: Change
+SetFuncMatchToUndef :: Change
+RemoveTypeSignature :: Change
+
+module Compiler.Module
+applyAST :: HsModule -> ParsedModule -> ParsedModule
+
+module Compiler.Runner
+runCompiler :: Ghc a -> IO a
+
+module Compiler.Parser
+parseFile :: FilePath -> IO ParsingResult
+type ParsingResult = Either ParsingErrorType ParsedModule
+data ParsingErrorType
+PermissionDenied :: ParsingErrorType
+FileNotFound :: ParsingErrorType
+SyntaxError :: ParsingErrorType
+UnknownError :: String -> ParsingErrorType
+instance GHC.Show.Show Compiler.Parser.ParsingErrorType
+
+module Compiler.TypeChecker
+data TypeCheckStatus
+Success :: TypeCheckStatus
+Error :: ErrorType -> TypeCheckStatus
+data ErrorType
+TypeCheckError :: ErrorType
+ScopeError :: String -> ErrorType
+typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
+instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
+instance GHC.Show.Show Compiler.TypeChecker.ErrorType
+
+module Seminal
