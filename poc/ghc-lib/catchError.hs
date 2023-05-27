@@ -52,7 +52,7 @@ execGHC filePath = runGhc ghcFolder action
                         Right p -> do
                             maybeT <- handleSourceError (return . Left . show) $ typecheckModule p >>= (return . Right)
                             return $ case maybeT of
-                                Left errMsg -> Error (if "Variable not in scope" `isContainedIn` errMsg
+                                Left errMsg -> Error (if any (\x -> isContainedIn x errMsg) ["Variable not in scope", "Not in scope: type constructor or class"]
                                     then ScopeError
                                     else TypeError) errMsg
                                 Right _ -> Success
