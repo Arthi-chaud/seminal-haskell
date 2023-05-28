@@ -1,4 +1,4 @@
--- Provides utilities to parse a file/source code using the compiler's API
+-- | Provides utilities to parse a file/source code using the compiler's API
 module Compiler.Parser (
     parseFile,
     ParsingResult,
@@ -18,22 +18,22 @@ import System.Directory (getPermissions, Permissions (readable))
 import System.Directory.Internal.Prelude (isDoesNotExistError)
 import Compiler.Runner (runCompiler)
 
--- Result of Parsing process
+-- | Result of Parsing process
 type ParsingResult = Either ParsingErrorType ParsedModule
 
 data ParsingErrorType =
-    -- Permission to read the file denied
+    -- | Permission to read the file denied
     PermissionDenied |
-    -- The file was not found
+    -- | The file was not found
     FileNotFound |
-    -- There was an error syntax in the source code
+    -- | There was an error syntax in the source code
     SyntaxError |
-    -- An unknown error occured
-    -- Comes with an error messag
+    -- | An unknown error occured
+    -- | Comes with an error messag
     UnknownError String
     deriving (Show, Eq)
 
--- Parse a file, retrieve its module
+-- | Parse a file, retrieve its module
 parseFile :: FilePath -> IO ParsingResult
 parseFile filePath = do
     permRes <- try (getPermissions filePath) :: IO (Either IOError Permissions)
@@ -45,7 +45,7 @@ parseFile filePath = do
             then parseFile' filePath
             else return $ Left PermissionDenied
 
--- Parse File, does not handle related to permissions/existence of file 
+-- | Parse File, does not handle related to permissions/existence of file 
 parseFile' :: FilePath -> IO ParsingResult
 parseFile' filePath = runCompiler action
     where

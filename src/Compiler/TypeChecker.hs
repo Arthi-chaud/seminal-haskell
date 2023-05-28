@@ -1,5 +1,5 @@
--- Provide a way to access Compiler/Typechecker as a black box,
--- according to Seminal's algorithm
+-- | Provide a way to access Compiler/Typechecker as a black box,
+-- | according to Seminal's algorithm
 module Compiler.TypeChecker (
     TypeCheckStatus (..),
     ErrorType (..),
@@ -14,19 +14,19 @@ import Text.Printf (printf)
 import GHC.SysTools (isContainedIn)
 import Data.Functor ((<&>))
 
--- Defines the possible outcomes of the typechecking process of the compiler
+-- | Defines the possible outcomes of the typechecking process of the compiler
 data TypeCheckStatus =
-    -- Indicated the Code typechecks
+    -- | Indicated the Code typechecks
     Success |
-    -- An error happened while typechecking
+    -- | An error happened while typechecking
     Error ErrorType
     deriving (Show, Eq)
 
 data ErrorType =
-    -- Indicates an error occured while typechecking
+    -- | Indicates an error occured while typechecking
     TypeCheckError |
-    -- A type or variable could not be resolved
-    -- It comes with the compiler's error message
+    -- | A type or variable could not be resolved
+    -- | It comes with the compiler's error message
     ScopeError String
 
 instance Eq ErrorType where
@@ -34,13 +34,13 @@ instance Eq ErrorType where
     ScopeError _ == ScopeError _ = True
     _ == _ = False
 
--- Pretty-print of Error types
+-- | Pretty-print of Error types
 instance Show ErrorType where
     show TypeCheckError = "Type Checking Error"
     show (ScopeError err) = printf "Scope Error: %s" err
 
 
--- Typecheck Module
+-- | Typecheck Module
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
 typecheckModule parsedModule = do
     maybeT <- handleSourceError (return . Left . show) (GHC.typecheckModule parsedModule <&> Right)
