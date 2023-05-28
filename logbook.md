@@ -41,3 +41,7 @@
 
 - Improve PoC: On compilation error, guess if type or value is in scope
 
+### May 28
+
+- Unit Testing of Compiler's functions
+- Add more possible changes to consider
