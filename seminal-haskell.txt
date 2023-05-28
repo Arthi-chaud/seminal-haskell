@@ -35,6 +35,7 @@ PermissionDenied :: ParsingErrorType
 FileNotFound :: ParsingErrorType
 SyntaxError :: ParsingErrorType
 UnknownError :: String -> ParsingErrorType
+instance GHC.Classes.Eq Compiler.Parser.ParsingErrorType
 instance GHC.Show.Show Compiler.Parser.ParsingErrorType
 
 module Compiler.TypeChecker
@@ -45,7 +46,9 @@ data ErrorType
 TypeCheckError :: ErrorType
 ScopeError :: String -> ErrorType
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
+instance GHC.Classes.Eq Compiler.TypeChecker.TypeCheckStatus
 instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
+instance GHC.Classes.Eq Compiler.TypeChecker.ErrorType
 instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
 module Seminal
