@@ -31,7 +31,7 @@ data ParsingErrorType =
     -- An unknown error occured
     -- Comes with an error messag
     UnknownError String
-    deriving Show
+    deriving (Show, Eq)
 
 -- Parse a file, retrieve its module
 parseFile :: FilePath -> IO ParsingResult

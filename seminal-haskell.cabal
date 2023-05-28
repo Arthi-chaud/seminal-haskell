@@ -61,6 +61,8 @@ test-suite seminal-haskell-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      TestCompiler.Parser
+      TestCompiler.TypeChecker
       Paths_seminal_haskell
   hs-source-dirs:
       test
@@ -70,6 +72,7 @@ test-suite seminal-haskell-test
     , base >=4.7 && <5
     , directory
     , filepath
+    , ghc-lib
     , seminal-haskell
     , test-framework
     , test-framework-hunit

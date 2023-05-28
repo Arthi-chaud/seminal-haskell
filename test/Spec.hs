@@ -1,2 +1,10 @@
+import Test.Framework (defaultMain)
+import TestCompiler.Parser
+import TestCompiler.TypeChecker
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = do
+    defaultMain [ 
+        TestCompiler.Parser.testSuite,
+        TestCompiler.TypeChecker.testSuite
+        ]

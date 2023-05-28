@@ -20,7 +20,7 @@ data TypeCheckStatus =
     Success |
     -- An error happened while typechecking
     Error ErrorType
-    deriving Show
+    deriving (Show, Eq)
 
 data ErrorType =
     -- Indicates an error occured while typechecking
@@ -28,6 +28,11 @@ data ErrorType =
     -- A type or variable could not be resolved
     -- It comes with the compiler's error message
     ScopeError String
+
+instance Eq ErrorType where
+    TypeCheckError == TypeCheckError = True
+    ScopeError _ == ScopeError _ = True
+    _ == _ = False
 
 -- Pretty-print of Error types
 instance Show ErrorType where

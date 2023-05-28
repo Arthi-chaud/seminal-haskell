@@ -62,10 +62,11 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - seminal-haskell
+    - ghc-lib
     - directory
     - filepath
     - text
     - HUnit
     - test-framework
     - test-framework-hunit
+    - seminal-haskell
