@@ -22,9 +22,13 @@ data Change =
     RemoveCaseMatch |
     -- | Set value of `case of` match to undefined
     SetCaseToUndef |
-    -- | Remove match for function
-    RemoveFuncMatch |
-    -- | Set value of function match to undefined
-    SetFuncMatchToUndef |
+    -- | Set match of `case of` match to undefined
+    SetMatchToUndef |
     -- | Remove type signature
-    RemoveTypeSignature
+    RemoveTypeSignature |
+    -- | Replace `x` in `if x then ... else ...` by `True`
+    IfToTrue |
+    -- | Set value of `let x = ` to `undefined`
+    LetToUndef |
+    -- | Set one value in `where` clause to `undefined`
+    WhereToUndef
