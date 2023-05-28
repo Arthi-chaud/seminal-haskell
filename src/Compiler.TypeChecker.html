@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- Provide a way to access Compiler/Typechecker as a black box,</span><span>
-</span><span id="line-2"></span><span class="hs-comment">-- according to Seminal's algorithm</span><span>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-comment">-- | Provide a way to access Compiler/Typechecker as a black box,</span><span>
+</span><span id="line-2"></span><span class="hs-comment">-- | according to Seminal's algorithm</span><span>
 </span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Compiler.TypeChecker</span><span> </span><span class="hs-special">(</span><span>
 </span><span id="line-4"></span><span>    </span><span class="annot"><a href="Compiler.TypeChecker.html#TypeCheckStatus"><span class="hs-identifier">TypeCheckStatus</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
 </span><span id="line-5"></span><span>    </span><span class="annot"><a href="Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier">ErrorType</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
@@ -14,11 +14,11 @@
 </span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.SysTools</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isContainedIn</span></span><span class="hs-special">)</span><span>
 </span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
 </span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-comment">-- Defines the possible outcomes of the typechecking process of the compiler</span><span>
+</span><span id="line-17"></span><span class="hs-comment">-- | Defines the possible outcomes of the typechecking process of the compiler</span><span>
 </span><span id="line-18"></span><span class="hs-keyword">data</span><span> </span><span id="TypeCheckStatus"><span class="annot"><a href="Compiler.TypeChecker.html#TypeCheckStatus"><span class="hs-identifier hs-var">TypeCheckStatus</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-19"></span><span>    </span><span class="hs-comment">-- Indicated the Code typechecks</span><span>
+</span><span id="line-19"></span><span>    </span><span class="hs-comment">-- | Indicated the Code typechecks</span><span>
 </span><span id="line-20"></span><span>    </span><span id="Success"><span class="annot"><a href="Compiler.TypeChecker.html#Success"><span class="hs-identifier hs-var">Success</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
-</span><span id="line-21"></span><span>    </span><span class="hs-comment">-- An error happened while typechecking</span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-comment">-- | An error happened while typechecking</span><span>
 </span><span id="line-22"></span><span>    </span><span id="Error"><span class="annot"><a href="Compiler.TypeChecker.html#Error"><span class="hs-identifier hs-var">Error</span></a></span></span><span> </span><span class="annot"><a href="Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span><span>
 </span><span id="line-23"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679083977"><span id="local-6989586621679083979"><span id="local-6989586621679083984"><span class="annot"><span class="annottext">Int -&gt; TypeCheckStatus -&gt; ShowS
 [TypeCheckStatus] -&gt; ShowS
@@ -40,10 +40,10 @@ $c== :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">)</span><span>
 </span><span id="line-24"></span><span>
 </span><span id="line-25"></span><span class="hs-keyword">data</span><span> </span><span id="ErrorType"><span class="annot"><a href="Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-var">ErrorType</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-26"></span><span>    </span><span class="hs-comment">-- Indicates an error occured while typechecking</span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-comment">-- | Indicates an error occured while typechecking</span><span>
 </span><span id="line-27"></span><span>    </span><span id="TypeCheckError"><span class="annot"><a href="Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-var">TypeCheckError</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
-</span><span id="line-28"></span><span>    </span><span class="hs-comment">-- A type or variable could not be resolved</span><span>
-</span><span id="line-29"></span><span>    </span><span class="hs-comment">-- It comes with the compiler's error message</span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-comment">-- | A type or variable could not be resolved</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-comment">-- | It comes with the compiler's error message</span><span>
 </span><span id="line-30"></span><span>    </span><span id="ScopeError"><span class="annot"><a href="Compiler.TypeChecker.html#ScopeError"><span class="hs-identifier hs-var">ScopeError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-31"></span><span>
 </span><span id="line-32"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679083965"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
@@ -61,7 +61,7 @@ $c== :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
 </span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="hs-comment">-- Pretty-print of Error types</span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- | Pretty-print of Error types</span><span>
 </span><span id="line-38"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679083959"><span id="local-6989586621679083962"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-39"></span><span>    </span><span id="local-6989586621679083950"><span class="annot"><span class="annottext">show :: ErrorType -&gt; String
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="annot"><span class="annottext">ErrorType
@@ -74,7 +74,7 @@ $c== :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 </span><a href="#local-6989586621679083948"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-41"></span><span>
 </span><span id="line-42"></span><span>
-</span><span id="line-43"></span><span class="hs-comment">-- Typecheck Module</span><span>
+</span><span id="line-43"></span><span class="hs-comment">-- | Typecheck Module</span><span>
 </span><span id="line-44"></span><span class="annot"><a href="Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-type">typecheckModule</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="annot"><a href="Compiler.TypeChecker.html#TypeCheckStatus"><span class="hs-identifier hs-type">TypeCheckStatus</span></a></span><span>
 </span><span id="line-45"></span><span id="typecheckModule"><span class="annot"><span class="annottext">typecheckModule :: ParsedModule -&gt; Ghc TypeCheckStatus
 </span><a href="Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-var hs-var">typecheckModule</span></a></span></span><span> </span><span id="local-6989586621679083947"><span class="annot"><span class="annottext">ParsedModule

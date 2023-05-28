@@ -7,44 +7,108 @@
 @version 0.0.1
 
 module Changes
+
+-- | Enum of the possible Changes to apply on the AST | Inspired by the
+--   list provided in the Seminal paper (2006, p. 4)
 data Change
+
+-- | Replace a variable with <a>undefined</a>
 GenericReplacement :: Change
+
+-- | Add arbitrary new argument to function call
 AddArg :: Change
+
+-- | Delete argument to function call
 DelArg :: Change
+
+-- | Swap arguments to function call
 SwapArg :: Change
+
+-- | Turns an array into a tuple
 ArrayToTuple :: Change
+
+-- | Turns a tuple into an array
 TupleToArray :: Change
+
+-- | Turns application arguments into a tuple | Either all of them, or some
 ArgsToTuple :: Change
+
+-- | Remove `case of` match
 RemoveCaseMatch :: Change
+
+-- | Set value of `case of` match to undefined
 SetCaseToUndef :: Change
+
+-- | Remove match for function
 RemoveFuncMatch :: Change
+
+-- | Set value of function match to undefined
 SetFuncMatchToUndef :: Change
+
+-- | Remove type signature
 RemoveTypeSignature :: Change
 
 module Compiler.Module
+
+-- | Apply (possibly modified) HsModule to ParsedModule, | To allow sending
+--   it to the typechecker
 applyAST :: HsModule -> ParsedModule -> ParsedModule
 
 module Compiler.Runner
+
+-- | Runs compiler (or function exposed by its API)
 runCompiler :: Ghc a -> IO a
 
+
+-- | Provides utilities to parse a file/source code using the compiler's
+--   API
 module Compiler.Parser
+
+-- | Parse a file, retrieve its module
 parseFile :: FilePath -> IO ParsingResult
+
+-- | Result of Parsing process
 type ParsingResult = Either ParsingErrorType ParsedModule
 data ParsingErrorType
+
+-- | Permission to read the file denied
 PermissionDenied :: ParsingErrorType
+
+-- | The file was not found
 FileNotFound :: ParsingErrorType
+
+-- | There was an error syntax in the source code
 SyntaxError :: ParsingErrorType
+
+-- | An unknown error occured | Comes with an error messag
 UnknownError :: String -> ParsingErrorType
 instance GHC.Classes.Eq Compiler.Parser.ParsingErrorType
 instance GHC.Show.Show Compiler.Parser.ParsingErrorType
 
+
+-- | Provide a way to access Compiler/Typechecker as a black box, |
+--   according to Seminal's algorithm
 module Compiler.TypeChecker
+
+-- | Defines the possible outcomes of the typechecking process of the
+--   compiler
 data TypeCheckStatus
+
+-- | Indicated the Code typechecks
 Success :: TypeCheckStatus
+
+-- | An error happened while typechecking
 Error :: ErrorType -> TypeCheckStatus
 data ErrorType
+
+-- | Indicates an error occured while typechecking
 TypeCheckError :: ErrorType
+
+-- | A type or variable could not be resolved | It comes with the
+--   compiler's error message
 ScopeError :: String -> ErrorType
+
+-- | Typecheck Module
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
 instance GHC.Classes.Eq Compiler.TypeChecker.TypeCheckStatus
 instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
