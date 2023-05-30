@@ -39,14 +39,26 @@ RemoveCaseMatch :: Change
 -- | Set value of `case of` match to undefined
 SetCaseToUndef :: Change
 
--- | Remove match for function
-RemoveFuncMatch :: Change
-
--- | Set value of function match to undefined
-SetFuncMatchToUndef :: Change
+-- | Set match of `case of` match to undefined
+SetMatchToUndef :: Change
 
 -- | Remove type signature
 RemoveTypeSignature :: Change
+
+-- | Replace <tt>x</tt> in `if x then ... else ...` by <a>True</a>
+IfToTrue :: Change
+
+-- | Set value of `let x = ` to <a>undefined</a>
+LetToUndef :: Change
+
+-- | Set one value in `where` clause to <a>undefined</a>
+WhereToUndef :: Change
+
+-- | Turn `[x]` into <tt>x</tt>
+SingletonToItem :: Change
+
+-- | Turn <tt>x</tt> into `[x]`
+ItemToSingleton :: Change
 
 module Compiler.Module
 
@@ -56,7 +68,7 @@ applyAST :: HsModule -> ParsedModule -> ParsedModule
 
 module Compiler.Runner
 
--- | Runs compiler (or function exposed by its API)
+-- | Allows runnning function exposed by the compiler's API
 runCompiler :: Ghc a -> IO a
 
 
@@ -115,4 +127,33 @@ instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
 instance GHC.Classes.Eq Compiler.TypeChecker.ErrorType
 instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
+
+-- | From a node in the AST, provide possible changes to apply
+module Enumerator
+
+
+-- | The Ranker allows sorting valid changes, before presenting them to the
+--   user
+module Ranker
+
+
+-- | Goes through the AST to find nodes to give to the enumerator
+module Searcher
+
+
+-- | Entrypoint to Seminal
 module Seminal
+
+-- | Run Seminal on a source file. If it returns Nothing, the file
+--   typechecks, otherwise, provides an ordered list of change suggestions
+runSeminal :: FilePath -> IO Status
+data Status
+
+-- | When the file typechecks without any changes
+Success :: Status
+
+-- | When an error occurs while parsing the file, unrelated to typechecking
+InvalidFile :: String -> Status
+
+-- | An ordered list of change suggestions
+Changes :: [Change] -> Status

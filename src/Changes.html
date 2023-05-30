@@ -22,9 +22,21 @@
 </span><span id="line-22"></span><span>    </span><span id="RemoveCaseMatch"><span class="annot"><a href="Changes.html#RemoveCaseMatch"><span class="hs-identifier hs-var">RemoveCaseMatch</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
 </span><span id="line-23"></span><span>    </span><span class="hs-comment">-- | Set value of `case of` match to undefined</span><span>
 </span><span id="line-24"></span><span>    </span><span id="SetCaseToUndef"><span class="annot"><a href="Changes.html#SetCaseToUndef"><span class="hs-identifier hs-var">SetCaseToUndef</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
-</span><span id="line-25"></span><span>    </span><span class="hs-comment">-- | Remove match for function</span><span>
-</span><span id="line-26"></span><span>    </span><span id="RemoveFuncMatch"><span class="annot"><a href="Changes.html#RemoveFuncMatch"><span class="hs-identifier hs-var">RemoveFuncMatch</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
-</span><span id="line-27"></span><span>    </span><span class="hs-comment">-- | Set value of function match to undefined</span><span>
-</span><span id="line-28"></span><span>    </span><span id="SetFuncMatchToUndef"><span class="annot"><a href="Changes.html#SetFuncMatchToUndef"><span class="hs-identifier hs-var">SetFuncMatchToUndef</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
-</span><span id="line-29"></span><span>    </span><span class="hs-comment">-- | Remove type signature</span><span>
-</span><span id="line-30"></span><span>    </span><span id="RemoveTypeSignature"><span class="annot"><a href="Changes.html#RemoveTypeSignature"><span class="hs-identifier hs-var">RemoveTypeSignature</span></a></span></span></pre></body></html>
+</span><span id="line-25"></span><span>    </span><span class="hs-comment">-- | Set match of `case of` match to undefined</span><span>
+</span><span id="line-26"></span><span>    </span><span id="SetMatchToUndef"><span class="annot"><a href="Changes.html#SetMatchToUndef"><span class="hs-identifier hs-var">SetMatchToUndef</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
+</span><span id="line-27"></span><span>    </span><span class="hs-comment">-- | Remove type signature</span><span>
+</span><span id="line-28"></span><span>    </span><span id="RemoveTypeSignature"><span class="annot"><a href="Changes.html#RemoveTypeSignature"><span class="hs-identifier hs-var">RemoveTypeSignature</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
+</span><span id="line-29"></span><span>    </span><span class="hs-comment">-- | Replace `x` in `if x then ... else ...` by `True`</span><span>
+</span><span id="line-30"></span><span>    </span><span id="IfToTrue"><span class="annot"><a href="Changes.html#IfToTrue"><span class="hs-identifier hs-var">IfToTrue</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
+</span><span id="line-31"></span><span>    </span><span class="hs-comment">-- | Set value of `let x = ` to `undefined`</span><span>
+</span><span id="line-32"></span><span>    </span><span id="LetToUndef"><span class="annot"><a href="Changes.html#LetToUndef"><span class="hs-identifier hs-var">LetToUndef</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
+</span><span id="line-33"></span><span>    </span><span class="hs-comment">-- | Set one value in `where` clause to `undefined`</span><span>
+</span><span id="line-34"></span><span>    </span><span id="WhereToUndef"><span class="annot"><a href="Changes.html#WhereToUndef"><span class="hs-identifier hs-var">WhereToUndef</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
+</span><span id="line-35"></span><span>    </span><span class="hs-comment">-- | Turn `[x]` into `x`</span><span>
+</span><span id="line-36"></span><span>    </span><span id="SingletonToItem"><span class="annot"><a href="Changes.html#SingletonToItem"><span class="hs-identifier hs-var">SingletonToItem</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
+</span><span id="line-37"></span><span>    </span><span class="hs-comment">-- | Turn `x` into `[x]`</span><span>
+</span><span id="line-38"></span><span>    </span><span id="ItemToSingleton"><span class="annot"><a href="Changes.html#ItemToSingleton"><span class="hs-identifier hs-var">ItemToSingleton</span></a></span></span><span>
+</span><span id="line-39"></span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- | Apply change to AST</span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- applyChange :: Change -&gt; Loc -&gt; HsModule -&gt; HsModule</span><span>
+</span><span id="line-42"></span></pre></body></html>
