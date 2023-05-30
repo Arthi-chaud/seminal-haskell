@@ -45,3 +45,9 @@
 
 - Unit Testing of Compiler's functions
 - Add more possible changes to consider
+
+### May 30
+
+- Add more possible changes to consider
+- Implement Seminal's entrypoint
+- Define the sub-modules of the library
