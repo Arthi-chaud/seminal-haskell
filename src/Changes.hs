@@ -31,4 +31,11 @@ data Change =
     -- | Set value of `let x = ` to `undefined`
     LetToUndef |
     -- | Set one value in `where` clause to `undefined`
-    WhereToUndef
+    WhereToUndef |
+    -- | Turn `[x]` into `x`
+    SingletonToItem |
+    -- | Turn `x` into `[x]`
+    ItemToSingleton
+
+-- | Apply change to AST
+-- applyChange :: Change -> Loc -> HsModule -> HsModule
