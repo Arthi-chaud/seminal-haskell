@@ -1,17 +1,13 @@
 module Main (main) where
-import Compiler.Parser (parseFile)
-import Compiler.TypeChecker (typecheckModule, TypeCheckStatus (..))
 import System.Environment (getArgs)
-import Compiler.Runner (runCompiler)
+import System.Exit (exitFailure)
+import Seminal (runSeminal, Status(..))
 
 main :: IO ()
 main = do
     (filePath:_) <- getArgs
-    r <- parseFile filePath
-    case r of
-        Left err -> print err
-        Right m -> do
-            res <- runCompiler $ typecheckModule m
-            putStrLn $ case res of 
-                Success -> "File Typechecks"
-                Error _ -> "Typecheck failed"
+    res <- runSeminal filePath
+    case res of
+        Success -> putStrLn "File Typechecks"
+        InvalidFile err -> putStrLn err >> exitFailure
+        Changes _ -> putStrLn "Possible changes to apply: []"
