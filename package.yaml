@@ -41,6 +41,7 @@ library:
   - exceptions
   - time
   - ghc-paths
+  - utility-ht
 
 executables:
   seminal-haskell:
@@ -52,6 +53,8 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - seminal-haskell
+    - ghc-lib
+    - ghc-lib-parser
 
 tests:
   seminal-haskell-test:

@@ -2,6 +2,10 @@ module Main (main) where
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Seminal (runSeminal, Status(..))
+import Data.List (intercalate)
+import Text.Printf (printf)
+import GHC.Plugins (showSDocUnsafe, Outputable (ppr))
+import Enumerator.Changes (Change(exec))
 
 main :: IO ()
 main = do
@@ -10,4 +14,4 @@ main = do
     case res of
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
-        Changes _ -> putStrLn "Possible changes to apply: []"
+        Changes list -> putStrLn $ printf "Possible changes to apply: [\n%s\n]" (intercalate "\n---\n---\n" ((showSDocUnsafe . ppr . exec) <$> list))

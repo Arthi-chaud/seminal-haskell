@@ -24,11 +24,14 @@ source-repository head
 
 library
   exposed-modules:
-      Changes
       Compiler.Module
       Compiler.Parser
       Compiler.Runner
       Compiler.TypeChecker
+      Enumerator.Changes
+      Enumerator.Enumerator
+      Ranker
+      Searcher
       Seminal
   other-modules:
       Paths_seminal_haskell
@@ -43,6 +46,7 @@ library
     , ghc-lib-parser
     , ghc-paths
     , time
+    , utility-ht
   default-language: Haskell2010
 
 executable seminal-haskell
@@ -54,6 +58,8 @@ executable seminal-haskell
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , ghc-lib
+    , ghc-lib-parser
     , seminal-haskell
   default-language: Haskell2010
 
