@@ -6,60 +6,6 @@
 @package seminal-haskell
 @version 0.0.1
 
-module Changes
-
--- | Enum of the possible Changes to apply on the AST | Inspired by the
---   list provided in the Seminal paper (2006, p. 4)
-data Change
-
--- | Replace a variable with <a>undefined</a>
-GenericReplacement :: Change
-
--- | Add arbitrary new argument to function call
-AddArg :: Change
-
--- | Delete argument to function call
-DelArg :: Change
-
--- | Swap arguments to function call
-SwapArg :: Change
-
--- | Turns an array into a tuple
-ArrayToTuple :: Change
-
--- | Turns a tuple into an array
-TupleToArray :: Change
-
--- | Turns application arguments into a tuple | Either all of them, or some
-ArgsToTuple :: Change
-
--- | Remove `case of` match
-RemoveCaseMatch :: Change
-
--- | Set value of `case of` match to undefined
-SetCaseToUndef :: Change
-
--- | Set match of `case of` match to undefined
-SetMatchToUndef :: Change
-
--- | Remove type signature
-RemoveTypeSignature :: Change
-
--- | Replace <tt>x</tt> in `if x then ... else ...` by <a>True</a>
-IfToTrue :: Change
-
--- | Set value of `let x = ` to <a>undefined</a>
-LetToUndef :: Change
-
--- | Set one value in `where` clause to <a>undefined</a>
-WhereToUndef :: Change
-
--- | Turn `[x]` into <tt>x</tt>
-SingletonToItem :: Change
-
--- | Turn <tt>x</tt> into `[x]`
-ItemToSingleton :: Change
-
 module Compiler.Module
 
 -- | Apply (possibly modified) HsModule to ParsedModule, | To allow sending
@@ -127,9 +73,33 @@ instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
 instance GHC.Classes.Eq Compiler.TypeChecker.ErrorType
 instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
+module Enumerator.Changes
+
+-- | Defines a change to apply on the AST
+data Change node
+Change :: SrcSpan -> node -> [Change node] -> Change node
+
+-- | Location (in the source code) of the node to change.
+[location] :: Change node -> SrcSpan
+
+-- | Run the change, returns the new node
+[exec] :: Change node -> node
+
+-- | List of subsequent changes to consider, if the parent change succeeds
+[followups] :: Change node -> [Change node]
+
+-- | Wraps a change of a leaf for/into its parent
+wrapChange :: (leaf -> node) -> Change leaf -> Change node
+
+-- | Rewraps tha location to the change type
+wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
+instance GHC.Utils.Outputable.Outputable node => GHC.Show.Show (Enumerator.Changes.Change node)
+
 
 -- | From a node in the AST, provide possible changes to apply
-module Enumerator
+module Enumerator.Enumerator
+enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
+enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
 
 
 -- | The Ranker allows sorting valid changes, before presenting them to the
@@ -156,4 +126,4 @@ Success :: Status
 InvalidFile :: String -> Status
 
 -- | An ordered list of change suggestions
-Changes :: [Change] -> Status
+Changes :: [Change HsModule] -> Status
