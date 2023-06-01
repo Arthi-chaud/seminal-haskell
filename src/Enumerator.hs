@@ -2,12 +2,20 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use lambda-case" #-}
 -- | From a node in the AST, provide possible changes to apply
-module Enumerator.Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
-import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds, EmptyLocalBinds), LHsExpr, noExtField, noAnnSrcSpan, NoExtField (NoExtField), emptyComments, noSrcSpanA, GhcPs, SrcSpanAnn' (..))
-import Enumerator.Changes (Change (..), wrapChange, wrapLoc)
+module Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
+
+import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, noAnnSrcSpan, GhcPs, SrcSpanAnn' (..))
+import Changes (Change (..), wrapChange, wrapLoc)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Plugins
+    ( noSrcSpan,
+      unLoc,
+      GenLocated(L),
+      SrcSpan,
+      mkVarOcc,
+      mkRdrUnqual,
+      Boxity(Boxed) )
 
 -- | Inspired from Seminal (2006, p. 5)
 type Enumerator a = a -> SrcSpan -> [Change a]
@@ -16,13 +24,13 @@ type Enumerator a = a -> SrcSpan -> [Change a]
 undefinedExpression :: HsExpr GhcPs
 undefinedExpression = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc "undefined"))
 
-wildcardDecl :: HsDecl GhcPs
-wildcardDecl = ValD NoExtField wildcardBind
-    where
-        wildcardBind = PatBind EpAnnNotUsed (L noSrcSpanA wildcardPattern) wildcardGRHS ([], [])
-        wildcardPattern= WildPat NoExtField
-        wildcardGRHS = GRHSs emptyComments [L noSrcSpan wildcardGRHS'] (EmptyLocalBinds NoExtField)
-        wildcardGRHS' = GRHS EpAnnNotUsed [] (L noSrcSpanA undefinedExpression)
+-- wildcardDecl :: HsDecl GhcPs
+-- wildcardDecl = ValD NoExtField wildcardBind
+--     where
+--         wildcardBind = PatBind EpAnnNotUsed (L noSrcSpanA wildcardPattern) wildcardGRHS ([], [])
+--         wildcardPattern= WildPat NoExtField
+--         wildcardGRHS = GRHSs emptyComments [L noSrcSpan wildcardGRHS'] (EmptyLocalBinds NoExtField)
+--         wildcardGRHS' = GRHS EpAnnNotUsed [] (L noSrcSpanA undefinedExpression)
 
 enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
 enumerateChangesAtRoot list = concat $ splitEverywhere list <&> (\(h, L l removed, t) -> let
@@ -30,15 +38,13 @@ enumerateChangesAtRoot list = concat $ splitEverywhere list <&> (\(h, L l remove
     followups = enumerateChangesInDeclaration removed removedLoc
         <&> wrapLoc (L . SrcSpanAnn ep)
         <&> wrapChange (\r -> h ++ [r] ++ t)
-    buildChange exec = Change removedLoc exec followups
+    buildChange exec = Change removedLoc list exec followups
     in case removed of
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&> wrapChange (L l . ValD v)
             <&> wrapChange (\change -> h ++ [change] ++ t)
         _ -> [buildChange $ h ++ t]
     )
- 
-
 
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
 enumerateChangesInDeclaration (TyClD _ e) loc = []
@@ -74,7 +80,8 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
         patChanges = splitEverywhere pats
             <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in Change {
                 location = loc,
-                exec = h ++ t, -- Removing cdeclaration in list
+                src = pats,
+                exec = h ++ t, -- Removing declaration in list
                 followups = enumerateChangesInPattern e loc
                     <&> wrapLoc (L . SrcSpanAnn ep)
                     <&> wrapChange (\r ->  h ++ [r] ++ t)
@@ -106,25 +113,34 @@ enumerateChangesInPattern _ _ = []
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression expr loc = [Change {
     location = loc,
+    src = expr,
     exec = undefinedExpression,
     followups = enumerateChangesInExpression' expr loc
 }]
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression' (ExplicitList _ [a]) loc = [
-    Change { location = loc, exec = unLoc a, followups = [] } -- Singleton to Item
-    ]
-enumerateChangesInExpression' (ExplicitList _ elems) loc = [
-    Change {
-        location = loc,
-        exec = ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed, -- List to Tuple
-        followups = []
-    }
-    ]
-enumerateChangesInExpression' (HsApp a func param) _ = enumF ++ enumParam
-    where
-        enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
-            <&> wrapChange (\c -> HsApp a (L lf c) param)
-        enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
-            <&> wrapChange (\c -> HsApp a func (L lp c))
-enumerateChangesInExpression' _ _ = []
+enumerateChangesInExpression' expr loc = case expr of
+    (ExplicitList _ [a]) -> [
+        Change {
+            location = loc,
+            src = expr,
+            exec = unLoc a,
+            followups = []
+        } -- Singleton to Item
+        ]
+    (ExplicitList _ elems) -> [
+        Change {
+            location = loc,
+            src = expr,
+            exec = ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed,
+            followups = []
+        } -- List to Tuple
+        ]
+    -- In function application: try chnages on functions and parameters
+    (HsApp a func param) -> enumF ++ enumParam
+        where
+            enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
+                <&> wrapChange (\c -> HsApp a (L lf c) param)
+            enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
+                <&> wrapChange (\c -> HsApp a func (L lp c))
+    _ -> []

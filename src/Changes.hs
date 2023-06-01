@@ -1,22 +1,23 @@
-module Enumerator.Changes (Change (..), wrapChange, wrapLoc) where
-import GHC (SrcSpan)
+module Changes (Change (..), wrapChange, wrapLoc) where
 import GHC.Plugins
 import Text.Printf
-import Data.List (intersect, intersperse, intercalate)
 
 -- | Wraps a change of a leaf for/into its parent
 wrapChange :: (leaf -> node) -> Change leaf -> Change node
-wrapChange f (Change loc exec followups) = Change loc (f exec) (wrapChange f <$> followups)
+wrapChange f (Change loc src exec followups) = Change loc (f src) (f exec) (wrapChange f <$> followups)
 
 -- | Rewraps tha location to the change type
 wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
-wrapLoc f (Change loc exec followups) = Change loc (f loc exec) (wrapLoc f <$> followups)
+wrapLoc f (Change loc src exec followups) = Change loc (f loc src) (f loc exec) (wrapLoc f <$> followups)
 
 -- | Defines a change to apply on the AST.
 -- The namings are inspired by the `astRepl` (Seminal, 2006, p. 5)
 data Change node = Change {
     -- | Location (in the source code) of the node to change.
     location :: SrcSpan,
+    -- | The original node.
+    -- Used solely for pretty-printing
+    src :: node,
     -- | Run the change, returns the new node
     exec :: node,
     -- | List of subsequent changes to consider, if the parent change succeeds
@@ -24,7 +25,7 @@ data Change node = Change {
 }
 
 instance (Outputable node) => Show (Change node) where
-    show (Change loc exec _) = printf "Change at %s: %s\n" showLoc showExec
+    show (Change loc _ exec _) = printf "Change at %s: %s\n" showLoc showExec
         where
             showLoc = showSDocUnsafe (ppr loc)
             showExec = showSDocUnsafe (ppr exec)

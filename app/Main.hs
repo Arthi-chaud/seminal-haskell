@@ -5,7 +5,7 @@ import Seminal (runSeminal, Status(..))
 import Data.List (intercalate)
 import Text.Printf (printf)
 import GHC.Plugins (showSDocUnsafe, Outputable (ppr))
-import Enumerator.Changes (Change(exec))
+import Changes (Change(exec))
 
 main :: IO ()
 main = do

@@ -1,11 +1,11 @@
 -- | Entrypoint to Seminal
 module Seminal (runSeminal, Status(..)) where
-import Enumerator.Changes (Change (exec, followups), wrapLoc, wrapChange)
+import Changes (Change (exec, followups), wrapLoc, wrapChange)
 import Compiler.TypeChecker (typecheckModule, TypeCheckStatus(Error, Success))
 import Compiler.Parser (parseFile)
 import Compiler.Runner (runCompiler)
 import GHC (HsModule (hsmodDecls, HsModule), HsDecl, GhcPs, LHsDecl, GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc)
-import Enumerator.Enumerator
+import Enumerator
 import Data.Functor ((<&>))
 
 data Status =
