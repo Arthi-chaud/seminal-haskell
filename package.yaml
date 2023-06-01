@@ -54,6 +54,7 @@ executables:
     dependencies:
     - seminal-haskell
     - ghc-lib
+    - ghc-paths
     - ghc-lib-parser
 
 tests:

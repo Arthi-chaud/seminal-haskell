@@ -18,7 +18,7 @@ import GHC
       depanal,
       getSessionDynFlags,
       mgModSummaries, ParsedModule (pm_parsed_source),
-      HsModule (hsmodImports, hsmodExports, hsmodName, hsmodDecls), moduleNameString )
+      HsModule (hsmodImports, hsmodExports, hsmodName, hsmodDecls), moduleNameString, GenLocated (L) )
 import Data.List ( find, singleton, intercalate )
 import Text.Printf ( printf )
 import Data.Functor
@@ -57,7 +57,8 @@ parseDeclaration (ValD _ (FunBind _ id (MG _ match _) _ )) = return $ Declaratio
         expr = unLoc e
         (GRHS _ _ e) = unLoc $ head $ grhssGRHSs $ m_grhss $ unLoc $ head (unLoc match)
 parseDeclaration (SigD _ (TypeSig _ [id] _)) = return $ Declaration { name = showGHC (unLoc id), declType = TypeSignature }
-parseDeclaration e = trace (showGHC e) Nothing
+parseDeclaration (ValD _ (PatBind _ (L _ (WildPat _)) _ _ )) = return $ Declaration { name = "_", declType = Data } 
+parseDeclaration _ = Nothing
 
 
 parseExprValue :: HsExpr GhcPs -> DeclarationType

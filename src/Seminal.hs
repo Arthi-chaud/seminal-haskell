@@ -7,7 +7,6 @@ import Compiler.Runner (runCompiler)
 import GHC (HsModule (hsmodDecls, HsModule), HsDecl, GhcPs, LHsDecl, GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc)
 import Enumerator.Enumerator
 import Data.Functor ((<&>))
-import Debug.Trace
 
 data Status =
     -- | When the file typechecks without any changes

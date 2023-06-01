@@ -3,16 +3,19 @@
 {-# HLINT ignore "Use lambda-case" #-}
 -- | From a node in the AST, provide possible changes to apply
 module Enumerator.Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
-import GHC (HsDecl(..), HsBindLR (..), HsBind, GhcPs, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat, GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, reLocA, getLocAnn, noAnnSrcSpan)
+import GHC (HsDecl(..), HsBindLR (..), HsBind, GhcPs, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds, EmptyLocalBinds), LHsExpr, noExtField, reLocA, getLocAnn, noAnnSrcSpan, NoExtField (NoExtField), GhcPass (GhcPs), IdP, emptyComments, noSrcSpanA)
 import Enumerator.Changes (Change (..), wrapChange, wrapLoc)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Plugins
 import GHC.Hs (SrcSpanAnn'(..))
 
-
 -- | Inspired from Seminal (2006, p. 5)
 type Enumerator a = a -> SrcSpan -> [Change a]
+
+-- | Expression for `undefined`
+undefinedExpression :: HsExpr GhcPs
+undefinedExpression = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc "undefined"))
 
 -- TODO
 -- Test if removing in list fixes
@@ -24,11 +27,21 @@ enumerateChangesAtRoot list = splitEverywhere list <&> (\(h, L l removed, t) -> 
     (SrcSpanAnn ep removedLoc) = l
     in Change {
         location = removedLoc,
-        exec = h ++ t, -- Removing cdeclaration in list
+        exec = h ++ [L l wildcardDecl] ++ t, -- Removing cdeclaration in list
         followups = enumerateChangesInDeclaration removed removedLoc
             <&> wrapLoc (L . SrcSpanAnn ep)
             <&> wrapChange (\r -> h ++ [r] ++ t)
     })
+    where
+        wildcardDecl :: HsDecl GhcPs
+        wildcardDecl = ValD NoExtField wildcardBind
+        wildcardBind :: HsBind GhcPs
+        wildcardBind = PatBind EpAnnNotUsed (L noSrcSpanA wildcardPattern) wildcardGRHS ([], [])
+        wildcardPattern :: Pat GhcPs
+        wildcardPattern= WildPat NoExtField
+        wildcardGRHS :: GRHSs GhcPs (LHsExpr GhcPs)
+        wildcardGRHS = GRHSs emptyComments [L noSrcSpan wildcardGRHS'] (EmptyLocalBinds NoExtField)
+        wildcardGRHS' = GRHS EpAnnNotUsed [] (L noSrcSpanA undefinedExpression)
 
 
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
@@ -97,11 +110,12 @@ enumerateChangesInPattern :: Enumerator (Pat GhcPs)
 -- TODO Enumerate change in binding
 enumerateChangesInPattern _ _ = []
 
--- | Enumerate possible changes for expressions, starting with replacing them with undefined
+-- | Enumerate possible changes for expressions,
+-- starting with replacing them with undefined
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression expr loc = [Change {
     location = loc,
-    exec =  HsVar noExtField $ L (noAnnSrcSpan loc) (mkRdrUnqual (mkVarOcc "undefined")),
+    exec = undefinedExpression,
     followups = enumerateChangesInExpression' expr loc
 }]
 

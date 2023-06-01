@@ -51,3 +51,14 @@
 - Add more possible changes to consider
 - Implement Seminal's entrypoint
 - Define the sub-modules of the library
+
+### May 31
+
+- Start implementing enumerator structure
+- Implement first change: singleton to item
+  - Note: For declaration list, tried to use [this](https://dl.acm.org/doi/pdf/10.1145/3310232.3310243) method. But standalone type signature without accompanying declaration are not allowed
+- Setup flow of: evaluates changes and go through followups changes
+
+### June 1
+
+- 

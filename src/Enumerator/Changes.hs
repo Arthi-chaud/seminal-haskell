@@ -12,7 +12,8 @@ wrapChange f (Change loc exec followups) = Change loc (f exec) (wrapChange f <$>
 wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
 wrapLoc f (Change loc exec followups) = Change loc (f loc exec) (wrapLoc f <$> followups)
 
--- | Defines a change to apply on the AST
+-- | Defines a change to apply on the AST.
+-- The namings are inspired by the `astRepl` (Seminal, 2006, p. 5)
 data Change node = Change {
     -- | Location (in the source code) of the node to change.
     location :: SrcSpan,
@@ -23,7 +24,7 @@ data Change node = Change {
 }
 
 instance (Outputable node) => Show (Change node) where
-    show (Change loc exec _) = printf "Change at %s: %s" showLoc showExec
+    show (Change loc exec _) = printf "Change at %s: %s\n" showLoc showExec
         where
             showLoc = showSDocUnsafe (ppr loc)
             showExec = showSDocUnsafe (ppr exec)
