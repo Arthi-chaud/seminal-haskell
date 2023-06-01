@@ -75,7 +75,8 @@ instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
 module Enumerator.Changes
 
--- | Defines a change to apply on the AST
+-- | Defines a change to apply on the AST. The namings are inspired by the
+--   <tt>astRepl</tt> (Seminal, 2006, p. 5)
 data Change node
 Change :: SrcSpan -> node -> [Change node] -> Change node
 

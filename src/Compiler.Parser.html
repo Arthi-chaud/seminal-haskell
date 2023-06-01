@@ -31,7 +31,7 @@
 </span><span id="line-31"></span><span>    </span><span class="hs-comment">-- | An unknown error occured</span><span>
 </span><span id="line-32"></span><span>    </span><span class="hs-comment">-- | Comes with an error messag</span><span>
 </span><span id="line-33"></span><span>    </span><span id="UnknownError"><span class="annot"><a href="Compiler.Parser.html#UnknownError"><span class="hs-identifier hs-var">UnknownError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-34"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679101984"><span id="local-6989586621679101986"><span id="local-6989586621679101993"><span class="annot"><span class="annottext">Int -&gt; ParsingErrorType -&gt; ShowS
+</span><span id="line-34"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679103562"><span id="local-6989586621679103564"><span id="local-6989586621679103571"><span class="annot"><span class="annottext">Int -&gt; ParsingErrorType -&gt; ShowS
 [ParsingErrorType] -&gt; ShowS
 ParsingErrorType -&gt; String
 forall a.
@@ -42,7 +42,7 @@ show :: ParsingErrorType -&gt; String
 $cshow :: ParsingErrorType -&gt; String
 showsPrec :: Int -&gt; ParsingErrorType -&gt; ShowS
 $cshowsPrec :: Int -&gt; ParsingErrorType -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101975"><span id="local-6989586621679101980"><span class="annot"><span class="annottext">ParsingErrorType -&gt; ParsingErrorType -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679103553"><span id="local-6989586621679103558"><span class="annot"><span class="annottext">ParsingErrorType -&gt; ParsingErrorType -&gt; Bool
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 /= :: ParsingErrorType -&gt; ParsingErrorType -&gt; Bool
 $c/= :: ParsingErrorType -&gt; ParsingErrorType -&gt; Bool
@@ -53,21 +53,21 @@ $c== :: ParsingErrorType -&gt; ParsingErrorType -&gt; Bool
 </span><span id="line-36"></span><span class="hs-comment">-- | Parse a file, retrieve its module</span><span>
 </span><span id="line-37"></span><span class="annot"><a href="Compiler.Parser.html#parseFile"><span class="hs-identifier hs-type">parseFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Compiler.Parser.html#ParsingResult"><span class="hs-identifier hs-type">ParsingResult</span></a></span><span>
 </span><span id="line-38"></span><span id="parseFile"><span class="annot"><span class="annottext">parseFile :: String -&gt; IO ParsingResult
-</span><a href="Compiler.Parser.html#parseFile"><span class="hs-identifier hs-var hs-var">parseFile</span></a></span></span><span> </span><span id="local-6989586621679101971"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679101971"><span class="hs-identifier hs-var">filePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-39"></span><span>    </span><span id="local-6989586621679101970"><span class="annot"><span class="annottext">Either IOError Permissions
-</span><a href="#local-6989586621679101970"><span class="hs-identifier hs-var">permRes</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) e a.
+</span><a href="Compiler.Parser.html#parseFile"><span class="hs-identifier hs-var hs-var">parseFile</span></a></span></span><span> </span><span id="local-6989586621679103549"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679103549"><span class="hs-identifier hs-var">filePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-39"></span><span>    </span><span id="local-6989586621679103548"><span class="annot"><span class="annottext">Either IOError Permissions
+</span><a href="#local-6989586621679103548"><span class="hs-identifier hs-var">permRes</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) e a.
 (MonadCatch m, Exception e) =&gt;
 m a -&gt; m (Either e a)
 </span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; IO Permissions
 </span><span class="hs-identifier hs-var">getPermissions</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679101971"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IOError</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Permissions</span></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679103549"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">IOError</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Permissions</span></span><span class="hs-special">)</span><span>
 </span><span id="line-40"></span><span>    </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either IOError Permissions
-</span><a href="#local-6989586621679101970"><span class="hs-identifier hs-var">permRes</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-41"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679101969"><span class="annot"><span class="annottext">IOError
-</span><a href="#local-6989586621679101969"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">IOError -&gt; Bool
+</span><a href="#local-6989586621679103548"><span class="hs-identifier hs-var">permRes</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-41"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679103547"><span class="annot"><span class="annottext">IOError
+</span><a href="#local-6989586621679103547"><span class="hs-identifier hs-var">err</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">IOError -&gt; Bool
 </span><span class="hs-identifier hs-var">isDoesNotExistError</span></span><span> </span><span class="annot"><span class="annottext">IOError
-</span><a href="#local-6989586621679101969"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><a href="#local-6989586621679103547"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-42"></span><span>            </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">ParsingErrorType
@@ -78,13 +78,13 @@ m a -&gt; m (Either e a)
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ParsingErrorType
 </span><a href="Compiler.Parser.html#UnknownError"><span class="hs-identifier hs-var">UnknownError</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679101968"><span class="annot"><span class="annottext">Permissions
-</span><a href="#local-6989586621679101968"><span class="hs-identifier hs-var">perms</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Permissions -&gt; Bool
+</span><span id="line-44"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679103546"><span class="annot"><span class="annottext">Permissions
+</span><a href="#local-6989586621679103546"><span class="hs-identifier hs-var">perms</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Permissions -&gt; Bool
 </span><span class="hs-identifier hs-var">readable</span></span><span> </span><span class="annot"><span class="annottext">Permissions
-</span><a href="#local-6989586621679101968"><span class="hs-identifier hs-var">perms</span></a></span><span>
+</span><a href="#local-6989586621679103546"><span class="hs-identifier hs-var">perms</span></a></span><span>
 </span><span id="line-45"></span><span>            </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">String -&gt; IO ParsingResult
 </span><a href="Compiler.Parser.html#parseFile%27"><span class="hs-identifier hs-var">parseFile'</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679101971"><span class="hs-identifier hs-var">filePath</span></a></span><span>
+</span><a href="#local-6989586621679103549"><span class="hs-identifier hs-var">filePath</span></a></span><span>
 </span><span id="line-46"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">forall a b. a -&gt; Either a b
@@ -94,25 +94,25 @@ m a -&gt; m (Either e a)
 </span><span id="line-48"></span><span class="hs-comment">-- | Parse File, does not handle related to permissions/existence of file </span><span>
 </span><span id="line-49"></span><span class="annot"><a href="Compiler.Parser.html#parseFile%27"><span class="hs-identifier hs-type">parseFile'</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Compiler.Parser.html#ParsingResult"><span class="hs-identifier hs-type">ParsingResult</span></a></span><span>
 </span><span id="line-50"></span><span id="parseFile%27"><span class="annot"><span class="annottext">parseFile' :: String -&gt; IO ParsingResult
-</span><a href="Compiler.Parser.html#parseFile%27"><span class="hs-identifier hs-var hs-var">parseFile'</span></a></span></span><span> </span><span id="local-6989586621679101966"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679101966"><span class="hs-identifier hs-var">filePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. Ghc a -&gt; IO a
+</span><a href="Compiler.Parser.html#parseFile%27"><span class="hs-identifier hs-var hs-var">parseFile'</span></a></span></span><span> </span><span id="local-6989586621679103544"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679103544"><span class="hs-identifier hs-var">filePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. Ghc a -&gt; IO a
 </span><a href="Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-var">runCompiler</span></a></span><span> </span><span class="annot"><span class="annottext">Ghc ParsingResult
-</span><a href="#local-6989586621679101965"><span class="hs-identifier hs-var">action</span></a></span><span>
+</span><a href="#local-6989586621679103543"><span class="hs-identifier hs-var">action</span></a></span><span>
 </span><span id="line-51"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-52"></span><span>        </span><span id="local-6989586621679101965"><span class="annot"><span class="annottext">action :: Ghc ParsingResult
-</span><a href="#local-6989586621679101965"><span class="hs-identifier hs-var hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-53"></span><span>            </span><span id="local-6989586621679101944"><span class="annot"><span class="annottext">Target
-</span><a href="#local-6989586621679101944"><span class="hs-identifier hs-var">target</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *).
+</span><span id="line-52"></span><span>        </span><span id="local-6989586621679103543"><span class="annot"><span class="annottext">action :: Ghc ParsingResult
+</span><a href="#local-6989586621679103543"><span class="hs-identifier hs-var hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-53"></span><span>            </span><span id="local-6989586621679103522"><span class="annot"><span class="annottext">Target
+</span><a href="#local-6989586621679103522"><span class="hs-identifier hs-var">target</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *).
 GhcMonad m =&gt;
 String -&gt; Maybe Phase -&gt; m Target
 </span><span class="hs-identifier hs-var">guessTarget</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679101966"><span class="hs-identifier hs-var">filePath</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Maybe a
+</span><a href="#local-6989586621679103544"><span class="hs-identifier hs-var">filePath</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span>
 </span><span id="line-54"></span><span>            </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *). GhcMonad m =&gt; [Target] -&gt; m ()
 </span><span class="hs-identifier hs-var">setTargets</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Target
-</span><a href="#local-6989586621679101944"><span class="hs-identifier hs-var">target</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-55"></span><span>            </span><span id="local-6989586621679101943"><span class="annot"><span class="annottext">ModuleGraph
-</span><a href="#local-6989586621679101943"><span class="hs-identifier hs-var">modGraph</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *).
+</span><a href="#local-6989586621679103522"><span class="hs-identifier hs-var">target</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-55"></span><span>            </span><span id="local-6989586621679103521"><span class="annot"><span class="annottext">ModuleGraph
+</span><a href="#local-6989586621679103521"><span class="hs-identifier hs-var">modGraph</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *).
 GhcMonad m =&gt;
 [ModuleName] -&gt; Bool -&gt; m ModuleGraph
 </span><span class="hs-identifier hs-var">depanal</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">Bool
@@ -120,11 +120,11 @@ GhcMonad m =&gt;
 </span><span id="line-56"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">find</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679101966"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="#local-6989586621679103544"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ModSummary -&gt; String
 </span><span class="hs-identifier hs-var">msHsFilePath</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModuleGraph -&gt; [ModSummary]
 </span><span class="hs-identifier hs-var">mgModSummaries</span></span><span> </span><span class="annot"><span class="annottext">ModuleGraph
-</span><a href="#local-6989586621679101943"><span class="hs-identifier hs-var">modGraph</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679103521"><span class="hs-identifier hs-var">modGraph</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-57"></span><span>                </span><span class="annot"><span class="annottext">Maybe ModSummary
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
@@ -133,24 +133,24 @@ GhcMonad m =&gt;
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; ParsingErrorType
 </span><a href="Compiler.Parser.html#UnknownError"><span class="hs-identifier hs-var">UnknownError</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Could not find module&quot;</span></span><span> </span><span>
-</span><span id="line-58"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679101941"><span class="annot"><span class="annottext">ModSummary
-</span><a href="#local-6989586621679101941"><span class="hs-identifier hs-var">modsum</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-59"></span><span>                    </span><span id="local-6989586621679101940"><span class="annot"><span class="annottext">Either SourceError ParsedModule
-</span><a href="#local-6989586621679101940"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) e a.
+</span><span id="line-58"></span><span>                </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679103519"><span class="annot"><span class="annottext">ModSummary
+</span><a href="#local-6989586621679103519"><span class="hs-identifier hs-var">modsum</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-59"></span><span>                    </span><span id="local-6989586621679103518"><span class="annot"><span class="annottext">Either SourceError ParsedModule
+</span><a href="#local-6989586621679103518"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) e a.
 (MonadCatch m, Exception e) =&gt;
 m a -&gt; m (Either e a)
 </span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (m :: * -&gt; *). GhcMonad m =&gt; ModSummary -&gt; m ParsedModule
 </span><span class="hs-identifier hs-var">parseModule</span></span><span> </span><span class="annot"><span class="annottext">ModSummary
-</span><a href="#local-6989586621679101941"><span class="hs-identifier hs-var">modsum</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SourceError</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679103519"><span class="hs-identifier hs-var">modsum</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SourceError</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span class="hs-special">)</span><span>
 </span><span id="line-60"></span><span>                    </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either SourceError ParsedModule
-</span><a href="#local-6989586621679101940"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679103518"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-61"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span class="annot"><span class="annottext">SourceError
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">ParsingErrorType
 </span><a href="Compiler.Parser.html#SyntaxError"><span class="hs-identifier hs-var">SyntaxError</span></a></span><span>
-</span><span id="line-62"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679101939"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679101939"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall a b. b -&gt; Either a b
+</span><span id="line-62"></span><span>                        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679103517"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679103517"><span class="hs-identifier hs-var">p</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679101939"><span class="hs-identifier hs-var">p</span></a></span></pre></body></html>
+</span><a href="#local-6989586621679103517"><span class="hs-identifier hs-var">p</span></a></span></pre></body></html>
