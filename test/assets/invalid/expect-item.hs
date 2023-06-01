@@ -1,5 +1,5 @@
 import Data.Char (isSpace)
 -- Expected an item, got a list
 
-a :: Bool
-a = isSpace ['a']
+a :: Int -> Bool
+a _ = isSpace ['a']

@@ -3,12 +3,11 @@
 {-# HLINT ignore "Use lambda-case" #-}
 -- | From a node in the AST, provide possible changes to apply
 module Enumerator.Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
-import GHC (HsDecl(..), HsBindLR (..), HsBind, GhcPs, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds, EmptyLocalBinds), LHsExpr, noExtField, reLocA, getLocAnn, noAnnSrcSpan, NoExtField (NoExtField), GhcPass (GhcPs), IdP, emptyComments, noSrcSpanA)
+import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds, EmptyLocalBinds), LHsExpr, noExtField, noAnnSrcSpan, NoExtField (NoExtField), emptyComments, noSrcSpanA, GhcPs, SrcSpanAnn' (..))
 import Enumerator.Changes (Change (..), wrapChange, wrapLoc)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Plugins
-import GHC.Hs (SrcSpanAnn'(..))
 
 -- | Inspired from Seminal (2006, p. 5)
 type Enumerator a = a -> SrcSpan -> [Change a]
@@ -17,31 +16,28 @@ type Enumerator a = a -> SrcSpan -> [Change a]
 undefinedExpression :: HsExpr GhcPs
 undefinedExpression = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc "undefined"))
 
--- TODO
--- Test if removing in list fixes
--- and then apply change to candidate
--- enumerateChangesInList :: (la -> (SrcSpan, a)) -> Enumerator a -> [la] -> [Change [a]]
-
-enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
-enumerateChangesAtRoot list = splitEverywhere list <&> (\(h, L l removed, t) -> let
-    (SrcSpanAnn ep removedLoc) = l
-    in Change {
-        location = removedLoc,
-        exec = h ++ [L l wildcardDecl] ++ t, -- Removing cdeclaration in list
-        followups = enumerateChangesInDeclaration removed removedLoc
-            <&> wrapLoc (L . SrcSpanAnn ep)
-            <&> wrapChange (\r -> h ++ [r] ++ t)
-    })
+wildcardDecl :: HsDecl GhcPs
+wildcardDecl = ValD NoExtField wildcardBind
     where
-        wildcardDecl :: HsDecl GhcPs
-        wildcardDecl = ValD NoExtField wildcardBind
-        wildcardBind :: HsBind GhcPs
         wildcardBind = PatBind EpAnnNotUsed (L noSrcSpanA wildcardPattern) wildcardGRHS ([], [])
-        wildcardPattern :: Pat GhcPs
         wildcardPattern= WildPat NoExtField
-        wildcardGRHS :: GRHSs GhcPs (LHsExpr GhcPs)
         wildcardGRHS = GRHSs emptyComments [L noSrcSpan wildcardGRHS'] (EmptyLocalBinds NoExtField)
         wildcardGRHS' = GRHS EpAnnNotUsed [] (L noSrcSpanA undefinedExpression)
+
+enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
+enumerateChangesAtRoot list = concat $ splitEverywhere list <&> (\(h, L l removed, t) -> let
+    (SrcSpanAnn ep removedLoc) = l
+    followups = enumerateChangesInDeclaration removed removedLoc
+        <&> wrapLoc (L . SrcSpanAnn ep)
+        <&> wrapChange (\r -> h ++ [r] ++ t)
+    buildChange exec = Change removedLoc exec followups
+    in case removed of
+        (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
+            <&> wrapChange (L l . ValD v)
+            <&> wrapChange (\change -> h ++ [change] ++ t)
+        _ -> [buildChange $ h ++ t]
+    )
+ 
 
 
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
@@ -62,16 +58,14 @@ enumerateChangesInBinding (AbsBinds {}) loc = []
 enumerateChangesInBinding (PatSynBind {}) loc = []
 
 -- | Enumerates changes to apply on function binding.
+-- TODO: Remove decl only if there is more than one
 enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
-enumerateChangesInFuncBinding (FunBind a b (MG c1 (L la ats) c3) d) _ = splitEverywhere ats
-    <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in Change {
-        location = loc,
-        exec = h ++ t, -- Removing cdeclaration in list
-        followups = enumerateChangesInMatch e loc
+enumerateChangesInFuncBinding (FunBind a b (MG c1 (L la ats) c3) d) _ = concat $ splitEverywhere ats
+    <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in enumerateChangesInMatch e loc
             <&> wrapLoc (L . SrcSpanAnn ep)
             <&> wrapChange (\r ->  h ++ [r] ++ t)
-    })
-    <&> wrapChange (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
+            <&> wrapChange (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
+    )
 enumerateChangesInFuncBinding _ _ = []
 
 enumerateChangesInMatch :: Enumerator (Match GhcPs (LHsExpr GhcPs))
@@ -86,13 +80,10 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
                     <&> wrapChange (\r ->  h ++ [r] ++ t)
             })
             <&> wrapChange (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
-        grhsChanges = splitEverywhere grhss
-            <&> (\(h, L l (GRHS grhsx p (L lbody body)), t) -> Change {
-                location = l,
-                exec = h ++ t, -- Removing cdeclaration in list
-                followups = enumerateChangesInExpression body (locA lbody)
+        grhsChanges = concat (splitEverywhere grhss
+            <&> (\(h, L l (GRHS grhsx p (L lbody body)), t) -> enumerateChangesInExpression body (locA lbody)
                     <&> wrapChange (\b -> h ++ [L l $ GRHS grhsx p (L lbody b)] ++ t)
-            })
+            ))
             <&> wrapChange (\grhs -> Match x ctxt pats (GRHSs ext grhs localBinds))
         localbindChanges = enumerateChangesInLocalBinds localBinds noSrcSpan
             <&> wrapChange (\newlb -> Match x ctxt pats (GRHSs ext grhss newlb))

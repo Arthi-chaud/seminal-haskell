@@ -61,4 +61,5 @@
 
 ### June 1
 
-- 
+- Bypass missing `main` function error
+- Successful change suggestion (no ranking nor formatting)
