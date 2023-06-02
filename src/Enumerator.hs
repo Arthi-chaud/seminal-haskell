@@ -5,7 +5,7 @@
 module Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
 
 import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar, HsLit, HsOverLit), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, noAnnSrcSpan, GhcPs, SrcSpanAnn' (..), HsLit (HsChar, HsString, HsCharPrim, HsStringPrim), getLocA)
-import Changes (Change (..), wrapChange, wrapLoc)
+import Changes (newChange, wrapChange, wrapLoc, Change)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Plugins
@@ -15,7 +15,7 @@ import GHC.Plugins
       SrcSpan,
       mkVarOcc,
       mkRdrUnqual,
-      Boxity(Boxed), mkFastString, unpackFS, trace )
+      Boxity(Boxed), mkFastString, unpackFS, showSDocUnsafe, pprLocated, pprCode, showPprUnsafe )
 import Data.ByteString.Internal (w2c)
 import Data.ByteString (unpack)
 import GHC.Types.SourceText (SourceText(NoSourceText))
@@ -42,12 +42,11 @@ enumerateChangesAtRoot list = concat $ splitEverywhere list <&> (\(h, L l remove
     followups = enumerateChangesInDeclaration removed removedLoc
         <&> wrapLoc (L . SrcSpanAnn ep)
         <&> wrapChange (\r -> h ++ [r] ++ t)
-    buildChange exec = Change removedLoc list exec followups
     in case removed of
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&> wrapChange (L l . ValD v)
             <&> wrapChange (\change -> h ++ [change] ++ t)
-        _ -> [buildChange $ h ++ t]
+        _ -> [newChange list (h ++ t) removedLoc followups]
     )
 
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
@@ -82,14 +81,14 @@ enumerateChangesInMatch :: Enumerator (Match GhcPs (LHsExpr GhcPs))
 enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bindingChanges
     where
         patChanges = splitEverywhere pats
-            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in Change {
-                location = loc,
-                src = pats,
-                exec = h ++ t, -- Removing declaration in list
-                followups = enumerateChangesInPattern e loc
+            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in newChange
+                pats
+                (h ++ t) -- Removing declaration in list
+                loc
+                (enumerateChangesInPattern e loc
                     <&> wrapLoc (L . SrcSpanAnn ep)
-                    <&> wrapChange (\r ->  h ++ [r] ++ t)
-            })
+                    <&> wrapChange (\r ->  h ++ [r] ++ t))
+            )
             <&> wrapChange (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
         grhsChanges = concat (splitEverywhere grhss
             <&> (\(h, L l (GRHS grhsx p (L lbody body)), t) -> enumerateChangesInExpression body (locA lbody)
@@ -116,35 +115,25 @@ enumerateChangesInPattern _ _ = []
 -- starting with replacing them with undefined, and wr
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression expr loc = [
-    Change {
-        location = loc,
-        src = expr,
-        exec = undefinedExpression,
-        followups = Change {
-            location = loc,
-            src = expr,
-            exec = ExplicitList EpAnnNotUsed [L noSrcSpanA expr],
-            followups = []
-        } : enumerateChangesInExpression' expr loc
-    }]
+    newChange
+        expr
+        undefinedExpression
+        loc
+        (newChange
+            expr
+            (ExplicitList EpAnnNotUsed [L noSrcSpanA expr])
+            loc
+            []
+        : enumerateChangesInExpression' expr loc)
+    ]
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression' expr loc =  case expr of
     (ExplicitList _ [a]) -> [
-        Change {
-            location = loc,
-            src = expr,
-            exec = unLoc a,
-            followups = []
-        } -- Singleton to Item
+        newChange expr (unLoc a) loc [] -- Singleton to item
         ]
     (ExplicitList _ elems) -> [
-        Change {
-            location = loc,
-            src = expr,
-            exec = ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed,
-            followups = []
-        } -- List to Tuple
+        newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc [] -- List to tuple
         ]
     -- In function application: try chnages on functions and parameters
     (HsApp a func param) -> enumF ++ enumParam
@@ -167,16 +156,6 @@ enumerateChangeInLiteral literal loc = case literal of
     (HsStringPrim _ string) -> changeForString $ w2c <$> unpack string
     _ -> []
     where
-        changeForChar char = [Change {
-            location = loc,
-            src = literal,
-            exec = HsString NoSourceText (mkFastString [char]),
-            followups = []
-        }]
-        changeForString [char] = [Change {
-            location = loc,
-            src = literal,
-            exec = HsChar NoSourceText char,
-            followups = []
-        }]
+        changeForChar char = [newChange literal (HsString NoSourceText (mkFastString [char])) loc []]
+        changeForString [char] = [newChange literal (HsChar NoSourceText char) loc []]
         changeForString _ = []

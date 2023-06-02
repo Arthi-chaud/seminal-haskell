@@ -2,7 +2,6 @@ module Main (main) where
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Seminal (runSeminal, Status(..))
-import Data.List (intercalate)
 import Text.Printf (printf)
 
 main :: IO ()

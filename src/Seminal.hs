@@ -1,6 +1,6 @@
 -- | Entrypoint to Seminal
 module Seminal (runSeminal, Status(..)) where
-import Changes (Change (exec, followups), wrapLoc, wrapChange)
+import Changes (Change (exec, followups), wrapChange)
 import Compiler.TypeChecker (typecheckModule, TypeCheckStatus(Error, Success))
 import Compiler.Parser (parseFile)
 import Compiler.Runner (runCompiler)

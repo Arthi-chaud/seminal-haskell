@@ -1,37 +1,75 @@
-module Changes (Change (..), wrapChange, wrapLoc) where
+module Changes (Change(exec, followups, doc), newChange, wrapChange, wrapLoc) where
 import GHC.Plugins
 import Text.Printf
 
+-- | Exported constructor for `Change`.
+-- It will allow easier build of related doc
+newChange :: (Outputable node) =>
+    -- | The node that is changed
+    node ->
+    -- | The new node
+    node ->
+    -- | The location of the original change
+    SrcSpan ->
+    -- | Followups
+    [Change node] ->
+    Change node
+newChange src exec loc followups = Change {
+    exec = exec,
+    followups = followups,
+    doc = ChangeDoc {
+        location = loc,
+        pprSrc = ppr src,
+        pprExec = ppr exec
+    }
+}
+
 -- | Wraps a change of a leaf for/into its parent
 wrapChange :: (leaf -> node) -> Change leaf -> Change node
-wrapChange f (Change loc src exec followups) = Change loc (f src) (f exec) (wrapChange f <$> followups)
+wrapChange f change = change {
+    exec = f $ exec change,
+    followups = wrapChange f <$> followups change
+}
 
 -- | Rewraps tha location to the change type
 wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
-wrapLoc f (Change loc src exec followups) = Change loc (f loc src) (f loc exec) (wrapLoc f <$> followups)
+wrapLoc f change = change {
+    exec = f (location $ doc change) $ exec change,
+    followups = wrapLoc f <$> followups change
+}
 
 -- | Defines a change to apply on the AST.
 -- The namings are inspired by the `astRepl` (Seminal, 2006, p. 5)
 data Change node = Change {
-    -- | Location (in the source code) of the node to change.
-    location :: SrcSpan,
-    -- | The original node.
-    -- Used solely for pretty-printing
-    src :: node,
     -- | Run the change, returns the new node
     exec :: node,
     -- | List of subsequent changes to consider, if the parent change succeeds
-    followups :: [Change node]
+    followups :: [Change node],
+    -- | Pretty-printable Information about the change
+    doc :: ChangeDoc
 }
 
-instance (Outputable node) => Show (Change node) where
-    show (Change loc src exec _) = printf "%s: Replace\n%s\n-- with --\n%s" location (showNode src) (showNode exec)
+-- | Gives information about a change
+data ChangeDoc = ChangeDoc {
+    -- | Location (in the source code) of the changed node.
+    location :: SrcSpan,
+    -- | The PrettyPrint of the changed subnode
+    pprSrc :: SDoc,
+     -- | The PrettyPrint of the new subnode
+    pprExec :: SDoc
+}
+
+instance Show (Change node) where
+    show change = show $ doc change
+
+instance Show ChangeDoc where
+    show (ChangeDoc loc src exec) = printf "%s: Replace\n%s\n-- with --\n%s" location (showNode src) (showNode exec)
         where
             showNode = showSDocUnsafe . pprLocated . L loc
             location = case loc of
-                RealSrcSpan s _ -> printf "Line %d" (srcSpanStartLine s)
-                UnhelpfulSpan _ -> "Could not find the location]"
-            -- showFU = intercalate "\n" $ show <$> followups
+                RealSrcSpan s _ -> printf "Line %d, Col %d" (srcSpanStartLine s) (srcSpanStartCol s)
+                UnhelpfulSpan _ -> "[Could not find the location]"
+
 -- | Enum of the possible Changes to apply on the AST
 -- Inspired by the list provided in the Seminal paper (2006, p. 4)
 -- data ChangeType =
