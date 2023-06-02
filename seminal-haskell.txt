@@ -6,6 +6,32 @@
 @package seminal-haskell
 @version 0.0.1
 
+module Changes
+
+-- | Defines a change to apply on the AST. The namings are inspired by the
+--   <tt>astRepl</tt> (Seminal, 2006, p. 5)
+data Change node
+Change :: SrcSpan -> node -> node -> [Change node] -> Change node
+
+-- | Location (in the source code) of the node to change.
+[location] :: Change node -> SrcSpan
+
+-- | The original node. Used solely for pretty-printing
+[src] :: Change node -> node
+
+-- | Run the change, returns the new node
+[exec] :: Change node -> node
+
+-- | List of subsequent changes to consider, if the parent change succeeds
+[followups] :: Change node -> [Change node]
+
+-- | Wraps a change of a leaf for/into its parent
+wrapChange :: (leaf -> node) -> Change leaf -> Change node
+
+-- | Rewraps tha location to the change type
+wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
+instance GHC.Utils.Outputable.Outputable node => GHC.Show.Show (Changes.Change node)
+
 module Compiler.Module
 
 -- | Apply (possibly modified) HsModule to ParsedModule, | To allow sending
@@ -73,32 +99,9 @@ instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
 instance GHC.Classes.Eq Compiler.TypeChecker.ErrorType
 instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
-module Enumerator.Changes
-
--- | Defines a change to apply on the AST. The namings are inspired by the
---   <tt>astRepl</tt> (Seminal, 2006, p. 5)
-data Change node
-Change :: SrcSpan -> node -> [Change node] -> Change node
-
--- | Location (in the source code) of the node to change.
-[location] :: Change node -> SrcSpan
-
--- | Run the change, returns the new node
-[exec] :: Change node -> node
-
--- | List of subsequent changes to consider, if the parent change succeeds
-[followups] :: Change node -> [Change node]
-
--- | Wraps a change of a leaf for/into its parent
-wrapChange :: (leaf -> node) -> Change leaf -> Change node
-
--- | Rewraps tha location to the change type
-wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
-instance GHC.Utils.Outputable.Outputable node => GHC.Show.Show (Enumerator.Changes.Change node)
-
 
 -- | From a node in the AST, provide possible changes to apply
-module Enumerator.Enumerator
+module Enumerator
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
 enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
 
@@ -106,10 +109,6 @@ enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
 -- | The Ranker allows sorting valid changes, before presenting them to the
 --   user
 module Ranker
-
-
--- | Goes through the AST to find nodes to give to the enumerator
-module Searcher
 
 
 -- | Entrypoint to Seminal
