@@ -4,7 +4,7 @@
 -- | From a node in the AST, provide possible changes to apply
 module Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
 
-import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar, HsLit), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, noAnnSrcSpan, GhcPs, SrcSpanAnn' (..), HsLit (HsChar, HsString, HsCharPrim, HsStringPrim))
+import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar, HsLit, HsOverLit), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, noAnnSrcSpan, GhcPs, SrcSpanAnn' (..), HsLit (HsChar, HsString, HsCharPrim, HsStringPrim), getLocA)
 import Changes (Change (..), wrapChange, wrapLoc)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -15,10 +15,11 @@ import GHC.Plugins
       SrcSpan,
       mkVarOcc,
       mkRdrUnqual,
-      Boxity(Boxed), mkFastString, unpackFS )
+      Boxity(Boxed), mkFastString, unpackFS, trace )
 import Data.ByteString.Internal (w2c)
 import Data.ByteString (unpack)
 import GHC.Types.SourceText (SourceText(NoSourceText))
+import GHC.Hs (noSrcSpanA)
 
 -- | Inspired from Seminal (2006, p. 5)
 type Enumerator a = a -> SrcSpan -> [Change a]
@@ -112,14 +113,22 @@ enumerateChangesInPattern :: Enumerator (Pat GhcPs)
 enumerateChangesInPattern _ _ = []
 
 -- | Enumerate possible changes for expressions,
--- starting with replacing them with undefined
+-- starting with replacing them with undefined, and wr
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression expr loc = [Change {
-    location = loc,
-    src = expr,
-    exec = undefinedExpression,
-    followups = enumerateChangesInExpression' expr loc
-}]
+enumerateChangesInExpression expr loc = [
+    Change {
+        location = loc,
+        src = expr,
+        exec = undefinedExpression,
+        followups = enumerateChangesInExpression' expr loc ++ [
+            -- Try to wrap item in list
+            Change {
+                location = loc,
+                src = expr,
+                exec = ExplicitList EpAnnNotUsed [L noSrcSpanA expr],
+                followups = []
+            }]
+    }]
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression' expr loc =  case expr of
