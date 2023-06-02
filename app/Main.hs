@@ -4,8 +4,6 @@ import System.Exit (exitFailure)
 import Seminal (runSeminal, Status(..))
 import Data.List (intercalate)
 import Text.Printf (printf)
-import GHC.Plugins (showSDocUnsafe, Outputable (ppr))
-import Changes (Change(exec))
 
 main :: IO ()
 main = do
@@ -14,4 +12,4 @@ main = do
     case res of
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
-        Changes list -> putStrLn $ printf "Possible changes to apply: [\n%s\n]" (intercalate "\n---\n---\n" ((showSDocUnsafe . ppr . exec) <$> list))
+        Changes list -> putStrLn $ printf "Possible changes to apply: %s" (intercalate "\n\n---\n" (show <$> list))

@@ -63,3 +63,7 @@
 
 - Bypass missing `main` function error
 - Successful change suggestion (no ranking nor formatting)
+
+### June 2
+
+- Pretty printing suggested changes

@@ -53,9 +53,6 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - seminal-haskell
-    - ghc-lib
-    - ghc-paths
-    - ghc-lib-parser
 
 tests:
   seminal-haskell-test:

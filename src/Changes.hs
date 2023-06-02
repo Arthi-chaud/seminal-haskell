@@ -25,10 +25,12 @@ data Change node = Change {
 }
 
 instance (Outputable node) => Show (Change node) where
-    show (Change loc _ exec _) = printf "Change at %s: %s\n" showLoc showExec
+    show (Change loc src exec _) = printf "%s: Replace\n%s\n-- with --\n%s" location (showNode src) (showNode exec)
         where
-            showLoc = showSDocUnsafe (ppr loc)
-            showExec = showSDocUnsafe (ppr exec)
+            showNode = showSDocUnsafe . pprLocated . L loc
+            location = case loc of
+                RealSrcSpan s _ -> printf "Line %d" (srcSpanStartLine s)
+                UnhelpfulSpan _ -> "Could not find the location]"
             -- showFU = intercalate "\n" $ show <$> followups
 -- | Enum of the possible Changes to apply on the AST
 -- Inspired by the list provided in the Seminal paper (2006, p. 4)

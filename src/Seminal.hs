@@ -38,7 +38,9 @@ runSeminal filePath = do
                         (ParsedModule _ src _) = pm
                         srcLoc = getLoc src
                         in pm { pm_parsed_source = L srcLoc m }
--- | Finds the possible changes to apply to a module to make it typecheck
+
+-- | Finds the possible changes to apply to a module to make it typecheck.
+-- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
 findChanges :: (HsModule -> IO TypeCheckStatus) -> HsModule -> IO [Change HsModule]
 findChanges test m = findValidChanges changes
     where
