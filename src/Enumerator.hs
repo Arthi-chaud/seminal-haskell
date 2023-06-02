@@ -4,7 +4,7 @@
 -- | From a node in the AST, provide possible changes to apply
 module Enumerator (enumerateChangesInDeclaration, enumerateChangesAtRoot) where
 
-import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, noAnnSrcSpan, GhcPs, SrcSpanAnn' (..))
+import GHC (HsDecl(..), HsBindLR (..), HsBind, HsExpr (ExplicitList, ExplicitTuple, HsApp, HsVar, HsLit), LHsDecl, EpAnn (EpAnnNotUsed), HsTupArg (Present), MatchGroup (MG), Match (Match), Pat (WildPat), GRHSs (grhssGRHSs, grhssLocalBinds, GRHSs), GRHS(GRHS), HsLocalBinds, HsLocalBindsLR (HsIPBinds, HsValBinds), LHsExpr, noExtField, noAnnSrcSpan, GhcPs, SrcSpanAnn' (..), HsLit (HsChar, HsString, HsCharPrim, HsStringPrim))
 import Changes (Change (..), wrapChange, wrapLoc)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -15,7 +15,10 @@ import GHC.Plugins
       SrcSpan,
       mkVarOcc,
       mkRdrUnqual,
-      Boxity(Boxed) )
+      Boxity(Boxed), mkFastString, unpackFS )
+import Data.ByteString.Internal (w2c)
+import Data.ByteString (unpack)
+import GHC.Types.SourceText (SourceText(NoSourceText))
 
 -- | Inspired from Seminal (2006, p. 5)
 type Enumerator a = a -> SrcSpan -> [Change a]
@@ -119,7 +122,7 @@ enumerateChangesInExpression expr loc = [Change {
 }]
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression' expr loc = case expr of
+enumerateChangesInExpression' expr loc =  case expr of
     (ExplicitList _ [a]) -> [
         Change {
             location = loc,
@@ -142,5 +145,31 @@ enumerateChangesInExpression' expr loc = case expr of
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
                 <&> wrapChange (\c -> HsApp a (L lf c) param)
             enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
-                <&> wrapChange (\c -> HsApp a func (L lp c))
+                <&> wrapChange (HsApp a func . L lp)
+    -- Attempts tweaks with litterals
+    (HsLit ext literal) -> enumerateChangeInLiteral literal loc
+        <&> wrapChange (HsLit ext)
     _ -> []
+
+-- | Enumeration of changes for Literals
+enumerateChangeInLiteral :: Enumerator (HsLit GhcPs)
+enumerateChangeInLiteral literal loc = case literal of
+    (HsChar _ char) -> changeForChar char
+    (HsCharPrim _ char) -> changeForChar char
+    (HsString _ string) -> changeForString $ unpackFS string
+    (HsStringPrim _ string) -> changeForString $ w2c <$> unpack string
+    _ -> []
+    where
+        changeForChar char = [Change {
+            location = loc,
+            src = literal,
+            exec = HsString NoSourceText (mkFastString [char]),
+            followups = []
+        }]
+        changeForString [char] = [Change {
+            location = loc,
+            src = literal,
+            exec = HsChar NoSourceText char,
+            followups = []
+        }]
+        changeForString _ = []

@@ -67,3 +67,8 @@
 ### June 2
 
 - Pretty printing suggested changes
+
+## Difficulties encountered
+
+- Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
+- For overloaded functions, like `length`, replacing the parameters with `undefined` leads to type ambiguity (TO BE RESOLVED)

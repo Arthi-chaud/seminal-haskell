@@ -1,3 +1,2 @@
-
-a :: Int
-a = length 'a'
+a :: String
+a = 'A'

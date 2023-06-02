@@ -12,4 +12,4 @@ main = do
     case res of
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
-        Changes list -> putStrLn $ printf "Possible changes to apply: %s" (intercalate "\n\n---\n" (show <$> list))
+        Changes list -> putStrLn $ printf "Possible changes to apply: %s" (show . last $ list)

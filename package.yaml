@@ -42,6 +42,7 @@ library:
   - time
   - ghc-paths
   - utility-ht
+  - bytestring
 
 executables:
   seminal-haskell:
