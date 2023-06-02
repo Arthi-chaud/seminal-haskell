@@ -66,6 +66,7 @@ test-suite seminal-haskell-test
   other-modules:
       TestCompiler.Parser
       TestCompiler.TypeChecker
+      TestSeminal
       Paths_seminal_haskell
   hs-source-dirs:
       test

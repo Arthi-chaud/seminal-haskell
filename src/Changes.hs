@@ -1,4 +1,4 @@
-module Changes (Change(exec, followups, doc), newChange, wrapChange, wrapLoc) where
+module Changes (Change(exec, followups, doc), newChange, wrapChange, wrapLoc, ChangeDoc(..)) where
 import GHC.Plugins
 import Text.Printf
 
