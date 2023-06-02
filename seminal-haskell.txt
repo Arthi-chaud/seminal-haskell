@@ -21,6 +21,19 @@ wrapChange :: (leaf -> node) -> Change leaf -> Change node
 
 -- | Rewraps tha location to the change type
 wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
+
+-- | Gives information about a change
+data ChangeDoc
+ChangeDoc :: SrcSpan -> SDoc -> SDoc -> ChangeDoc
+
+-- | Location (in the source code) of the changed node.
+[location] :: ChangeDoc -> SrcSpan
+
+-- | The PrettyPrint of the changed subnode
+[pprSrc] :: ChangeDoc -> SDoc
+
+-- | The PrettyPrint of the new subnode
+[pprExec] :: ChangeDoc -> SDoc
 instance GHC.Show.Show (Changes.Change node)
 instance GHC.Show.Show Changes.ChangeDoc
 
