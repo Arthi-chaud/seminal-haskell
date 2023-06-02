@@ -72,3 +72,5 @@ instance (Outputable node) => Show (Change node) where
 --     StringToChar |
 --     -- | Remove declaration (using its index) from list
 --     RemoveDeclaration Int
+--     RemoveItemInList
+--     itemToshow 

@@ -120,14 +120,12 @@ enumerateChangesInExpression expr loc = [
         location = loc,
         src = expr,
         exec = undefinedExpression,
-        followups = enumerateChangesInExpression' expr loc ++ [
-            -- Try to wrap item in list
-            Change {
-                location = loc,
-                src = expr,
-                exec = ExplicitList EpAnnNotUsed [L noSrcSpanA expr],
-                followups = []
-            }]
+        followups = Change {
+            location = loc,
+            src = expr,
+            exec = ExplicitList EpAnnNotUsed [L noSrcSpanA expr],
+            followups = []
+        } : enumerateChangesInExpression' expr loc
     }]
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
