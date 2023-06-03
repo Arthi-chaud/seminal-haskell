@@ -98,11 +98,58 @@ instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
 instance GHC.Classes.Eq Compiler.TypeChecker.ErrorType
 instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
+module Enumerator.Enumerator
 
--- | From a node in the AST, provide possible changes to apply
-module Enumerator
+-- | Inspired from Seminal (2006, p. 5)
+type Enumerator a = a " The node of the AST where changes are enumerated" -> SrcSpan " The location of the node (source code-wise)." -> [Change a] " Output: A list of changes for the node "
+
+module Enumerator.Literals
+
+-- | Enumeration of changes for Literals, e.g. hard-coded chars, strings,
+--   ints etc. See <a>API doc</a>
+enumerateChangeInLiteral :: Enumerator (HsLit GhcPs)
+
+module Enumerator.Expressions
+
+-- | Enumerate possible changes for expressions, starting with replacing
+--   them with undefined. See <a>API doc</a>
+enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
+
+module Enumerator.LocalBindings
+
+-- | Enumeration of changes for local bindings, e.g. in a `let` or `where`
+--   clause See <a>API doc</a>
+enumerateChangesInLocalBinds :: Enumerator (HsLocalBinds GhcPs)
+
+module Enumerator.Patterns
+
+-- | Enumerate possible changes for patterns, See <a>API doc</a>
+enumerateChangesInPattern :: Enumerator (Pat GhcPs)
+
+module Enumerator.Matches
+
+-- | Enumerates changes for a single match See <a>API doc</a>
+enumerateChangesInMatch :: Enumerator (Match GhcPs (LHsExpr GhcPs))
+
+module Enumerator.Bindings
+
+-- | Enumeration of changes for bindings, i.e. anything with an `=` See
+--   <a>API doc</a>
+enumerateChangesInBinding :: Enumerator (HsBind GhcPs)
+
+-- | Enumerates changes to apply on function binding, e.g. `a True = True`.
+--   One function binding groups all the matches Basically get changes for
+--   each match
+enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
+
+module Enumerator.Declarations
+
+-- | Enumerate changes for a declaration. A declaration could be of a type,
+--   function, instalce, class etc. See <a>API doc</a>
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
-enumerateChangesAtRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
+
+module Enumerator.Modules
+enumerateChangesInModule :: HsModule -> [Change HsModule]
 
 
 -- | The Ranker allows sorting valid changes, before presenting them to the

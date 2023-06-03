@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Enumerator.Bindings</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier">enumerateChangesInBinding</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInFuncBinding"><span class="hs-identifier">enumerateChangesInFuncBinding</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Enumerator.Matches.html"><span class="hs-identifier">Enumerator.Matches</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Enumerator.Matches.html#enumerateChangesInMatch"><span class="hs-identifier">enumerateChangesInMatch</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Enumerator.Enumerator.html"><span class="hs-identifier">Enumerator.Enumerator</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier">Enumerator</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>    </span><span class="annot"><span class="hs-identifier">GhcPs</span></span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>    </span><span class="annot"><span class="hs-identifier">HsBindLR</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span>    </span><span class="annot"><span class="hs-identifier">SrcSpanAnn'</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SrcSpanAnn</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">locA</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-9"></span><span>    </span><span class="annot"><span class="hs-identifier">MatchGroup</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">MG</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-10"></span><span>    </span><span class="annot"><span class="hs-identifier">HsBind</span></span><span class="hs-special">,</span><span>
+</span><span id="line-11"></span><span>    </span><span class="annot"><span class="hs-identifier">GenLocated</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">L</span></span><span class="hs-special">)</span><span>
+</span><span id="line-12"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Changes.html"><span class="hs-identifier">Changes</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Changes.html#wrapChange"><span class="hs-identifier">wrapChange</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Changes.html#wrapLoc"><span class="hs-identifier">wrapLoc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Enumerator.Patterns.html"><span class="hs-identifier">Enumerator.Patterns</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier">enumerateChangesInPattern</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List.HT</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">splitEverywhere</span></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>
+</span><span id="line-18"></span><span class="hs-comment">-- | Enumeration of changes for bindings, i.e. anything with an `=`</span><span>
+</span><span id="line-19"></span><span class="hs-comment">-- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Binds.html#t:HsBindLR)</span><span>
+</span><span id="line-20"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier hs-type">enumerateChangesInBinding</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsBind</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span id="enumerateChangesInBinding"><span class="annot"><span class="annottext">enumerateChangesInBinding :: Enumerator (HsBind GhcPs)
+</span><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier hs-var hs-var">enumerateChangesInBinding</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FunBind</span></span><span> </span><span id="local-6989586621679102685"><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
+</span><a href="#local-6989586621679102685"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679102684"><span class="annot"><span class="annottext">LIdP GhcPs
+</span><a href="#local-6989586621679102684"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679102683"><span class="annot"><span class="annottext">MatchGroup GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679102683"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679102682"><span class="annot"><span class="annottext">[CoreTickish]
+</span><a href="#local-6989586621679102682"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102681"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102681"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsBind GhcPs)
+</span><a href="Enumerator.Bindings.html#enumerateChangesInFuncBinding"><span class="hs-identifier hs-var">enumerateChangesInFuncBinding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall idL idR.
+XFunBind idL idR
+-&gt; LIdP idL
+-&gt; MatchGroup idR (LHsExpr idR)
+-&gt; [CoreTickish]
+-&gt; HsBindLR idL idR
+</span><span class="hs-identifier hs-var">FunBind</span></span><span> </span><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
+</span><a href="#local-6989586621679102685"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">LIdP GhcPs
+</span><a href="#local-6989586621679102684"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">MatchGroup GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679102683"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">[CoreTickish]
+</span><a href="#local-6989586621679102682"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102681"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-22"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier hs-var">enumerateChangesInBinding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PatBind</span></span><span> </span><span id="local-6989586621679102679"><span class="annot"><span class="annottext">XPatBind GhcPs GhcPs
+</span><a href="#local-6989586621679102679"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679102678"><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679102678"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span id="local-6989586621679102677"><span class="annot"><span class="annottext">Pat GhcPs
+</span><a href="#local-6989586621679102677"><span class="hs-identifier hs-var">pat</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102676"><span class="annot"><span class="annottext">GRHSs GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679102676"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679102675"><span class="annot"><span class="annottext">([CoreTickish], [[CoreTickish]])
+</span><a href="#local-6989586621679102675"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Enumerator (Pat GhcPs)
+</span><a href="Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-var">enumerateChangesInPattern</span></a></span><span> </span><span class="annot"><span class="annottext">Pat GhcPs
+</span><a href="#local-6989586621679102677"><span class="hs-identifier hs-var">pat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a. SrcSpanAnn' a -&gt; SrcSpan
+</span><span class="hs-identifier hs-var">locA</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679102678"><span class="hs-identifier hs-var">loc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>    </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall leaf node. (leaf -&gt; node) -&gt; Change leaf -&gt; Change node
+</span><a href="Changes.html#wrapChange"><span class="hs-identifier hs-var">wrapChange</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall l e. l -&gt; e -&gt; GenLocated l e
+</span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679102678"><span class="hs-identifier hs-var">loc</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>    </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall leaf node. (leaf -&gt; node) -&gt; Change leaf -&gt; Change node
+</span><a href="Changes.html#wrapChange"><span class="hs-identifier hs-var">wrapChange</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679102674"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
+</span><a href="#local-6989586621679102674"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall idL idR.
+XPatBind idL idR
+-&gt; LPat idL
+-&gt; GRHSs idR (LHsExpr idR)
+-&gt; ([CoreTickish], [[CoreTickish]])
+-&gt; HsBindLR idL idR
+</span><span class="hs-identifier hs-var">PatBind</span></span><span> </span><span class="annot"><span class="annottext">XPatBind GhcPs GhcPs
+</span><a href="#local-6989586621679102679"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
+</span><a href="#local-6989586621679102674"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">GRHSs GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679102676"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">([CoreTickish], [[CoreTickish]])
+</span><a href="#local-6989586621679102675"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier hs-var">enumerateChangesInBinding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">VarBind</span></span><span> </span><span class="annot"><span class="annottext">XVarBind GhcPs GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">IdP GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">LHsExpr GhcPs
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102672"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102672"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-26"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier hs-var">enumerateChangesInBinding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">AbsBinds</span></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102670"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102670"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-27"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInBinding"><span class="hs-identifier hs-var">enumerateChangesInBinding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PatSynBind</span></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102668"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102668"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="hs-comment">-- | Enumerates changes to apply on function binding, e.g. `a True = True`.</span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- One function binding groups all the matches</span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- Basically get changes for each match</span><span>
+</span><span id="line-32"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInFuncBinding"><span class="hs-identifier hs-type">enumerateChangesInFuncBinding</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsBind</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span id="enumerateChangesInFuncBinding"><span class="annot"><span class="annottext">enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
+</span><a href="Enumerator.Bindings.html#enumerateChangesInFuncBinding"><span class="hs-identifier hs-var hs-var">enumerateChangesInFuncBinding</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FunBind</span></span><span> </span><span id="local-6989586621679102667"><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
+</span><a href="#local-6989586621679102667"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679102666"><span class="annot"><span class="annottext">LIdP GhcPs
+</span><a href="#local-6989586621679102666"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">MG</span></span><span> </span><span id="local-6989586621679102665"><span class="annot"><span class="annottext">XMG GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679102665"><span class="hs-identifier hs-var">c1</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679102664"><span class="annot"><span class="annottext">SrcSpanAnnL
+</span><a href="#local-6989586621679102664"><span class="hs-identifier hs-var">la</span></a></span></span><span> </span><span id="local-6989586621679102663"><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102663"><span class="hs-identifier hs-var">ats</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102662"><span class="annot"><span class="annottext">Origin
+</span><a href="#local-6989586621679102662"><span class="hs-identifier hs-var">c3</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679102661"><span class="annot"><span class="annottext">[CoreTickish]
+</span><a href="#local-6989586621679102661"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [([a], a, [a])]
+</span><span class="hs-identifier hs-var">splitEverywhere</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102663"><span class="hs-identifier hs-var">ats</span></a></span><span>
+</span><span id="line-34"></span><span>    </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679102659"><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102659"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679102658"><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679102658"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679102657"><span class="annot"><span class="annottext">Match
+  GhcPs (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs))
+</span><a href="#local-6989586621679102657"><span class="hs-identifier hs-var">e</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679102656"><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102656"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SrcSpanAnn</span></span><span> </span><span id="local-6989586621679102655"><span class="annot"><span class="annottext">EpAnn AnnListItem
+</span><a href="#local-6989586621679102655"><span class="hs-identifier hs-var">ep</span></a></span></span><span> </span><span id="local-6989586621679102654"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102654"><span class="hs-identifier hs-var">loc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679102658"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">Enumerator (Match GhcPs (LHsExpr GhcPs))
+</span><a href="Enumerator.Matches.html#enumerateChangesInMatch"><span class="hs-identifier hs-var">enumerateChangesInMatch</span></a></span><span> </span><span class="annot"><span class="annottext">Match
+  GhcPs (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs))
+</span><a href="#local-6989586621679102657"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679102654"><span class="hs-identifier hs-var">loc</span></a></span><span>
+</span><span id="line-35"></span><span>            </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a l. (SrcSpan -&gt; a -&gt; l) -&gt; Change a -&gt; Change l
+</span><a href="Changes.html#wrapLoc"><span class="hs-identifier hs-var">wrapLoc</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall l e. l -&gt; e -&gt; GenLocated l e
+</span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall a. a -&gt; SrcSpan -&gt; SrcSpanAnn' a
+</span><span class="hs-identifier hs-var">SrcSpanAnn</span></span><span> </span><span class="annot"><span class="annottext">EpAnn AnnListItem
+</span><a href="#local-6989586621679102655"><span class="hs-identifier hs-var">ep</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-36"></span><span>            </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall leaf node. (leaf -&gt; node) -&gt; Change leaf -&gt; Change node
+</span><a href="Changes.html#wrapChange"><span class="hs-identifier hs-var">wrapChange</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679102652"><span class="annot"><span class="annottext">GenLocated
+  (SrcSpanAnn' (EpAnn AnnListItem))
+  (Match
+     GhcPs
+     (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))
+</span><a href="#local-6989586621679102652"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span>  </span><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102659"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">GenLocated
+  (SrcSpanAnn' (EpAnn AnnListItem))
+  (Match
+     GhcPs
+     (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))
+</span><a href="#local-6989586621679102652"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102656"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>            </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall leaf node. (leaf -&gt; node) -&gt; Change leaf -&gt; Change node
+</span><a href="Changes.html#wrapChange"><span class="hs-identifier hs-var">wrapChange</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679102651"><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102651"><span class="hs-identifier hs-var">c2</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall idL idR.
+XFunBind idL idR
+-&gt; LIdP idL
+-&gt; MatchGroup idR (LHsExpr idR)
+-&gt; [CoreTickish]
+-&gt; HsBindLR idL idR
+</span><span class="hs-identifier hs-var">FunBind</span></span><span> </span><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
+</span><a href="#local-6989586621679102667"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">LIdP GhcPs
+</span><a href="#local-6989586621679102666"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall p body.
+XMG p body -&gt; XRec p [LMatch p body] -&gt; Origin -&gt; MatchGroup p body
+</span><span class="hs-identifier hs-var">MG</span></span><span> </span><span class="annot"><span class="annottext">XMG GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679102665"><span class="hs-identifier hs-var">c1</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall l e. l -&gt; e -&gt; GenLocated l e
+</span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnnL
+</span><a href="#local-6989586621679102664"><span class="hs-identifier hs-var">la</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated
+   (SrcSpanAnn' (EpAnn AnnListItem))
+   (Match
+      GhcPs
+      (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsExpr GhcPs)))]
+</span><a href="#local-6989586621679102651"><span class="hs-identifier hs-var">c2</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Origin
+</span><a href="#local-6989586621679102662"><span class="hs-identifier hs-var">c3</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[CoreTickish]
+</span><a href="#local-6989586621679102661"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span class="annot"><a href="Enumerator.Bindings.html#enumerateChangesInFuncBinding"><span class="hs-identifier hs-var">enumerateChangesInFuncBinding</span></a></span><span> </span><span class="annot"><span class="annottext">HsBind GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-40"></span></pre></body></html>
