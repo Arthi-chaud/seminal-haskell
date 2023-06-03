@@ -67,6 +67,12 @@
 ### June 2
 
 - Pretty printing suggested changes
+- Implement Functional tests suite
+
+### June 3
+
+- Setup CI for Coverage report
+- Split Enumerator into submodules: one for each type of node
 
 ## Difficulties encountered
 
