@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Use list comprehension" #-}
 module Enumerator.Expressions (enumerateChangesInExpression) where
 import Enumerator.Enumerator (Enumerator)
 import GHC (
@@ -39,6 +41,21 @@ enumerateChangesInExpression' expr loc =  case expr of
         -- Turn a list into a tuple
         newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc []
         ]
+    (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
+        -- Turn a unit into an item
+        -- Note: How to build a 1-tuple ?
+        newChange expr unit (locA lunit) []
+        ]
+    (ExplicitTuple _ args _) -> if all tupleArgIsPresent args
+            then [
+                -- Turn a tuple into a list
+                newChange expr (ExplicitList EpAnnNotUsed $ getTupleArg <$> args) loc []
+                ]
+            else []
+        where
+            tupleArgIsPresent (Present {}) = True
+            tupleArgIsPresent _ = False
+            getTupleArg (Present _ arg) = arg
     -- Attempts tweaks with litterals
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
         <&> fmap (HsLit ext)

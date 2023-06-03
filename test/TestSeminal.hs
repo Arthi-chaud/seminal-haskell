@@ -47,6 +47,10 @@ testSuite = testGroup "Seminal" $ buildTest <$>[
         "Got a list, expected an item" 
         "['a']"  "'a'",
     testSeminal
+        "expect-list-not-tuple"
+        "Got an tuple, expected a list" 
+        "('a', 'b')" "['a', 'b']",
+    testSeminal
         "expect-list"
         "Got an int, expected a list" 
         "1"  "[1]",
@@ -57,5 +61,5 @@ testSuite = testGroup "Seminal" $ buildTest <$>[
     testSeminal
         "expect-tuple"
         "Got a list, expected a tuple" 
-        "['a', 'b']"  "('a', 'b')"   
+        "['a', 'b']"  "('a', 'b')"
     ]
