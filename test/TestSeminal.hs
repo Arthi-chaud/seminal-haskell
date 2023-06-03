@@ -37,7 +37,15 @@ testSeminal file name src exec = do
         err -> assertFailure $ "Seminal Failed: " ++ show err
 
 testSuite :: Test
-testSuite = testGroup "Seminal" $ buildTest <$>[
+testSuite = testGroup "Seminal" $ buildTest <$> [
+    testSeminal
+        "expect-char-from-string-list"
+        "Got a singleton of string, expected a char" 
+        "[\"a\"]"  "'a'",
+    testSeminal
+        "expect-char-in-tuple"
+        "Got a string, expected a char, in a typed tuple" 
+        "\"1\""  "'1'",
     testSeminal
         "expect-char"
         "Got a string, expected a char" 
@@ -54,6 +62,10 @@ testSuite = testGroup "Seminal" $ buildTest <$>[
         "expect-list"
         "Got an int, expected a list" 
         "1"  "[1]",
+    testSeminal
+        "expect-string-in-list"
+        "List of String, with a Char in the middle" 
+        "'A'"  "\"A\"",
     testSeminal
         "expect-string-not-int"
         "Got an int, expected a string" 

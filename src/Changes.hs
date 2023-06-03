@@ -1,4 +1,4 @@
-module Changes (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..)) where
+module Changes (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc) where
 import GHC.Plugins
 import Text.Printf
 
@@ -62,10 +62,18 @@ data ChangeDoc = ChangeDoc {
     pprExec :: SDoc
 }
 
+-- | Reset the originally changed node. 
+rewriteSrc :: (Outputable node) => node -> Change leaf -> Change leaf
+rewriteSrc node change = updatedChange 
+    where
+        updatedChange = change { doc = newdoc }
+        newdoc = changedoc { pprSrc = ppr node }
+        changedoc = doc change
+
 instance Show ChangeDoc where
     show (ChangeDoc loc src exec) = printf "%s: Replace\n%s\n-- with --\n%s" location (showNode src) (showNode exec)
         where
-            showNode = showSDocUnsafe . pprLocated . L loc
+            showNode = showSDocUnsafe . ppr
             location = case loc of
                 RealSrcSpan s _ -> printf "Line %d, Col %d" (srcSpanStartLine s) (srcSpanStartCol s)
                 UnhelpfulSpan _ -> "[Could not find the location]"
@@ -90,17 +98,11 @@ instance Show ChangeDoc where
 --     SetCaseToUndef |
 --     -- | Set match of `case of` match to `_`
 --     SetMatchToWildcard |
---     -- | Remove type signature
---     RemoveTypeSignature |
 --     -- | Replace `x` in `if x then ... else ...` by `True`
 --     IfToTrue |
 --     -- | Set value of `let x = ` to `undefined`
 --     LetToUndef |
 --     -- | Set one value in `where` clause to `undefined`
 --     WhereToUndef |
---     -- | Turn `[x]` into `x`
---     SingletonToItem |
 --     -- | Remove declaration
 --     RemoveDeclaration
---     RemoveItemInList
---     itemToshow 

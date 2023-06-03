@@ -10,13 +10,13 @@ import GHC (
     noSrcSpan,
     noAnnSrcSpan,
     EpAnn (EpAnnNotUsed),
-    HsTupArg (Present),
-    unLoc, noSrcSpanA, SrcSpanAnn' (locA), LHsExpr, SrcSpan
+    HsTupArg (Present), noSrcSpanA, SrcSpanAnn' (locA), LHsExpr
     )
-import Changes (newChange)
+import Changes (newChange, rewriteSrc)
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
 import Enumerator.Literals (enumerateChangeInLiteral)
 import Data.Functor ((<&>))
+import Data.List.HT (splitEverywhere)
 
 -- | Enumerate possible changes for expressions,
 -- starting with replacing them with undefined.
@@ -39,25 +39,43 @@ enumerateChangesInExpression expr loc = [changeToUndefined]
         locMe = L noSrcSpanA
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression' expr loc =  case expr of
-    (ExplicitList _ [a]) -> [
-        -- Extract singleton into an item
-        newChange expr (unLoc a) loc []
-        ]
-    (ExplicitList _ elems) -> [
+enumerateChangesInExpression' expr loc = case expr of
+    (ExplicitList ext elems) ->
+        (if length elems == 1
+            -- Extract Singleton into item
+            then let L _ single = head elems in (
+                newChange expr single loc [] :
+                (rewriteSrc expr <$> enumerateChangesInExpression' single loc)
+            )
+            else []) ++
         -- Turn a list into a tuple
-        newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc []
-        ]
+        (newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc []:
+        -- Remove element in list
+        (splitEverywhere elems
+            <&> (\(h, L lremoved removed, t) -> newChange
+                expr
+                (ExplicitList ext $ h ++ t) -- Removing element in list
+                loc
+                (enumerateChangesInExpression removed (locA lremoved)
+                    <&> fmap (L lremoved)
+                    <&> fmap (\i -> h ++ [i] ++ t)
+                    <&> fmap (ExplicitList ext))
+            )
+        ))
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
         -- Turn a unit into an item
         -- Note: How to build a 1-tuple ?
         newChange expr unit (locA lunit) []
         ]
-    (ExplicitTuple _ args _) -> if all tupleArgIsPresent args
-            then [
+    (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
+            then
                 -- Turn a tuple into a list
-                newChange expr (ExplicitList EpAnnNotUsed $ getTupleArg <$> args) loc []
-                ]
+                newChange expr (ExplicitList EpAnnNotUsed $ getTupleArg <$> args) loc [] :
+                -- Enumerate each change for each element in the tuple
+                concat (splitEverywhere args <&> (\(h, Present ext (L lunit unit), t) ->
+                    (enumerateChangesInExpression unit (locA lunit))
+                    <&> fmap (\i -> ExplicitTuple xtuple (h ++ [Present ext (L lunit i)] ++ t) box)
+                ))
             else []
         where
             tupleArgIsPresent (Present {}) = True
