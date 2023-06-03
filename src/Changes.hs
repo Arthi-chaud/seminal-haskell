@@ -100,11 +100,7 @@ instance Show ChangeDoc where
 --     WhereToUndef |
 --     -- | Turn `[x]` into `x`
 --     SingletonToItem |
---     -- | Turn `x` into `[x]`
---     ItemToSingleton |
---     CharToString |
---     StringToChar |
---     -- | Remove declaration (using its index) from list
---     RemoveDeclaration Int
+--     -- | Remove declaration
+--     RemoveDeclaration
 --     RemoveItemInList
 --     itemToshow 

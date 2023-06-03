@@ -34,7 +34,7 @@ testSeminal file name src exec = do
         Changes m -> let bestChange = getBestSuggestion m in do
             showSrc bestChange @?= src
             showExec bestChange @?= exec
-        _ -> assertFailure "Seminal Failed"
+        err -> assertFailure $ "Seminal Failed: " ++ show err
 
 testSuite :: Test
 testSuite = testGroup "Seminal" $ buildTest <$>[
@@ -54,6 +54,10 @@ testSuite = testGroup "Seminal" $ buildTest <$>[
         "expect-list"
         "Got an int, expected a list" 
         "1"  "[1]",
+    testSeminal
+        "expect-string-not-int"
+        "Got an int, expected a string" 
+        "1"  "show 1",
     testSeminal
         "expect-string"
         "Got a Char, expected a String" 

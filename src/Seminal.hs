@@ -16,6 +16,7 @@ data Status =
     InvalidFile String |
     -- | An ordered list of change suggestions
     Changes [Change HsModule]
+    deriving Show
 
 -- | Run Seminal on a source file.
 -- If it returns Nothing, the file typechecks,

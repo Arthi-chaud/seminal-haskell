@@ -11,7 +11,7 @@ import GHC (
     noAnnSrcSpan,
     EpAnn (EpAnnNotUsed),
     HsTupArg (Present),
-    unLoc, noSrcSpanA, SrcSpanAnn' (locA)
+    unLoc, noSrcSpanA, SrcSpanAnn' (locA), LHsExpr, SrcSpan
     )
 import Changes (newChange)
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
@@ -25,11 +25,18 @@ enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression expr loc = [changeToUndefined]
     where
         -- | Change the expression to `undefined`, used as a wildcard
-        changeToUndefined = newChange expr undefinedExpression loc (changeToList:subchanges)
+        changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:subchanges)
         -- | Wrap the expression into a list
-        changeToList = newChange expr (ExplicitList EpAnnNotUsed [L noSrcSpanA expr]) loc []
+        changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc []
+        -- | Try to call `show` on the Expression
+        changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc []
+            <&> (wrapExprInPar . locMe)
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
+        -- | Located expr
+        lexpr = locMe expr
+        -- | Wrap HsExpr into LHsExpr
+        locMe = L noSrcSpanA
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression' expr loc =  case expr of
@@ -72,4 +79,13 @@ enumerateChangesInExpression' expr loc =  case expr of
 
 -- | Expression for `undefined`
 undefinedExpression :: HsExpr GhcPs
-undefinedExpression = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc "undefined"))
+undefinedExpression = buildFunctionName "undefined"
+
+-- | Build HsExpr (HsVar) from a symbol name
+buildFunctionName :: String -> HsExpr GhcPs
+buildFunctionName funcName = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc funcName))
+
+-- | Wraps an expression in parenthesis (AST-wise).
+-- Mainly used for pretty printing
+wrapExprInPar :: LHsExpr GhcPs -> HsExpr GhcPs
+wrapExprInPar = HsPar EpAnnNotUsed
