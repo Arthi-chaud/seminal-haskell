@@ -11,7 +11,7 @@ import GHC (
     HsTupArg (Present),
     unLoc, noSrcSpanA, SrcSpanAnn' (locA)
     )
-import Changes (newChange, wrapChange)
+import Changes (newChange)
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
 import Enumerator.Literals (enumerateChangeInLiteral)
 import Data.Functor ((<&>))
@@ -41,16 +41,16 @@ enumerateChangesInExpression' expr loc =  case expr of
         ]
     -- Attempts tweaks with litterals
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
-        <&> wrapChange (HsLit ext)
+        <&> fmap (HsLit ext)
     -- In function application: try changes on functions and parameters
     (HsApp a func param) -> enumF ++ enumParam
         where
             -- | Enumeration on the function
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
-                <&> wrapChange (\c -> HsApp a (L lf c) param)
+                <&> fmap (\c -> HsApp a (L lf c) param)
             -- | Enumeration on the parameters
             enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
-                <&> wrapChange (HsApp a func . L lp)
+                <&> fmap (HsApp a func . L lp)
     _ -> []
 
 -- | Expression for `undefined`

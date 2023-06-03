@@ -3,7 +3,7 @@ import Enumerator.Enumerator (Enumerator)
 import GHC (GhcPs, GRHSs (..), Match (..), GenLocated (L), SrcSpanAnn' (..), GRHS (GRHS), noSrcSpan)
 import GHC.Hs (LHsExpr)
 import Data.List.HT (splitEverywhere)
-import Changes (newChange, wrapChange, wrapLoc)
+import Changes (newChange, wrapLoc)
 import Data.Functor ((<&>))
 import Enumerator.Patterns (enumerateChangesInPattern)
 import Enumerator.Expressions (enumerateChangesInExpression)
@@ -23,22 +23,22 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
                 -- | Enumerate changes for the pattern
                 (enumerateChangesInPattern e loc
                     <&> wrapLoc (L . SrcSpanAnn ep)
-                    <&> wrapChange (\r ->  h ++ [r] ++ t))
+                    <&> fmap (\r ->  h ++ [r] ++ t))
             )
-            <&> wrapChange (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
+            <&> fmap (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
         -- | Changes for the right-hand side of the `=` symbol
         -- Note: GHRS is Guarded Right-Hand Side
         grhsChanges = concat (splitEverywhere grhss
             <&> (\(h, L l (GRHS grhsx p (L lbody body)), t) ->  enumerateChangesInExpression body (locA lbody)
-                    <&> wrapChange (L lbody)
-                    <&> wrapChange (GRHS grhsx p)
-                    <&> wrapChange (L l)
-                    <&> wrapChange (\b -> h ++ [b] ++ t)
+                    <&> fmap (L lbody)
+                    <&> fmap (GRHS grhsx p)
+                    <&> fmap (L l)
+                    <&> fmap (\b -> h ++ [b] ++ t)
             ))
-            <&> wrapChange (\grhs -> Match x ctxt pats (GRHSs ext grhs localBinds))
+            <&> fmap (\grhs -> Match x ctxt pats (GRHSs ext grhs localBinds))
         -- | The enumeration of changes for the `where` clause of the match
         localbindChanges = enumerateChangesInLocalBinds localBinds noSrcSpan
-            <&> wrapChange (Match x ctxt pats . GRHSs ext grhss)
+            <&> fmap (Match x ctxt pats . GRHSs ext grhss)
 
         bindingChanges = patChanges ++ grhsChanges ++ localbindChanges
 

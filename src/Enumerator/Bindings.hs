@@ -10,7 +10,7 @@ import GHC (
     HsBind,
     GenLocated (L)
     )
-import Changes (wrapChange, wrapLoc)
+import Changes (wrapLoc)
 import Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -20,8 +20,8 @@ import Data.List.HT (splitEverywhere)
 enumerateChangesInBinding :: Enumerator (HsBind GhcPs)
 enumerateChangesInBinding (FunBind a b c d) l = enumerateChangesInFuncBinding (FunBind a b c d) l
 enumerateChangesInBinding (PatBind a (L loc pat) c d) _ = enumerateChangesInPattern pat (locA loc)
-    <&> wrapChange (L loc)
-    <&> wrapChange (\b -> PatBind a b c d)
+    <&> fmap (L loc)
+    <&> fmap (\b -> PatBind a b c d)
 enumerateChangesInBinding (VarBind _ _ _) loc = []
 enumerateChangesInBinding (AbsBinds {}) loc = []
 enumerateChangesInBinding (PatSynBind {}) loc = []
@@ -33,7 +33,7 @@ enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
 enumerateChangesInFuncBinding (FunBind a b (MG c1 (L la ats) c3) d) _ = concat $ splitEverywhere ats
     <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in enumerateChangesInMatch e loc
             <&> wrapLoc (L . SrcSpanAnn ep)
-            <&> wrapChange (\r ->  h ++ [r] ++ t)
-            <&> wrapChange (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
+            <&> fmap (\r ->  h ++ [r] ++ t)
+            <&> fmap (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
     )
 enumerateChangesInFuncBinding _ _ = []

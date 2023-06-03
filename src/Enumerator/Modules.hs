@@ -1,6 +1,6 @@
 module Enumerator.Modules(enumerateChangesInModule) where
 import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
-import Changes(Change, newChange, wrapLoc, wrapChange)
+import Changes(Change, newChange, wrapLoc)
 import Enumerator.Declarations(enumerateChangesInDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
@@ -9,7 +9,7 @@ import Enumerator.Bindings (enumerateChangesInFuncBinding)
 enumerateChangesInModule :: HsModule -> [Change HsModule]
 enumerateChangesInModule hsmod = case hsmod of
     HsModule {} -> enumerateChangesAtModuleRoot (hsmodDecls hsmod)
-        <&> wrapChange (\decls -> hsmod { hsmodDecls = decls })
+        <&> fmap (\decls -> hsmod { hsmodDecls = decls })
     -- We do not need to consider extensions
     -- (From 9.6.x)
     _ -> []
@@ -20,10 +20,10 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> (\(h, L l 
     (SrcSpanAnn ep removedLoc) = l
     followups = enumerateChangesInDeclaration removed removedLoc
         <&> wrapLoc (L . SrcSpanAnn ep)
-        <&> wrapChange (\r -> h ++ [r] ++ t)
+        <&> fmap (\r -> h ++ [r] ++ t)
     in case removed of
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
-            <&> wrapChange (L l . ValD v)
-            <&> wrapChange (\change -> h ++ [change] ++ t)
+            <&> fmap (L l . ValD v)
+            <&> fmap (\change -> h ++ [change] ++ t)
         _ -> [newChange list (h ++ t) removedLoc followups]
     )

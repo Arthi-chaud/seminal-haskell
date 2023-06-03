@@ -1,4 +1,4 @@
-module Changes (Change(exec, followups, doc), newChange, wrapChange, wrapLoc, ChangeDoc(..)) where
+module Changes (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..)) where
 import GHC.Plugins
 import Text.Printf
 
@@ -13,6 +13,7 @@ newChange :: (Outputable node) =>
     SrcSpan ->
     -- | Followups
     [Change node] ->
+    -- | Output
     Change node
 newChange src exec loc followups = Change {
     exec = exec,
@@ -22,13 +23,6 @@ newChange src exec loc followups = Change {
         pprSrc = ppr src,
         pprExec = ppr exec
     }
-}
-
--- | Wraps a change of a leaf for/into its parent
-wrapChange :: (leaf -> node) -> Change leaf -> Change node
-wrapChange f change = change {
-    exec = f $ exec change,
-    followups = wrapChange f <$> followups change
 }
 
 -- | Rewraps tha location to the change type
@@ -49,6 +43,15 @@ data Change node = Change {
     doc :: ChangeDoc
 }
 
+instance Show (Change node) where
+    show change = show $ doc change
+
+instance Functor Change where
+    fmap f change = change {
+        exec = f $ exec change,
+        followups = fmap f <$> followups change
+    }
+
 -- | Gives information about a change
 data ChangeDoc = ChangeDoc {
     -- | Location (in the source code) of the changed node.
@@ -58,9 +61,6 @@ data ChangeDoc = ChangeDoc {
      -- | The PrettyPrint of the new subnode
     pprExec :: SDoc
 }
-
-instance Show (Change node) where
-    show change = show $ doc change
 
 instance Show ChangeDoc where
     show (ChangeDoc loc src exec) = printf "%s: Replace\n%s\n-- with --\n%s" location (showNode src) (showNode exec)

@@ -2,7 +2,7 @@ module Enumerator.Declarations(enumerateChangesInDeclaration) where
 import Enumerator.Enumerator (Enumerator)
 import GHC (HsDecl(..), GhcPs)
 import Enumerator.Bindings (enumerateChangesInBinding)
-import Changes (wrapChange)
+import Changes ()
 import Data.Functor ((<&>))
 
 -- | Enumerate changes for a declaration.
@@ -12,7 +12,7 @@ enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
 enumerateChangesInDeclaration (TyClD _ e) loc = []
 enumerateChangesInDeclaration (InstD _ _) loc = []
 enumerateChangesInDeclaration (DerivD _ _) loc = []
-enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&> wrapChange (ValD i)
+enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&> fmap (ValD i)
 enumerateChangesInDeclaration (SigD _ e) loc = []
 enumerateChangesInDeclaration _ _ = []
 
