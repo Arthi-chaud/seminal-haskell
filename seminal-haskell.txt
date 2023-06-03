@@ -16,9 +16,6 @@ data Change node
 --   related doc
 newChange :: Outputable node => node -> node -> SrcSpan -> [Change node] -> Change node
 
--- | Wraps a change of a leaf for/into its parent
-wrapChange :: (leaf -> node) -> Change leaf -> Change node
-
 -- | Rewraps tha location to the change type
 wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
 
@@ -35,6 +32,7 @@ ChangeDoc :: SrcSpan -> SDoc -> SDoc -> ChangeDoc
 -- | The PrettyPrint of the new subnode
 [pprExec] :: ChangeDoc -> SDoc
 instance GHC.Show.Show (Changes.Change node)
+instance GHC.Base.Functor Changes.Change
 instance GHC.Show.Show Changes.ChangeDoc
 
 module Compiler.Runner
@@ -173,3 +171,4 @@ InvalidFile :: String -> Status
 
 -- | An ordered list of change suggestions
 Changes :: [Change HsModule] -> Status
+instance GHC.Show.Show Seminal.Status
