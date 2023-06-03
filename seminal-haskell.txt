@@ -31,6 +31,9 @@ ChangeDoc :: SrcSpan -> SDoc -> SDoc -> ChangeDoc
 
 -- | The PrettyPrint of the new subnode
 [pprExec] :: ChangeDoc -> SDoc
+
+-- | Reset the originally changed node.
+rewriteSrc :: Outputable node => node -> Change leaf -> Change leaf
 instance GHC.Show.Show (Changes.Change node)
 instance GHC.Base.Functor Changes.Change
 instance GHC.Show.Show Changes.ChangeDoc
