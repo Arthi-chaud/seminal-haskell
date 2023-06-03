@@ -1,12 +1,12 @@
 -- | Entrypoint to Seminal
 module Seminal (runSeminal, Status(..)) where
-import Changes (Change (exec, followups), wrapChange)
+import Changes (Change (exec, followups))
 import Compiler.TypeChecker (typecheckModule, TypeCheckStatus(Error, Success))
 import Compiler.Parser (parseFile)
 import Compiler.Runner (runCompiler)
-import GHC (HsModule (hsmodDecls, HsModule), HsDecl, GhcPs, LHsDecl, GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc)
-import Enumerator
+import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule)
 import Data.Functor ((<&>))
+import Enumerator.Modules (enumerateChangesInModule)
 
 data Status =
     -- | When the file typechecks without any changes
@@ -42,14 +42,11 @@ runSeminal filePath = do
 -- | Finds the possible changes to apply to a module to make it typecheck.
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
 findChanges :: (HsModule -> IO TypeCheckStatus) -> HsModule -> IO [Change HsModule]
-findChanges test m = findValidChanges changes
+findChanges test m = findValidChanges $ enumerateChangesInModule m
     where
-        -- | Hsmodule to changes
-        changes = enumerateChangesAtRoot (hsmodDecls m)
-            <&> wrapChange (\decls -> m { hsmodDecls = decls })
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate
-        -- | Checks if change typechecks
+        -- | Checks if change typechecks, and make tuple out of result 
         evaluate change = test (exec change) <&> (\res -> (change, res))
         -- | Takes a list of change, and 
         findValidChanges clist = do

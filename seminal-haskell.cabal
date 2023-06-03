@@ -28,7 +28,15 @@ library
       Compiler.Parser
       Compiler.Runner
       Compiler.TypeChecker
-      Enumerator
+      Enumerator.Bindings
+      Enumerator.Declarations
+      Enumerator.Enumerator
+      Enumerator.Expressions
+      Enumerator.Literals
+      Enumerator.LocalBindings
+      Enumerator.Matches
+      Enumerator.Modules
+      Enumerator.Patterns
       Ranker
       Seminal
   other-modules:
