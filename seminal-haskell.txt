@@ -46,9 +46,11 @@ data ChangeType
 --   conclusive change
 Wildcard :: ChangeType
 
--- | A Change that is possible but is not good for code quality E.g.
---   <a>show</a>
-Secondary :: ChangeType
+-- | A Change that consist in removing a value
+Removal :: ChangeType
+
+-- | A Change that consist of wrapping the actual value E.g. <a>show</a>
+Wrapping :: ChangeType
 
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
