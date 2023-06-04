@@ -71,12 +71,10 @@ rewriteSrc node change = updatedChange
         changedoc = doc change
 
 instance Show ChangeDoc where
-    show (ChangeDoc loc src exec) = printf "%s: Replace\n%s\n-- with --\n%s" location (showNode src) (showNode exec)
+    show (ChangeDoc loc src exec) = printf "%s: Replace %s with %s" (showNode loc) (showNode src) (showNode exec)
         where
+            showNode :: Outputable a => a -> String
             showNode = showSDocUnsafe . ppr
-            location = case loc of
-                RealSrcSpan s _ -> printf "Line %d, Col %d" (srcSpanStartLine s) (srcSpanStartCol s)
-                UnhelpfulSpan _ -> "[Could not find the location]"
 
 -- | Enum of the possible Changes to apply on the AST
 -- Inspired by the list provided in the Seminal paper (2006, p. 4)

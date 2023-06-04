@@ -2,7 +2,6 @@ module Main (main) where
 import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Seminal (runSeminal, Status(..))
-import Text.Printf (printf)
 
 main :: IO ()
 main = do
@@ -11,4 +10,6 @@ main = do
     case res of
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
-        Changes list -> putStrLn $ printf "Possible changes to apply: %s" (show . last $ list)
+        Changes list -> do
+            putStrLn "Suggestions:"
+            mapM_ print (take 1 $ reverse list)
