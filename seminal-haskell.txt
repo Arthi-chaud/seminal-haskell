@@ -6,7 +6,7 @@
 @package seminal-haskell
 @version 0.0.1
 
-module Changes
+module Change
 
 -- | Defines a change to apply on the AST. The namings are inspired by the
 --   <tt>astRepl</tt> (Seminal, 2006, p. 5)
@@ -14,14 +14,14 @@ data Change node
 
 -- | Exported constructor for <a>Change</a>. It will allow easier build of
 --   related doc
-newChange :: Outputable node => node -> node -> SrcSpan -> [Change node] -> Change node
+newChange :: Outputable node => node -> node -> SrcSpan -> [Change node] -> Maybe String -> ChangeType -> Change node
 
 -- | Rewraps tha location to the change type
 wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
 
 -- | Gives information about a change
 data ChangeDoc
-ChangeDoc :: SrcSpan -> SDoc -> SDoc -> ChangeDoc
+ChangeDoc :: SrcSpan -> SDoc -> SDoc -> Maybe String -> ChangeType -> ChangeDoc
 
 -- | Location (in the source code) of the changed node.
 [location] :: ChangeDoc -> SrcSpan
@@ -32,11 +32,32 @@ ChangeDoc :: SrcSpan -> SDoc -> SDoc -> ChangeDoc
 -- | The PrettyPrint of the new subnode
 [pprExec] :: ChangeDoc -> SDoc
 
+-- | An optional message to give to the user
+[message] :: ChangeDoc -> Maybe String
+
+-- | A 'type' of Change, which allows ranking them
+[category] :: ChangeDoc -> ChangeType
+
 -- | Reset the originally changed node.
 rewriteSrc :: Outputable node => node -> Change leaf -> Change leaf
-instance GHC.Show.Show (Changes.Change node)
-instance GHC.Base.Functor Changes.Change
-instance GHC.Show.Show Changes.ChangeDoc
+data ChangeType
+
+-- | The Change basically replaces the node with a wildcard. It is not a
+--   conclusive change
+Wildcard :: ChangeType
+
+-- | A Change that is possible but is not good for code quality E.g.
+--   <a>show</a>
+Secondary :: ChangeType
+
+-- | The Change is good enough to terminate the search and/or be presented
+--   to the user as if
+Terminal :: ChangeType
+instance GHC.Classes.Eq Change.ChangeType
+instance GHC.Show.Show (Change.Change node)
+instance GHC.Base.Functor Change.Change
+instance GHC.Show.Show Change.ChangeDoc
+instance GHC.Classes.Ord Change.ChangeType
 
 module Compiler.Runner
 
@@ -101,7 +122,8 @@ instance GHC.Show.Show Compiler.TypeChecker.ErrorType
 
 module Enumerator.Enumerator
 
--- | Inspired from Seminal (2006, p. 5)
+-- | Inspired from Seminal (2006, p. 5) The list of changes if sorted by
+--   relevancy: the right-most is the most relevant/specific change
 type Enumerator a = a " The node of the AST where changes are enumerated" -> SrcSpan " The location of the node (source code-wise)." -> [Change a] " Output: A list of changes for the node "
 
 module Enumerator.Literals
@@ -156,6 +178,11 @@ enumerateChangesInModule :: HsModule -> [Change HsModule]
 -- | The Ranker allows sorting valid changes, before presenting them to the
 --   user
 module Ranker
+
+-- | Takes the list of successful changes from the searcher. It sorts
+--   changes based on their type and index (The deeper <a>=</a> the
+--   left-most = the better)
+sortChanges :: [Change a] -> [Change a]
 
 
 -- | Entrypoint to Seminal
