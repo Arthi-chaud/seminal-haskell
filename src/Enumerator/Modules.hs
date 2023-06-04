@@ -1,6 +1,6 @@
 module Enumerator.Modules(enumerateChangesInModule) where
 import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
-import Changes(Change, newChange, wrapLoc)
+import Change(Change, newChange, wrapLoc, ChangeType (Wildcard))
 import Enumerator.Declarations(enumerateChangesInDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
@@ -22,8 +22,10 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> (\(h, L l 
         <&> wrapLoc (L . SrcSpanAnn ep)
         <&> fmap (\r -> h ++ [r] ++ t)
     in case removed of
+        -- | In the case of a variable, we do not try to remove it, as it may be accompanied by a type declaration,
+        -- And standalone type declaration are not allowed
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&> fmap (L l . ValD v)
             <&> fmap (\change -> h ++ [change] ++ t)
-        _ -> [newChange list (h ++ t) removedLoc followups]
+        _ -> [newChange list (h ++ t) removedLoc followups Nothing Wildcard]
     )

@@ -1,7 +1,7 @@
 module Enumerator.Literals (enumerateChangeInLiteral) where
 import Enumerator.Enumerator (Enumerator)
 import GHC (HsLit(..), GhcPs)
-import Changes (newChange)
+import Change (newChange, ChangeType (Terminal))
 import Data.ByteString (unpack)
 import Data.ByteString.Internal (w2c)
 import GHC.Data.FastString (mkFastString)
@@ -23,9 +23,9 @@ enumerateChangeInLiteral literal loc = case literal of
     _ -> []
     where
         changeForChar char = [
-            newChange literal (HsString NoSourceText (mkFastString [char])) loc [] -- Turn into String
+            newChange literal (HsString NoSourceText (mkFastString [char])) loc [] Nothing Terminal -- Turn into String
             ]
         changeForString [char] = [
-            newChange literal (HsChar NoSourceText char) loc [] -- It Singleton, extract it to char
+            newChange literal (HsChar NoSourceText char) loc [] Nothing Terminal -- If Singleton, extract it to char
             ]
         changeForString _ = []

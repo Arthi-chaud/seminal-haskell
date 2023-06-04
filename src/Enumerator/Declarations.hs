@@ -2,7 +2,7 @@ module Enumerator.Declarations(enumerateChangesInDeclaration) where
 import Enumerator.Enumerator (Enumerator)
 import GHC (HsDecl(..), GhcPs)
 import Enumerator.Bindings (enumerateChangesInBinding)
-import Changes ()
+import Change ()
 import Data.Functor ((<&>))
 
 -- | Enumerate changes for a declaration.

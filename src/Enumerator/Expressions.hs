@@ -12,7 +12,7 @@ import GHC (
     EpAnn (EpAnnNotUsed),
     HsTupArg (Present), noSrcSpanA, SrcSpanAnn' (locA), LHsExpr
     )
-import Changes (newChange, rewriteSrc)
+import Change (newChange, rewriteSrc, ChangeType (Terminal, Wildcard, Secondary))
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
 import Enumerator.Literals (enumerateChangeInLiteral)
 import Data.Functor ((<&>))
@@ -25,11 +25,11 @@ enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression expr loc = [changeToUndefined]
     where
         -- | Change the expression to `undefined`, used as a wildcard
-        changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:subchanges)
+        changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:subchanges) Nothing Wildcard
         -- | Wrap the expression into a list
-        changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc []
+        changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Terminal
         -- | Try to call `show` on the Expression
-        changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc []
+        changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Secondary
             <&> (wrapExprInPar . locMe)
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
@@ -40,16 +40,16 @@ enumerateChangesInExpression expr loc = [changeToUndefined]
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression' expr loc = case expr of
-    (ExplicitList ext elems) ->
+    (ExplicitList ext elems) -> reverse -- Reverse because we started here w/ most specific
         (if length elems == 1
             -- Extract Singleton into item
             then let L _ single = head elems in (
-                newChange expr single loc [] :
+                newChange expr single loc [] Nothing Terminal :
                 (rewriteSrc expr <$> enumerateChangesInExpression' single loc)
             )
             else []) ++
         -- Turn a list into a tuple
-        (newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc []:
+        (newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc [] Nothing Terminal:
         -- Remove element in list
         (splitEverywhere elems
             <&> (\(h, L lremoved removed, t) -> newChange
@@ -60,17 +60,19 @@ enumerateChangesInExpression' expr loc = case expr of
                     <&> fmap (L lremoved)
                     <&> fmap (\i -> h ++ [i] ++ t)
                     <&> fmap (ExplicitList ext))
+                Nothing
+                Wildcard
             )
         ))
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
         -- Turn a unit into an item
         -- Note: How to build a 1-tuple ?
-        newChange expr unit (locA lunit) []
+        newChange expr unit (locA lunit) [] Nothing Terminal
         ]
     (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
-            then
+            then reverse $ -- Reverse because we started here w/ most specific
                 -- Turn a tuple into a list
-                newChange expr (ExplicitList EpAnnNotUsed $ getTupleArg <$> args) loc [] :
+                newChange expr (ExplicitList EpAnnNotUsed $ getTupleArg <$> args) loc [] Nothing Terminal:
                 -- Enumerate each change for each element in the tuple
                 concat (splitEverywhere args <&> (\(h, Present ext (L lunit unit), t) ->
                     (enumerateChangesInExpression unit (locA lunit))

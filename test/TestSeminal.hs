@@ -4,7 +4,7 @@ import Test.HUnit ((@?=), assertFailure)
 import Test.Framework (Test, testGroup, buildTest)
 import Test.Framework.Providers.HUnit (testCase)
 import Seminal (runSeminal, Status (..))
-import Changes (Change(doc), ChangeDoc(..))
+import Change (Change(doc), ChangeDoc(..))
 import GHC.Plugins (showSDocUnsafe)
 
 buildAssetPath :: [Char] -> [Char]
@@ -16,7 +16,7 @@ showExec :: ChangeDoc -> String
 showExec = showSDocUnsafe . pprExec
 
 getBestSuggestion :: [Change node] -> ChangeDoc
-getBestSuggestion = doc . last
+getBestSuggestion = doc . head
 
 testSeminal ::
     -- | Name of the file to run seminal on

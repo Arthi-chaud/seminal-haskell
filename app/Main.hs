@@ -12,4 +12,4 @@ main = do
         InvalidFile err -> putStrLn err >> exitFailure
         Changes list -> do
             putStrLn "Suggestions:"
-            mapM_ print (take 1 $ reverse list)
+            mapM_ print list

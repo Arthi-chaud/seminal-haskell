@@ -1,4 +1,4 @@
-module Changes (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc) where
+module Change (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc, ChangeType(..)) where
 import GHC.Plugins
 import Text.Printf
 
@@ -13,15 +13,19 @@ newChange :: (Outputable node) =>
     SrcSpan ->
     -- | Followups
     [Change node] ->
+    Maybe String ->
+    ChangeType ->
     -- | Output
     Change node
-newChange src exec loc followups = Change {
+newChange src exec loc followups message category = Change {
     exec = exec,
     followups = followups,
     doc = ChangeDoc {
         location = loc,
         pprSrc = ppr src,
-        pprExec = ppr exec
+        pprExec = ppr exec,
+        message = message,
+        category = category
     }
 }
 
@@ -58,9 +62,31 @@ data ChangeDoc = ChangeDoc {
     location :: SrcSpan,
     -- | The PrettyPrint of the changed subnode
     pprSrc :: SDoc,
-     -- | The PrettyPrint of the new subnode
-    pprExec :: SDoc
+    -- | The PrettyPrint of the new subnode
+    pprExec :: SDoc,
+    -- | An optional message to give to the user
+    message :: Maybe String,
+    -- | A 'type' of Change, which allows ranking them
+    category :: ChangeType
 }
+
+data ChangeType =
+    -- | The Change basically replaces the node with a wildcard.
+    -- It is not a conclusive change
+    Wildcard |
+    -- | A Change that is possible but is not good for code quality
+    -- E.g. `show`
+    Secondary |
+    -- | The Change is good enough to terminate the search and/or
+    -- be presented to the user as if
+    Terminal
+    deriving Eq
+
+instance Ord ChangeType where
+    compare Wildcard Secondary = LT
+    compare Secondary Terminal = LT
+    compare Terminal Wildcard = GT
+    compare _ _ = EQ
 
 -- | Reset the originally changed node. 
 rewriteSrc :: (Outputable node) => node -> Change leaf -> Change leaf
@@ -71,7 +97,7 @@ rewriteSrc node change = updatedChange
         changedoc = doc change
 
 instance Show ChangeDoc where
-    show (ChangeDoc loc src exec) = printf "%s: Replace %s with %s" (showNode loc) (showNode src) (showNode exec)
+    show (ChangeDoc loc src exec _ _) = printf "%s: Replace %s with %s" (showNode loc) (showNode src) (showNode exec)
         where
             showNode :: Outputable a => a -> String
             showNode = showSDocUnsafe . ppr

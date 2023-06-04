@@ -24,7 +24,7 @@ source-repository head
 
 library
   exposed-modules:
-      Changes
+      Change
       Compiler.Parser
       Compiler.Runner
       Compiler.TypeChecker

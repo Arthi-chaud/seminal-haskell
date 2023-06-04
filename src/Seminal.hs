@@ -1,12 +1,13 @@
 -- | Entrypoint to Seminal
 module Seminal (runSeminal, Status(..)) where
-import Changes (Change (exec, followups))
+import Change (Change (exec, followups))
 import Compiler.TypeChecker (typecheckModule, TypeCheckStatus(Error, Success))
 import Compiler.Parser (parseFile)
 import Compiler.Runner (runCompiler)
 import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule)
 import Data.Functor ((<&>))
 import Enumerator.Modules (enumerateChangesInModule)
+import Ranker (sortChanges)
 
 data Status =
     -- | When the file typechecks without any changes
@@ -43,7 +44,7 @@ runSeminal filePath = do
 -- | Finds the possible changes to apply to a module to make it typecheck.
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
 findChanges :: (HsModule -> IO TypeCheckStatus) -> HsModule -> IO [Change HsModule]
-findChanges test m = findValidChanges $ enumerateChangesInModule m
+findChanges test m = sortChanges <$> findValidChanges (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate

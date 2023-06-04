@@ -10,7 +10,7 @@ import GHC (
     HsBind,
     GenLocated (L)
     )
-import Changes (wrapLoc)
+import Change (wrapLoc)
 import Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
