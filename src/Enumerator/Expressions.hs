@@ -12,7 +12,7 @@ import GHC (
     EpAnn (EpAnnNotUsed),
     HsTupArg (Present), noSrcSpanA, SrcSpanAnn' (locA), LHsExpr
     )
-import Change (newChange, rewriteSrc, ChangeType (Terminal, Wildcard, Secondary))
+import Change (newChange, rewriteSrc, ChangeType (Terminal, Wildcard, Wrapping, Removal))
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
 import Enumerator.Literals (enumerateChangeInLiteral)
 import Data.Functor ((<&>))
@@ -27,9 +27,9 @@ enumerateChangesInExpression expr loc = [changeToUndefined]
         -- | Change the expression to `undefined`, used as a wildcard
         changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:subchanges) Nothing Wildcard
         -- | Wrap the expression into a list
-        changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Terminal
+        changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Wrapping
         -- | Try to call `show` on the Expression
-        changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Secondary
+        changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
             <&> (wrapExprInPar . locMe)
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
@@ -61,7 +61,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     <&> fmap (\i -> h ++ [i] ++ t)
                     <&> fmap (ExplicitList ext))
                 Nothing
-                Wildcard
+                Removal
             )
         ))
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [

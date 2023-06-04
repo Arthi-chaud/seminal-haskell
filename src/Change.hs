@@ -74,19 +74,28 @@ data ChangeType =
     -- | The Change basically replaces the node with a wildcard.
     -- It is not a conclusive change
     Wildcard |
-    -- | A Change that is possible but is not good for code quality
+    -- | A Change that consist in removing a value
+    Removal |
+    -- | A Change that consist of wrapping the actual value
     -- E.g. `show`
-    Secondary |
+    Wrapping |
     -- | The Change is good enough to terminate the search and/or
     -- be presented to the user as if
     Terminal
     deriving Eq
 
 instance Ord ChangeType where
-    compare Wildcard Secondary = LT
-    compare Secondary Terminal = LT
-    compare Terminal Wildcard = GT
-    compare _ _ = EQ
+    -- | Ordering Change types by giving each type a number
+    -- The higher the number, the better
+    compare t1 t2 = compare (n t1) (n t2)
+        where
+            n :: ChangeType -> Int
+            n t = case t of
+                Wildcard -> 1
+                Removal -> 2
+                Wrapping -> 3
+                Terminal -> 4
+
 
 -- | Reset the originally changed node. 
 rewriteSrc :: (Outputable node) => node -> Change leaf -> Change leaf

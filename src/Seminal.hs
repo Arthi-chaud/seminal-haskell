@@ -31,7 +31,7 @@ runSeminal filePath = do
             res <- typecheckPm pm
             case res of
                 Compiler.TypeChecker.Success -> return Seminal.Success
-                Compiler.TypeChecker.Error _ -> Changes <$> findChanges (typecheckPm . hsModToParsedModule) hsModule
+                Compiler.TypeChecker.Error _ -> Changes . sortChanges <$> findChanges (typecheckPm . hsModToParsedModule) hsModule
                 where
                     hsModule = unLoc $ pm_parsed_source pm
                     typecheckPm = runCompiler . typecheckModule
@@ -44,7 +44,7 @@ runSeminal filePath = do
 -- | Finds the possible changes to apply to a module to make it typecheck.
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
 findChanges :: (HsModule -> IO TypeCheckStatus) -> HsModule -> IO [Change HsModule]
-findChanges test m = sortChanges <$> findValidChanges (enumerateChangesInModule m)
+findChanges test m = findValidChanges (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate

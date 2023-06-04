@@ -3,7 +3,7 @@ import Enumerator.Enumerator (Enumerator)
 import GHC (GhcPs, GRHSs (..), Match (..), GenLocated (L), SrcSpanAnn' (..), GRHS (GRHS), noSrcSpan)
 import GHC.Hs (LHsExpr)
 import Data.List.HT (splitEverywhere)
-import Change (newChange, wrapLoc, ChangeType (Wildcard))
+import Change (newChange, wrapLoc, ChangeType (Wildcard, Removal))
 import Data.Functor ((<&>))
 import Enumerator.Patterns (enumerateChangesInPattern)
 import Enumerator.Expressions (enumerateChangesInExpression)
@@ -24,7 +24,7 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
                 (enumerateChangesInPattern e loc
                     <&> wrapLoc (L . SrcSpanAnn ep)
                     <&> fmap (\r ->  h ++ [r] ++ t))
-                Nothing Wildcard
+                Nothing Removal
             )
             <&> fmap (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
         -- | Changes for the right-hand side of the `=` symbol

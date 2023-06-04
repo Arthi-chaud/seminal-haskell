@@ -1,6 +1,6 @@
 module Enumerator.Modules(enumerateChangesInModule) where
 import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
-import Change(Change, newChange, wrapLoc, ChangeType (Wildcard))
+import Change(Change, newChange, wrapLoc, ChangeType (Removal))
 import Enumerator.Declarations(enumerateChangesInDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
@@ -27,5 +27,5 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> (\(h, L l 
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&> fmap (L l . ValD v)
             <&> fmap (\change -> h ++ [change] ++ t)
-        _ -> [newChange list (h ++ t) removedLoc followups Nothing Wildcard]
+        _ -> [newChange list (h ++ t) removedLoc followups Nothing Removal]
     )
