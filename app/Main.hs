@@ -1,11 +1,12 @@
 module Main (main) where
-import System.Environment (getArgs)
 import System.Exit (exitFailure)
 import Seminal (runSeminal, Status(..))
+import Options.Applicative (execParser)
+import Options (optionParser, Options (Options))
 
 main :: IO ()
 main = do
-    (filePath:_) <- getArgs
+    (Options filePath _ _ _) <- execParser optionParser
     res <- runSeminal filePath
     case res of
         Success -> putStrLn "File Typechecks"

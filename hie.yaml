@@ -2,7 +2,7 @@ cradle:
   stack:
     - path: "./src"
       component: "seminal-haskell:lib"
-    - path: "./app/Main.hs"
+    - path: "./app/"
       component: "seminal-haskell:exe:seminal-haskell"
     - path: "./app/Paths_seminal_haskell.hs"
       component: "seminal-haskell:exe:seminal-haskell"

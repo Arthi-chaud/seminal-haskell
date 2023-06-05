@@ -82,7 +82,7 @@ data ChangeType =
     -- | The Change is good enough to terminate the search and/or
     -- be presented to the user as if
     Terminal
-    deriving Eq
+    deriving (Eq, Show)
 
 instance Ord ChangeType where
     -- | Ordering Change types by giving each type a number
