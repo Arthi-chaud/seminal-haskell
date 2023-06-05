@@ -251,32 +251,4 @@ node -&gt; Change leaf -&gt; Change leaf
 </span><span class="hs-identifier hs-var">showSDocUnsafe</span></span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall a. Outputable a =&gt; a -&gt; SDoc
 </span><span class="hs-identifier hs-var">ppr</span></span><span>
-</span><span id="line-113"></span><span>
-</span><span id="line-114"></span><span class="hs-comment">-- | Enum of the possible Changes to apply on the AST</span><span>
-</span><span id="line-115"></span><span class="hs-comment">-- Inspired by the list provided in the Seminal paper (2006, p. 4)</span><span>
-</span><span id="line-116"></span><span class="hs-comment">-- data ChangeType =</span><span>
-</span><span id="line-117"></span><span class="hs-comment">--     -- | Replace an argument in application with `undefined`</span><span>
-</span><span id="line-118"></span><span class="hs-comment">--     GenericReplacement Int |</span><span>
-</span><span id="line-119"></span><span class="hs-comment">--     -- | Add arbitrary new argument to function call</span><span>
-</span><span id="line-120"></span><span class="hs-comment">--     AddArg |</span><span>
-</span><span id="line-121"></span><span class="hs-comment">--     -- | Delete argument to function call</span><span>
-</span><span id="line-122"></span><span class="hs-comment">--     DelArg |</span><span>
-</span><span id="line-123"></span><span class="hs-comment">--     -- | Swap arguments to function call</span><span>
-</span><span id="line-124"></span><span class="hs-comment">--     SwapArg |</span><span>
-</span><span id="line-125"></span><span class="hs-comment">--     -- | Turns application arguments into a tuple</span><span>
-</span><span id="line-126"></span><span class="hs-comment">--     -- | Either all of them, or some</span><span>
-</span><span id="line-127"></span><span class="hs-comment">--     ArgsToTuple |</span><span>
-</span><span id="line-128"></span><span class="hs-comment">--     -- | Remove `case of` match</span><span>
-</span><span id="line-129"></span><span class="hs-comment">--     RemoveCaseMatch |</span><span>
-</span><span id="line-130"></span><span class="hs-comment">--     -- | Set value of `case of` match to undefined</span><span>
-</span><span id="line-131"></span><span class="hs-comment">--     SetCaseToUndef |</span><span>
-</span><span id="line-132"></span><span class="hs-comment">--     -- | Set match of `case of` match to `_`</span><span>
-</span><span id="line-133"></span><span class="hs-comment">--     SetMatchToWildcard |</span><span>
-</span><span id="line-134"></span><span class="hs-comment">--     -- | Replace `x` in `if x then ... else ...` by `True`</span><span>
-</span><span id="line-135"></span><span class="hs-comment">--     IfToTrue |</span><span>
-</span><span id="line-136"></span><span class="hs-comment">--     -- | Set value of `let x = ` to `undefined`</span><span>
-</span><span id="line-137"></span><span class="hs-comment">--     LetToUndef |</span><span>
-</span><span id="line-138"></span><span class="hs-comment">--     -- | Set one value in `where` clause to `undefined`</span><span>
-</span><span id="line-139"></span><span class="hs-comment">--     WhereToUndef |</span><span>
-</span><span id="line-140"></span><span class="hs-comment">--     -- | Remove declaration</span><span>
-</span><span id="line-141"></span><span class="hs-comment">--     RemoveDeclaration</span></pre></body></html>
+</span><span id="line-113"></span></pre></body></html>
