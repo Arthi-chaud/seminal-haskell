@@ -11,3 +11,16 @@ Compilers for programming languages that allow type inference and polymorphism a
 The goal of Seminal is to overcome this weakness. To do so, Delta-debugging is leveraged: Seminal will go through the AST of the source code, and attempt some tweaks, and will try to type-check the new AST. The successful changes will be ranked and presented to the developer as suggestions to fix the type error.
 
 This implementation of Seminal for Haskell is a Master's Degree Project for the [University of Kent](https://www.kent.ac.uk/).
+
+---
+
+```text
+Usage: seminal-haskell filePath [-n|--lines N] [--lazy] [-l|--minLevel LEVEL]
+
+Available options:
+  filePath                 The path to the Haskell source file
+  -n,--lines N             Output the best N suggestions
+  --lazy                   Stops searching at the first *good* change
+  -l,--minLevel LEVEL      The minimal level of suggestions to display (default: Wrapping)
+  -h,--help                Show this help text
+```

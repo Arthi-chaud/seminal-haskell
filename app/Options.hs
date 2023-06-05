@@ -30,7 +30,7 @@ optionParser = info (parser <**> helper) description
                 ( long "lines"
                     <> short 'n'
                     <> metavar "N"
-                    <> help "Output the best K suggestions"
+                    <> help "Output the best N suggestions"
                 )) <*>
             switch
                 ( long "lazy"
