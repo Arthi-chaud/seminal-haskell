@@ -55,6 +55,7 @@ Wrapping :: ChangeType
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
 Terminal :: ChangeType
+instance GHC.Show.Show Change.ChangeType
 instance GHC.Classes.Eq Change.ChangeType
 instance GHC.Show.Show (Change.Change node)
 instance GHC.Base.Functor Change.Change
@@ -203,4 +204,5 @@ InvalidFile :: String -> Status
 
 -- | An ordered list of change suggestions
 Changes :: [Change HsModule] -> Status
+data ChangeType
 instance GHC.Show.Show Seminal.Status
