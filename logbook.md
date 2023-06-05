@@ -84,6 +84,7 @@
 - First meeting w/ master supervisor
 - Setup CI for build on multiple versions of the compiler
 - Use GitHub Issues to track changes to consider
+- Setup CLI Options Parser
 
 ## Difficulties encountered
 
