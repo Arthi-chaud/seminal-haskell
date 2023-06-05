@@ -74,6 +74,15 @@
 - Setup CI for Coverage report
 - Split Enumerator into submodules: one for each type of node
 
+### June 4
+
+- Ranker: Ranks suggestion by order of discovery + position in code
+- Printing Change: Now a single-line
+
+### June 5
+
+- First meeting w/ master supervisor
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
