@@ -43,6 +43,8 @@ library:
   - ghc-paths
   - utility-ht
   - bytestring
+  exposed-modules:
+  - Seminal
 
 executables:
   seminal-haskell:

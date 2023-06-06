@@ -1,7 +1,7 @@
-module Enumerator.Literals (enumerateChangeInLiteral) where
-import Enumerator.Enumerator (Enumerator)
+module Seminal.Enumerator.Literals (enumerateChangeInLiteral) where
+import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (HsLit(..), GhcPs)
-import Change (newChange, ChangeType (Terminal))
+import Seminal.Change (newChange, ChangeType (Terminal))
 import Data.ByteString (unpack)
 import Data.ByteString.Internal (w2c)
 import GHC.Data.FastString (mkFastString)

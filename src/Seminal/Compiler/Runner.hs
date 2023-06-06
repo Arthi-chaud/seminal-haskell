@@ -1,4 +1,4 @@
-module Compiler.Runner (runCompiler) where
+module Seminal.Compiler.Runner (runCompiler) where
 import GHC (Ghc, runGhc, getSessionDynFlags, setSessionDynFlags, DynFlags (..), GhcMode (..), GhcLink (..))
 import GHC.Paths (libdir)
 

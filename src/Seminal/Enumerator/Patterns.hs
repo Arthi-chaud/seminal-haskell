@@ -1,5 +1,5 @@
-module Enumerator.Patterns (enumerateChangesInPattern) where
-import Enumerator.Enumerator (Enumerator)
+module Seminal.Enumerator.Patterns (enumerateChangesInPattern) where
+import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (Pat(..), GhcPs)
 
 -- | Enumerate possible changes for patterns,

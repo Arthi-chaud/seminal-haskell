@@ -24,22 +24,23 @@ source-repository head
 
 library
   exposed-modules:
-      Change
-      Compiler.Parser
-      Compiler.Runner
-      Compiler.TypeChecker
-      Enumerator.Bindings
-      Enumerator.Declarations
-      Enumerator.Enumerator
-      Enumerator.Expressions
-      Enumerator.Literals
-      Enumerator.LocalBindings
-      Enumerator.Matches
-      Enumerator.Modules
-      Enumerator.Patterns
-      Ranker
       Seminal
   other-modules:
+      Seminal.Change
+      Seminal.Compiler.Parser
+      Seminal.Compiler.Runner
+      Seminal.Compiler.TypeChecker
+      Seminal.Enumerator.Bindings
+      Seminal.Enumerator.Declarations
+      Seminal.Enumerator.Enumerator
+      Seminal.Enumerator.Expressions
+      Seminal.Enumerator.Literals
+      Seminal.Enumerator.LocalBindings
+      Seminal.Enumerator.Matches
+      Seminal.Enumerator.Modules
+      Seminal.Enumerator.Patterns
+      Seminal.Options
+      Seminal.Ranker
       Paths_seminal_haskell
   hs-source-dirs:
       src

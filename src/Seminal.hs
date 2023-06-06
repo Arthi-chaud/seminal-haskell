@@ -1,13 +1,19 @@
 -- | Entrypoint to Seminal
-module Seminal (runSeminal, Status(..), ChangeType) where
-import Change (Change (exec, followups), ChangeType)
-import Compiler.TypeChecker (typecheckModule, TypeCheckStatus(Error, Success))
-import Compiler.Parser (parseFile)
-import Compiler.Runner (runCompiler)
+module Seminal (
+    runSeminal,
+    Status(..),
+    ChangeType(..),
+    module Seminal.Options
+) where
+import Seminal.Options
+import Seminal.Change (Change (exec, followups), ChangeType(..))
+import qualified Seminal.Compiler.TypeChecker as TypeChecker
+import Seminal.Compiler.Parser (parseFile)
+import Seminal.Compiler.Runner (runCompiler)
 import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule)
 import Data.Functor ((<&>))
-import Enumerator.Modules (enumerateChangesInModule)
-import Ranker (sortChanges)
+import Seminal.Enumerator.Modules (enumerateChangesInModule)
+import Seminal.Ranker (sortChanges)
 
 data Status =
     -- | When the file typechecks without any changes
@@ -30,20 +36,20 @@ runSeminal filePath = do
         Right pm -> do
             res <- typecheckPm pm
             case res of
-                Compiler.TypeChecker.Success -> return Seminal.Success
-                Compiler.TypeChecker.Error _ -> Changes . sortChanges <$> findChanges (typecheckPm . hsModToParsedModule) hsModule
+                TypeChecker.Success -> return Success
+                TypeChecker.Error _ -> Changes . sortChanges <$> findChanges (typecheckPm . hsModToParsedModule) hsModule
                 where
                     hsModule = unLoc $ pm_parsed_source pm
-                    typecheckPm = runCompiler . typecheckModule
+                    typecheckPm = runCompiler . TypeChecker.typecheckModule
                     hsModToParsedModule :: HsModule -> ParsedModule
                     hsModToParsedModule m = let
                         (ParsedModule _ src _) = pm
                         srcLoc = getLoc src
                         in pm { pm_parsed_source = L srcLoc m }
 
--- | Finds the possible changes to apply to a module to make it typecheck.
+-- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
-findChanges :: (HsModule -> IO TypeCheckStatus) -> HsModule -> IO [Change HsModule]
+findChanges :: (HsModule -> IO TypeChecker.TypeCheckStatus) -> HsModule -> IO [Change HsModule]
 findChanges test m = findValidChanges (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
@@ -52,7 +58,7 @@ findChanges test m = findValidChanges (enumerateChangesInModule m)
         evaluate change = test (exec change) <&> (\res -> (change, res))
         -- | Takes a list of change, and 
         findValidChanges clist = do
-            successfulchanges <- evaluateAll clist <&> filter ((Compiler.TypeChecker.Success ==) . snd) <&> map fst
+            successfulchanges <- evaluateAll clist <&> filter ((TypeChecker.Success ==) . snd) <&> map fst
             case successfulchanges of
                 [] -> return successfulchanges
                 _ -> (successfulchanges ++) <$> findValidChanges (concatMap followups successfulchanges)

@@ -1,13 +1,13 @@
-module Enumerator.Matches (enumerateChangesInMatch) where
-import Enumerator.Enumerator (Enumerator)
+module Seminal.Enumerator.Matches (enumerateChangesInMatch) where
+import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (GhcPs, GRHSs (..), Match (..), GenLocated (L), SrcSpanAnn' (..), GRHS (GRHS), noSrcSpan)
 import GHC.Hs (LHsExpr)
 import Data.List.HT (splitEverywhere)
-import Change (newChange, wrapLoc, ChangeType (Wildcard, Removal))
+import Seminal.Change (newChange, wrapLoc, ChangeType (Wildcard, Removal))
 import Data.Functor ((<&>))
-import Enumerator.Patterns (enumerateChangesInPattern)
-import Enumerator.Expressions (enumerateChangesInExpression)
-import Enumerator.LocalBindings (enumerateChangesInLocalBinds)
+import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
+import Seminal.Enumerator.Expressions (enumerateChangesInExpression)
+import Seminal.Enumerator.LocalBindings (enumerateChangesInLocalBinds)
 
 -- | Enumerates changes for a single match
 -- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Expr.html#t:Match)

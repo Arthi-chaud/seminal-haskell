@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use list comprehension" #-}
-module Enumerator.Expressions (enumerateChangesInExpression) where
-import Enumerator.Enumerator (Enumerator)
+module Seminal.Enumerator.Expressions (enumerateChangesInExpression) where
+import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (
     HsExpr (..),
     GhcPs,
@@ -12,9 +12,9 @@ import GHC (
     EpAnn (EpAnnNotUsed),
     HsTupArg (Present), noSrcSpanA, SrcSpanAnn' (locA), LHsExpr
     )
-import Change (newChange, rewriteSrc, ChangeType (Terminal, Wildcard, Wrapping, Removal))
+import Seminal.Change (newChange, rewriteSrc, ChangeType (Terminal, Wildcard, Wrapping, Removal))
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
-import Enumerator.Literals (enumerateChangeInLiteral)
+import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 

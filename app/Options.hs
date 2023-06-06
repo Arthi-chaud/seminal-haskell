@@ -1,7 +1,7 @@
 {-# LANGUAGE LambdaCase #-}
 module Options (Options(..), optionParser) where
 import Options.Applicative (long, metavar, help, showDefault, value, short, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str)
-import Change (ChangeType(..))
+import Seminal (ChangeType(..))
 
 data Options = Options {
     filePath :: String,

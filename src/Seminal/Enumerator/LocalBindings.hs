@@ -1,6 +1,6 @@
-module Enumerator.LocalBindings(enumerateChangesInLocalBinds) where
+module Seminal.Enumerator.LocalBindings(enumerateChangesInLocalBinds) where
 import GHC (HsLocalBindsLR(..), GhcPs)
-import Enumerator.Enumerator (Enumerator)
+import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC.Hs (HsLocalBinds)
 
 -- | Enumeration of changes for local bindings, e.g. in a `let` or `where` clause

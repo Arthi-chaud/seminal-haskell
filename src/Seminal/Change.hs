@@ -1,4 +1,4 @@
-module Change (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc, ChangeType(..)) where
+module Seminal.Change (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc, ChangeType(..)) where
 import GHC.Plugins
 import Text.Printf
 

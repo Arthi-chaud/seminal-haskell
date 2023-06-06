@@ -1,5 +1,5 @@
-module Enumerator.Enumerator(Enumerator) where
-import Change (Change)
+module Seminal.Enumerator.Enumerator(Enumerator) where
+import Seminal.Change (Change)
 import GHC (SrcSpan)
     
 -- | Inspired from Seminal (2006, p. 5)

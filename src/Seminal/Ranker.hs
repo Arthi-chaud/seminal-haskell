@@ -1,6 +1,6 @@
 -- | The Ranker allows sorting valid changes, before presenting them to the user
-module Ranker (sortChanges) where
-import Change (Change (doc), ChangeDoc (category, location))
+module Seminal.Ranker (sortChanges) where
+import Seminal.Change (Change (doc), ChangeDoc (category, location))
 import Data.List (sortOn)
 import Data.Ix (Ix(range))
 import GHC (realSrcSpan)

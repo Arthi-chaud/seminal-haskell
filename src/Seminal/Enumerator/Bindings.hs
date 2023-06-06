@@ -1,7 +1,7 @@
-module Enumerator.Bindings (enumerateChangesInBinding, enumerateChangesInFuncBinding) where
+module Seminal.Enumerator.Bindings (enumerateChangesInBinding, enumerateChangesInFuncBinding) where
 
-import Enumerator.Matches(enumerateChangesInMatch)
-import Enumerator.Enumerator(Enumerator) 
+import Seminal.Enumerator.Matches(enumerateChangesInMatch)
+import Seminal.Enumerator.Enumerator(Enumerator) 
 import GHC (
     GhcPs,
     HsBindLR (..),
@@ -10,8 +10,8 @@ import GHC (
     HsBind,
     GenLocated (L)
     )
-import Change (wrapLoc)
-import Enumerator.Patterns (enumerateChangesInPattern)
+import Seminal.Change (wrapLoc)
+import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 

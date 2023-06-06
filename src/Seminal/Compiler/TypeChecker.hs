@@ -1,9 +1,9 @@
 -- | Provide a way to access Compiler/Typechecker as a black box,
 -- | according to Seminal's algorithm
-module Compiler.TypeChecker (
+module Seminal.Compiler.TypeChecker (
     TypeCheckStatus (..),
     ErrorType (..),
-    Compiler.TypeChecker.typecheckModule
+    Seminal.Compiler.TypeChecker.typecheckModule
 ) where
 
 import GHC

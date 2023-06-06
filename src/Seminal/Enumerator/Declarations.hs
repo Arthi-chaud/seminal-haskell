@@ -1,8 +1,8 @@
-module Enumerator.Declarations(enumerateChangesInDeclaration) where
-import Enumerator.Enumerator (Enumerator)
+module Seminal.Enumerator.Declarations(enumerateChangesInDeclaration) where
+import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (HsDecl(..), GhcPs)
-import Enumerator.Bindings (enumerateChangesInBinding)
-import Change ()
+import Seminal.Enumerator.Bindings (enumerateChangesInBinding)
+import Seminal.Change ()
 import Data.Functor ((<&>))
 
 -- | Enumerate changes for a declaration.

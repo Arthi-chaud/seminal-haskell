@@ -1,5 +1,5 @@
 -- | Provides utilities to parse a file/source code using the compiler's API
-module Compiler.Parser (
+module Seminal.Compiler.Parser (
     parseFile,
     ParsingResult,
     ParsingErrorType (..)
@@ -16,7 +16,7 @@ import GHC.Plugins (msHsFilePath)
 import GHC.Types.SourceError (SourceError)
 import System.Directory (getPermissions, Permissions (readable))
 import System.Directory.Internal.Prelude (isDoesNotExistError)
-import Compiler.Runner (runCompiler)
+import Seminal.Compiler.Runner (runCompiler)
 
 -- | Result of Parsing process
 type ParsingResult = Either ParsingErrorType ParsedModule
