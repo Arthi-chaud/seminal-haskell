@@ -16,7 +16,9 @@ main = do
     case res of
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
-        Changes list -> do
+        Changes (errMsg, list) -> do
+            putStrLn errMsg
+            putStrLn ""
             putStrLn "Suggestions:"
             mapM_ print windowedList
             where

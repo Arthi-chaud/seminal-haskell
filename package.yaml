@@ -43,6 +43,7 @@ library:
   - ghc-paths
   - utility-ht
   - bytestring
+  - text
   exposed-modules:
   - Seminal
   - Seminal.Options

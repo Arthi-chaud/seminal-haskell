@@ -13,6 +13,7 @@ import GHC.Types.SourceError (handleSourceError)
 import Text.Printf (printf)
 import GHC.SysTools (isContainedIn)
 import Data.Functor ((<&>))
+import Data.Text (pack, strip, unpack)
 
 -- | Defines the possible outcomes of the typechecking process of the compiler
 data TypeCheckStatus =
@@ -24,22 +25,21 @@ data TypeCheckStatus =
 
 data ErrorType =
     -- | Indicates an error occured while typechecking
-    TypeCheckError |
+    TypeCheckError String |
     -- | A type or variable could not be resolved
     -- | It comes with the compiler's error message
     ScopeError String
 
 instance Eq ErrorType where
-    TypeCheckError == TypeCheckError = True
+    TypeCheckError _ == TypeCheckError _ = True
     ScopeError _ == ScopeError _ = True
     _ == _ = False
 
 -- | Pretty-print of Error types
 instance Show ErrorType where
-    show TypeCheckError = "Type Checking Error"
+    show (TypeCheckError err) = printf "Typecheck Error: %s" err
     show (ScopeError err) = printf "Scope Error: %s" err
-
-
+    
 -- | Typecheck Module
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
 typecheckModule parsedModule = do
@@ -47,6 +47,7 @@ typecheckModule parsedModule = do
     return $ case maybeT of
         Right _ -> Success
         Left errMsg -> Error (if any (`isContainedIn` errMsg) ["Variable not in scope", "Not in scope: type constructor or class"]
-            then ScopeError errMsg
-            else TypeCheckError)
+            then ScopeError strippedMsg
+            else TypeCheckError strippedMsg)
+                where strippedMsg = unpack (strip $ pack errMsg)
 

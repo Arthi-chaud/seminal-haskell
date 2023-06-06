@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 -- | Entrypoint to Seminal
 module Seminal (
     runSeminal,
@@ -12,6 +13,7 @@ import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule)
 import Data.Functor ((<&>))
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Ranker (sortChanges)
+import Seminal.Compiler.TypeChecker (ErrorType(..))
 
 data Status =
     -- | When the file typechecks without any changes
@@ -19,8 +21,9 @@ data Status =
     -- | When an error occurs while parsing the file,
     -- unrelated to typechecking
     InvalidFile String |
-    -- | An ordered list of change suggestions
-    Changes [Change HsModule]
+    -- | An ordered list of change suggestions,
+    -- Along with the original typecheck error
+    Changes (String, [Change HsModule])
     deriving Show
 
 -- | Run Seminal on a source file.
@@ -35,7 +38,9 @@ runSeminal (Options searchMethod)filePath = do
             res <- typecheckPm pm
             case res of
                 TypeChecker.Success -> return Seminal.Success
-                TypeChecker.Error _ -> Changes . sortChanges <$> changes
+                TypeChecker.Error err -> case err of
+                    (ScopeError _) -> return $ InvalidFile (show err)
+                    (TypeCheckError msg) -> Changes . (msg,) . sortChanges <$> changes
                 where
                     changes = findChanges searchMethod (typecheckPm . hsModToParsedModule) hsModule
                     hsModule = unLoc $ pm_parsed_source pm
@@ -54,7 +59,7 @@ findChanges method test m = findValidChanges (enumerateChangesInModule m)
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate
         -- | Checks if change typechecks, and make tuple out of result 
-        evaluate change = test (exec change) <&> (\res -> (change, res))
+        evaluate change = test (exec change) <&> (change,)
         -- | Takes a list of change, and 
         findValidChanges clist = do
             successfulchanges <- evaluateAll clist <&> filter ((TypeChecker.Success ==) . snd) <&> map fst
