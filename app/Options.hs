@@ -11,6 +11,8 @@ data Options = Options {
     -- | If true, will stop searching when a *good* change is found
     -- | If false, will go through the entire AST
     lazy :: Bool,
+    -- | If True, will hide the compiler's typecheck error
+    quiet :: Bool,
     -- | The minimal level of suggestions to display
     minLevel :: ChangeType
 }
@@ -35,6 +37,11 @@ optionParser = info (parser <**> helper) description
             switch
                 ( long "lazy"
                     <> help "Stops searching at the first *good* change"
+                ) <*>
+            switch
+                ( long "quiet"
+                    <> short 'q'
+                    <> help "Hide the original type-check error"
                 ) <*>
             option changeTypeParser
                 ( long "minLevel"

@@ -5,10 +5,11 @@ import Seminal.Options
 import qualified Options as Program
 import Options.Applicative (execParser)
 import Seminal.Change (ChangeDoc(..), Change (doc))
+import Control.Monad (unless)
 
 main :: IO ()
 main = do
-    (Program.Options filePath n isLazy minLevel) <- execParser Program.optionParser
+    (Program.Options filePath n isLazy quiet minLevel) <- execParser Program.optionParser
     let options = Options {
         search = if isLazy then Lazy else Eager 
     }
@@ -17,8 +18,9 @@ main = do
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
         Changes (errMsg, list) -> do
-            putStrLn errMsg
-            putStrLn ""
+            -- When it is not quiet, print typecheck error message
+            -- We add one more newline for format
+            unless quiet $ putStrLn (errMsg ++ "\n")
             putStrLn "Suggestions:"
             mapM_ print windowedList
             where
