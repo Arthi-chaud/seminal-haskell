@@ -110,7 +110,7 @@ Error :: ErrorType -> TypeCheckStatus
 data ErrorType
 
 -- | Indicates an error occured while typechecking
-TypeCheckError :: ErrorType
+TypeCheckError :: String -> ErrorType
 
 -- | A type or variable could not be resolved | It comes with the
 --   compiler's error message
@@ -153,6 +153,7 @@ Success :: Status
 -- | When an error occurs while parsing the file, unrelated to typechecking
 InvalidFile :: String -> Status
 
--- | An ordered list of change suggestions
-Changes :: [Change HsModule] -> Status
+-- | An ordered list of change suggestions, Along with the original
+--   typecheck error
+Changes :: (String, [Change HsModule]) -> Status
 instance GHC.Show.Show Seminal.Status
