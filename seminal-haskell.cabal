@@ -31,7 +31,6 @@ library
       Seminal.Compiler.Runner
       Seminal.Compiler.TypeChecker
   other-modules:
-      Seminal.Enumerator.Bindings
       Seminal.Enumerator.Declarations
       Seminal.Enumerator.Enumerator
       Seminal.Enumerator.Expressions

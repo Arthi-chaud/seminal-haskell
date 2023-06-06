@@ -80,6 +80,10 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         "Got a list, expected a tuple" 
         "['a', 'b']"  "('a', 'b')",
     testSeminal
+        "let/expect-char"
+        "Let: Got a String, expected a char" 
+        "\"a\""  "'a'",
+    testSeminal
         "where/expect-char"
         "Where: Got a String, expected a char" 
         "\"a\""  "'a'"

@@ -91,6 +91,9 @@
 - Use options to select the number of changes to display
 - Use options to do a lazy or eager search
 - Re-organise the file architecture to be a standard Haskell Module/Library
+- Use option to hide typechecker error message
+- Enumerator goes through 'where' clause
+- Enumerator goes through 'let' clause
 
 ## Difficulties encountered
 

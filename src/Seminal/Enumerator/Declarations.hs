@@ -1,7 +1,7 @@
 module Seminal.Enumerator.Declarations(enumerateChangesInDeclaration) where
 import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (HsDecl(..), GhcPs)
-import Seminal.Enumerator.Bindings (enumerateChangesInBinding)
+import Seminal.Enumerator.Expressions (enumerateChangesInBinding)
 import Seminal.Change ()
 import Data.Functor ((<&>))
 
