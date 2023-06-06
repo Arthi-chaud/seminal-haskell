@@ -89,6 +89,8 @@
 ### June 6
 
 - Use options to select the number of changes to display
+- Use options to do a lazy or eager search
+- Re-organise the file architecture to be a standard Haskell Module/Library
 
 ## Difficulties encountered
 
