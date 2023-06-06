@@ -6,7 +6,7 @@
 @package seminal-haskell
 @version 0.0.1
 
-module Change
+module Seminal.Change
 
 -- | Defines a change to apply on the AST. The namings are inspired by the
 --   <tt>astRepl</tt> (Seminal, 2006, p. 5)
@@ -55,137 +55,27 @@ Wrapping :: ChangeType
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
 Terminal :: ChangeType
-instance GHC.Show.Show Change.ChangeType
-instance GHC.Classes.Eq Change.ChangeType
-instance GHC.Show.Show (Change.Change node)
-instance GHC.Base.Functor Change.Change
-instance GHC.Show.Show Change.ChangeDoc
-instance GHC.Classes.Ord Change.ChangeType
+instance GHC.Show.Show Seminal.Change.ChangeType
+instance GHC.Classes.Eq Seminal.Change.ChangeType
+instance GHC.Show.Show (Seminal.Change.Change node)
+instance GHC.Base.Functor Seminal.Change.Change
+instance GHC.Show.Show Seminal.Change.ChangeDoc
+instance GHC.Classes.Ord Seminal.Change.ChangeType
 
-module Compiler.Runner
+module Seminal.Options
+newtype Options
+Options :: SearchMethod -> Options
 
--- | Allows runnning function exposed by the compiler's API
-runCompiler :: Ghc a -> IO a
+-- | Tells when to stop searching
+[search] :: Options -> SearchMethod
+data SearchMethod
 
+-- | Stop when the bottom of the AST is reached
+Eager :: SearchMethod
 
--- | Provides utilities to parse a file/source code using the compiler's
---   API
-module Compiler.Parser
-
--- | Parse a file, retrieve its module
-parseFile :: FilePath -> IO ParsingResult
-
--- | Result of Parsing process
-type ParsingResult = Either ParsingErrorType ParsedModule
-data ParsingErrorType
-
--- | Permission to read the file denied
-PermissionDenied :: ParsingErrorType
-
--- | The file was not found
-FileNotFound :: ParsingErrorType
-
--- | There was an error syntax in the source code
-SyntaxError :: ParsingErrorType
-
--- | An unknown error occured | Comes with an error messag
-UnknownError :: String -> ParsingErrorType
-instance GHC.Classes.Eq Compiler.Parser.ParsingErrorType
-instance GHC.Show.Show Compiler.Parser.ParsingErrorType
-
-
--- | Provide a way to access Compiler/Typechecker as a black box, |
---   according to Seminal's algorithm
-module Compiler.TypeChecker
-
--- | Defines the possible outcomes of the typechecking process of the
---   compiler
-data TypeCheckStatus
-
--- | Indicated the Code typechecks
-Success :: TypeCheckStatus
-
--- | An error happened while typechecking
-Error :: ErrorType -> TypeCheckStatus
-data ErrorType
-
--- | Indicates an error occured while typechecking
-TypeCheckError :: ErrorType
-
--- | A type or variable could not be resolved | It comes with the
---   compiler's error message
-ScopeError :: String -> ErrorType
-
--- | Typecheck Module
-typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
-instance GHC.Classes.Eq Compiler.TypeChecker.TypeCheckStatus
-instance GHC.Show.Show Compiler.TypeChecker.TypeCheckStatus
-instance GHC.Classes.Eq Compiler.TypeChecker.ErrorType
-instance GHC.Show.Show Compiler.TypeChecker.ErrorType
-
-module Enumerator.Enumerator
-
--- | Inspired from Seminal (2006, p. 5) The list of changes if sorted by
---   relevancy: the right-most is the most relevant/specific change
-type Enumerator a = a " The node of the AST where changes are enumerated" -> SrcSpan " The location of the node (source code-wise)." -> [Change a] " Output: A list of changes for the node "
-
-module Enumerator.Literals
-
--- | Enumeration of changes for Literals, e.g. hard-coded chars, strings,
---   ints etc. See <a>API doc</a>
-enumerateChangeInLiteral :: Enumerator (HsLit GhcPs)
-
-module Enumerator.Expressions
-
--- | Enumerate possible changes for expressions, starting with replacing
---   them with undefined. See <a>API doc</a>
-enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
-
-module Enumerator.LocalBindings
-
--- | Enumeration of changes for local bindings, e.g. in a `let` or `where`
---   clause See <a>API doc</a>
-enumerateChangesInLocalBinds :: Enumerator (HsLocalBinds GhcPs)
-
-module Enumerator.Patterns
-
--- | Enumerate possible changes for patterns, See <a>API doc</a>
-enumerateChangesInPattern :: Enumerator (Pat GhcPs)
-
-module Enumerator.Matches
-
--- | Enumerates changes for a single match See <a>API doc</a>
-enumerateChangesInMatch :: Enumerator (Match GhcPs (LHsExpr GhcPs))
-
-module Enumerator.Bindings
-
--- | Enumeration of changes for bindings, i.e. anything with an `=` See
---   <a>API doc</a>
-enumerateChangesInBinding :: Enumerator (HsBind GhcPs)
-
--- | Enumerates changes to apply on function binding, e.g. `a True = True`.
---   One function binding groups all the matches Basically get changes for
---   each match
-enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
-
-module Enumerator.Declarations
-
--- | Enumerate changes for a declaration. A declaration could be of a type,
---   function, instalce, class etc. See <a>API doc</a>
-enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
-
-module Enumerator.Modules
-enumerateChangesInModule :: HsModule -> [Change HsModule]
-
-
--- | The Ranker allows sorting valid changes, before presenting them to the
---   user
-module Ranker
-
--- | Takes the list of successful changes from the searcher. It sorts
---   changes based on their type and index (The deeper <a>=</a> the
---   left-most = the better)
-sortChanges :: [Change a] -> [Change a]
+-- | Stop when a <tt>Terminal</tt> change is found
+Lazy :: SearchMethod
+instance GHC.Classes.Eq Seminal.Options.SearchMethod
 
 
 -- | Entrypoint to Seminal
@@ -193,7 +83,7 @@ module Seminal
 
 -- | Run Seminal on a source file. If it returns Nothing, the file
 --   typechecks, otherwise, provides an ordered list of change suggestions
-runSeminal :: FilePath -> IO Status
+runSeminal :: Options -> FilePath -> IO Status
 data Status
 
 -- | When the file typechecks without any changes
@@ -204,5 +94,4 @@ InvalidFile :: String -> Status
 
 -- | An ordered list of change suggestions
 Changes :: [Change HsModule] -> Status
-data ChangeType
 instance GHC.Show.Show Seminal.Status
