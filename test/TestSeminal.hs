@@ -32,7 +32,7 @@ testSeminal ::
 testSeminal file name src exec = do
     res <- runSeminal (Options Eager) $ buildAssetPath file
     return $ testCase name $ case res of
-        Changes m -> let bestChange = getBestSuggestion m in do
+        Changes m -> let bestChange = getBestSuggestion (snd m) in do
             showSrc bestChange @?= src
             showExec bestChange @?= exec
         err -> assertFailure $ "Seminal Failed: " ++ show err
@@ -78,5 +78,9 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         "expect-tuple"
         "Got a list, expected a tuple" 
-        "['a', 'b']"  "('a', 'b')"
+        "['a', 'b']"  "('a', 'b')",
+    testSeminal
+        "where/expect-char"
+        "Where: Got a String, expected a char" 
+        "\"a\""  "'a'"
     ]

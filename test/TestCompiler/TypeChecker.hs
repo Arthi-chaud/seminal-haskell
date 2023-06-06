@@ -16,7 +16,7 @@ testSuite = testGroup "Compiler's Typechecker" [
     buildTest $ do
         Right m <- parseFile "test/assets/invalid/type-error.hs"
         res <- runCompiler $ typecheckModule m
-        return $ testCase "Typecheck Fail (Expected String, got Char)" $ res @=? Error TypeCheckError,
+        return $ testCase "Typecheck Fail (Expected String, got Char)" $ res @=? Error (TypeCheckError ""),
     buildTest $ do
         Right m <- parseFile "test/assets/invalid/scope-error.hs"
         res <- runCompiler $ typecheckModule m

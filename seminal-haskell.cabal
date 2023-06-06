@@ -36,10 +36,9 @@ library
       Seminal.Enumerator.Enumerator
       Seminal.Enumerator.Expressions
       Seminal.Enumerator.Literals
-      Seminal.Enumerator.LocalBindings
-      Seminal.Enumerator.Matches
       Seminal.Enumerator.Modules
       Seminal.Enumerator.Patterns
+      Seminal.Enumerator.Signatures
       Seminal.Ranker
       Paths_seminal_haskell
   hs-source-dirs:
