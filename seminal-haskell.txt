@@ -62,6 +62,67 @@ instance GHC.Base.Functor Seminal.Change.Change
 instance GHC.Show.Show Seminal.Change.ChangeDoc
 instance GHC.Classes.Ord Seminal.Change.ChangeType
 
+module Seminal.Compiler.Runner
+
+-- | Allows runnning function exposed by the compiler's API
+runCompiler :: Ghc a -> IO a
+
+
+-- | Provides utilities to parse a file/source code using the compiler's
+--   API
+module Seminal.Compiler.Parser
+
+-- | Parse a file, retrieve its module
+parseFile :: FilePath -> IO ParsingResult
+
+-- | Result of Parsing process
+type ParsingResult = Either ParsingErrorType ParsedModule
+data ParsingErrorType
+
+-- | Permission to read the file denied
+PermissionDenied :: ParsingErrorType
+
+-- | The file was not found
+FileNotFound :: ParsingErrorType
+
+-- | There was an error syntax in the source code
+SyntaxError :: ParsingErrorType
+
+-- | An unknown error occured | Comes with an error messag
+UnknownError :: String -> ParsingErrorType
+instance GHC.Classes.Eq Seminal.Compiler.Parser.ParsingErrorType
+instance GHC.Show.Show Seminal.Compiler.Parser.ParsingErrorType
+
+
+-- | Provide a way to access Compiler/Typechecker as a black box, |
+--   according to Seminal's algorithm
+module Seminal.Compiler.TypeChecker
+
+-- | Defines the possible outcomes of the typechecking process of the
+--   compiler
+data TypeCheckStatus
+
+-- | Indicated the Code typechecks
+Success :: TypeCheckStatus
+
+-- | An error happened while typechecking
+Error :: ErrorType -> TypeCheckStatus
+data ErrorType
+
+-- | Indicates an error occured while typechecking
+TypeCheckError :: ErrorType
+
+-- | A type or variable could not be resolved | It comes with the
+--   compiler's error message
+ScopeError :: String -> ErrorType
+
+-- | Typecheck Module
+typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
+instance GHC.Classes.Eq Seminal.Compiler.TypeChecker.TypeCheckStatus
+instance GHC.Show.Show Seminal.Compiler.TypeChecker.TypeCheckStatus
+instance GHC.Classes.Eq Seminal.Compiler.TypeChecker.ErrorType
+instance GHC.Show.Show Seminal.Compiler.TypeChecker.ErrorType
+
 module Seminal.Options
 newtype Options
 Options :: SearchMethod -> Options
