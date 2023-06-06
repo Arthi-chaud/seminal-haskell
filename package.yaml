@@ -45,6 +45,8 @@ library:
   - bytestring
   exposed-modules:
   - Seminal
+  - Seminal.Options
+  - Seminal.Change
 
 executables:
   seminal-haskell:
