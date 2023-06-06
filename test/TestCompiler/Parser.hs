@@ -1,6 +1,6 @@
 module TestCompiler.Parser (testSuite) where
 
-import Compiler.Parser
+import Seminal.Compiler.Parser
 import Test.HUnit ((@=?), assertFailure)
 import Test.Framework (Test, testGroup, buildTest)
 import Test.Framework.Providers.HUnit (testCase)

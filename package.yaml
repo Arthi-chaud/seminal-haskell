@@ -47,6 +47,10 @@ library:
   - Seminal
   - Seminal.Options
   - Seminal.Change
+  ## For testing purposes, ugh
+  - Seminal.Compiler.Parser
+  - Seminal.Compiler.Runner
+  - Seminal.Compiler.TypeChecker
 
 executables:
   seminal-haskell:

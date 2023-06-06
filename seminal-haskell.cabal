@@ -27,10 +27,10 @@ library
       Seminal
       Seminal.Options
       Seminal.Change
-  other-modules:
       Seminal.Compiler.Parser
       Seminal.Compiler.Runner
       Seminal.Compiler.TypeChecker
+  other-modules:
       Seminal.Enumerator.Bindings
       Seminal.Enumerator.Declarations
       Seminal.Enumerator.Enumerator

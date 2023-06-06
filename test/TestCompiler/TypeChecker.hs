@@ -1,11 +1,11 @@
 module TestCompiler.TypeChecker (testSuite) where
 
-import Compiler.Parser
+import Seminal.Compiler.Parser
 import Test.HUnit ((@=?))
 import Test.Framework (Test, testGroup, buildTest)
 import Test.Framework.Providers.HUnit (testCase)
-import Compiler.TypeChecker (typecheckModule, TypeCheckStatus (Success, Error), ErrorType (TypeCheckError, ScopeError))
-import Compiler.Runner
+import Seminal.Compiler.TypeChecker (typecheckModule, TypeCheckStatus (Success, Error), ErrorType (TypeCheckError, ScopeError))
+import Seminal.Compiler.Runner
 
 testSuite :: Test
 testSuite = testGroup "Compiler's Typechecker" [

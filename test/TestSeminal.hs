@@ -4,7 +4,8 @@ import Test.HUnit ((@?=), assertFailure)
 import Test.Framework (Test, testGroup, buildTest)
 import Test.Framework.Providers.HUnit (testCase)
 import Seminal (runSeminal, Status (..))
-import Change (Change(doc), ChangeDoc(..))
+import Seminal.Change (Change(doc), ChangeDoc(..))
+import Seminal.Options
 import GHC.Plugins (showSDocUnsafe)
 
 buildAssetPath :: [Char] -> [Char]
@@ -29,7 +30,7 @@ testSeminal ::
     -> String
     -> IO Test
 testSeminal file name src exec = do
-    res <- runSeminal $ buildAssetPath file
+    res <- runSeminal (Options Eager) $ buildAssetPath file
     return $ testCase name $ case res of
         Changes m -> let bestChange = getBestSuggestion m in do
             showSrc bestChange @?= src
