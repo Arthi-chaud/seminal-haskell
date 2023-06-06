@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 module Options (Options(..), optionParser) where
-import Options.Applicative (long, metavar, help, showDefault, value, short, ReadM, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str)
+import Options.Applicative (long, metavar, help, showDefault, value, short, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str)
 import Change (ChangeType(..))
 
 data Options = Options {

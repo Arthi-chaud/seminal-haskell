@@ -86,6 +86,10 @@
 - Use GitHub Issues to track changes to consider
 - Setup CLI Options Parser
 
+### June 6
+
+- Use options to select the number of changes to display
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
