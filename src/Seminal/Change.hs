@@ -115,7 +115,10 @@ rewriteSrc node change = updatedChange
         changedoc = doc change
 
 instance Show ChangeDoc where
-    show (ChangeDoc loc src exec _ _) = printf "%s: Replace %s with %s" (showNode loc) (showNode src) (showNode exec)
+    show (ChangeDoc loc src exec maybeMsg _) = replacement ++ case maybeMsg of
+        (Just msg) -> '\n' : msg
+        _ -> ""
         where
+            replacement = printf "%s: Replace %s with %s" (showNode loc) (showNode src) (showNode exec)
             showNode :: Outputable a => a -> String
             showNode = showSDocUnsafe . ppr

@@ -39,7 +39,7 @@ import Seminal.Change
       ChangeType(Removal),
       newChange,
       rewriteSrc,
-      ChangeType(Terminal, Wildcard, Wrapping, Removal) )
+      ChangeType(Terminal, Wildcard, Wrapping, Removal), ChangeDoc (message) )
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -62,8 +62,9 @@ enumerateChangesInExpression expr loc = [changeToUndefined, changeToNil]
         -- | Try to call `show` on the Expression
         changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
             <&> (wrapExprInPar . locMe)
-        changeToTrue = newChange expr (HsVar noExtField ltrue) loc [] Nothing Wildcard
+        changeToTrue = newChange expr (HsVar noExtField ltrue) loc [] message Wildcard
             where
+                message = return "This expression needs to evaluate to a boolean value. It is not the case here. Check the type of the value."
                 ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
