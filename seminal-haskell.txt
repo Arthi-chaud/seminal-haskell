@@ -58,7 +58,9 @@ Terminal :: ChangeType
 instance GHC.Show.Show Seminal.Change.ChangeType
 instance GHC.Classes.Eq Seminal.Change.ChangeType
 instance GHC.Show.Show (Seminal.Change.Change node)
+instance GHC.Classes.Eq (Seminal.Change.Change node)
 instance GHC.Base.Functor Seminal.Change.Change
+instance GHC.Classes.Eq Seminal.Change.ChangeDoc
 instance GHC.Show.Show Seminal.Change.ChangeDoc
 instance GHC.Classes.Ord Seminal.Change.ChangeType
 
