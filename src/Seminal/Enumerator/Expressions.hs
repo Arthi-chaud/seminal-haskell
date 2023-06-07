@@ -5,52 +5,66 @@ module Seminal.Enumerator.Expressions (
     enumerateChangesInFuncBinding
 ) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (
-    HsExpr (..),
-    GhcPs,
-    GenLocated (..),
-    noExtField,
-    noSrcSpan,
-    noAnnSrcSpan,
-    EpAnn (EpAnnNotUsed),
-    HsTupArg (Present), noSrcSpanA, SrcSpanAnn' (locA), LHsExpr
-    )
-import Seminal.Enumerator.Enumerator(Enumerator) 
-import GHC (
-    GhcPs,
-    HsBindLR (..),
-    SrcSpanAnn' (SrcSpanAnn, locA),
-    MatchGroup (MG),
-    HsBind,
-    GenLocated (L), Match (..), LHsExpr, GRHSs (GRHSs), GRHS (GRHS),
-    HsLocalBinds, HsLocalBindsLR (HsValBinds, HsIPBinds),
-    HsValBindsLR (XValBindsLR, ValBinds), noSrcSpan, HsIPBinds (IPBinds), IPBind (IPBind)
-    )
-import Seminal.Change (wrapLoc, newChange, ChangeType (Removal))
+import GHC
+    ( HsExpr(..),
+      GhcPs,
+      GenLocated(..),
+      noExtField,
+      noSrcSpan,
+      noAnnSrcSpan,
+      EpAnn(EpAnnNotUsed),
+      HsTupArg(Present),
+      noSrcSpanA,
+      SrcSpanAnn'(locA),
+      LHsExpr,
+      GhcPs,
+      HsBindLR(..),
+      SrcSpanAnn'(SrcSpanAnn, locA),
+      MatchGroup(MG),
+      HsBind,
+      GenLocated(L),
+      Match(..),
+      LHsExpr,
+      GRHSs(GRHSs),
+      GRHS(GRHS),
+      HsLocalBinds,
+      HsLocalBindsLR(HsValBinds, HsIPBinds),
+      HsValBindsLR(XValBindsLR, ValBinds),
+      noSrcSpan,
+      HsIPBinds(IPBinds),
+      IPBind(IPBind), mkModuleName )
+import Seminal.Change
+    ( wrapLoc,
+      newChange,
+      ChangeType(Removal),
+      newChange,
+      rewriteSrc,
+      ChangeType(Terminal, Wildcard, Wrapping, Removal) )
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Data.Bag (bagToList, listToBag)
 import Seminal.Enumerator.Signatures (enumerateChangeInSignature)
-import Seminal.Change (newChange, rewriteSrc, ChangeType (Terminal, Wildcard, Wrapping, Removal))
-import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed))
+import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkRdrQual, mkDataCOcc, mkDataOcc)
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
-import Data.Functor ((<&>))
-import Data.List.HT (splitEverywhere)
 
 -- | Enumerate possible changes for expressions,
 -- starting with replacing them with undefined.
 -- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Expr.html#t:HsExpr)
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression expr loc = [changeToUndefined]
+enumerateChangesInExpression expr loc = [changeToUndefined, changeToNil]
     where
         -- | Change the expression to `undefined`, used as a wildcard
-        changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:subchanges) Nothing Wildcard
+        changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:changeToTrue:subchanges) Nothing Wildcard
+        changeToNil = newChange expr (ExplicitList EpAnnNotUsed []) loc (changeToString:changeToList:subchanges) Nothing Wildcard
         -- | Wrap the expression into a list
         changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Wrapping
         -- | Try to call `show` on the Expression
         changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
             <&> (wrapExprInPar . locMe)
+        changeToTrue = newChange expr (HsVar noExtField ltrue) loc [] Nothing Wildcard
+            where
+                ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
         -- | Located expr
@@ -59,6 +73,7 @@ enumerateChangesInExpression expr loc = [changeToUndefined]
         locMe = L noSrcSpanA
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
+enumerateChangesInExpression' (HsPar _ (L lexpr expr)) _ = enumerateChangesInExpression' expr (locA lexpr)
 enumerateChangesInExpression' expr loc = case expr of
     (ExplicitList ext elems) -> reverse -- Reverse because we started here w/ most specific
         (if length elems == 1
@@ -123,6 +138,17 @@ enumerateChangesInExpression' expr loc = case expr of
             enumExpr = let (L lexpr letExpr) = e in enumerateChangesInExpression letExpr (locA lexpr)
                 <&> fmap (L lexpr)
                 <&> fmap (HsLet x bind)
+    (HsIf ext lifExpr lthenExpr lelseExpr) -> enumIf ++ enumElse ++ enumThen
+        where
+            enumIf = let (L lif ifExpr) = lifExpr in enumerateChangesInExpression ifExpr (locA lif)
+                <&> fmap (L lif)
+                <&> fmap (\newIf -> HsIf ext newIf lthenExpr lelseExpr)
+            enumElse = let (L lelse elseExpr) = lelseExpr in enumerateChangesInExpression elseExpr (locA lelse)
+                <&> fmap (L lelse)
+                <&> fmap (HsIf ext lifExpr lthenExpr)
+            enumThen = let (L lthen thenExpr) = lthenExpr in enumerateChangesInExpression thenExpr (locA lthen)
+                <&> fmap (L lthen)
+                <&> fmap (\newthen -> HsIf ext lifExpr newthen lelseExpr)
     _ -> []
 
 -- | Expression for `undefined`

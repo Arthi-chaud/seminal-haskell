@@ -52,6 +52,10 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         "Got a string, expected a char" 
         "\"a\""  "'a'",
     testSeminal
+        "expect-foldable"
+        "Got an int, expected a list (for overloaded function)" 
+        "1"  "[1]",
+    testSeminal
         "expect-item"
         "Got a list, expected an item" 
         "['a']"  "'a'",
@@ -86,5 +90,17 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         "where/expect-char"
         "Where: Got a String, expected a char" 
-        "\"a\""  "'a'"
+        "\"a\""  "'a'",
+    testSeminal
+        "if/then-expect-int"
+        "If-Then: Got a List, expected an Int" 
+        "[1]" "1",
+    testSeminal
+        "if/if-expect-bool"
+        "If: Got an Int, expected a Bool" 
+        "1" "True",
+    testSeminal
+        "if/else-expect-string"
+        "If-Else: Got a Char, expected a string" 
+        "'.'" "\".\""
     ]

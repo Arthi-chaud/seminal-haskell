@@ -95,7 +95,13 @@
 - Enumerator goes through 'where' clause
 - Enumerator goes through 'let' clause
 
+### June 7
+
+- Enumerator goes through 'If' conditions
+- Enumeration for Expressions uses multiple types of wildcards: `undefined`, `[]`, `True`
+- Enumeration goes through expressions in parenthesis
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
-- For overloaded functions, like `length`, replacing the parameters with `undefined` leads to type ambiguity (TO BE RESOLVED)
+- For overloaded functions, like `length`, replacing the parameters with `undefined` leads to type ambiguity. The solution was to use multiple kinds of wildcards

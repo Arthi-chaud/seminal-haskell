@@ -50,6 +50,9 @@ data Change node = Change {
 instance Show (Change node) where
     show change = show $ doc change
 
+instance Eq (Change node) where
+    c1 == c2 = doc c1 == doc c2
+
 instance Functor Change where
     fmap f change = change {
         exec = f $ exec change,
@@ -69,6 +72,12 @@ data ChangeDoc = ChangeDoc {
     -- | A 'type' of Change, which allows ranking them
     category :: ChangeType
 }
+
+instance Eq ChangeDoc where
+    d1 == d2 = location d1 == location d2 &&
+        showSDocUnsafe (pprSrc d1) == showSDocUnsafe (pprSrc d2) &&
+        showSDocUnsafe (pprExec d1) == showSDocUnsafe (pprExec d2) &&
+        category d1 == category d2
 
 data ChangeType =
     -- | The Change basically replaces the node with a wildcard.
@@ -99,7 +108,7 @@ instance Ord ChangeType where
 
 -- | Reset the originally changed node. 
 rewriteSrc :: (Outputable node) => node -> Change leaf -> Change leaf
-rewriteSrc node change = updatedChange 
+rewriteSrc node change = updatedChange
     where
         updatedChange = change { doc = newdoc }
         newdoc = changedoc { pprSrc = ppr node }

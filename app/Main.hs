@@ -6,6 +6,7 @@ import qualified Options as Program
 import Options.Applicative (execParser)
 import Seminal.Change (ChangeDoc(..), Change (doc))
 import Control.Monad (unless)
+import Data.List (nub)
 
 main :: IO ()
 main = do
@@ -29,5 +30,5 @@ main = do
                     Nothing -> filteredList
                     Just size -> take size filteredList
                 -- Filters the changes by level
-                filteredList = filter ((minLevel <=) . category . doc) list
+                filteredList = filter ((minLevel <=) . category . doc) (nub list)
                 
