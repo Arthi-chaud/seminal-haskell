@@ -185,18 +185,12 @@ enumerateChangesInMatch :: Enumerator (Match GhcPs (LHsExpr GhcPs))
 enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bindingChanges
     where
         -- | Changes for the left-hand side of the `=` symbol
-        patChanges = splitEverywhere pats
-            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in newChange
-                pats
-                (h ++ t) -- Removing declaration in list
-                loc
-                -- | Enumerate changes for the pattern
-                (enumerateChangesInPattern e loc
+        patChanges = concat $ splitEverywhere pats
+            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in enumerateChangesInPattern e loc
                     <&> wrapLoc (L . SrcSpanAnn ep)
-                    <&> fmap (\r ->  h ++ [r] ++ t))
-                (return "Remove this pattern from the list") Removal
+                    <&> fmap (\r ->  h ++ [r] ++ t)
+                    <&> fmap (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
             )
-            <&> fmap (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
         -- | Changes for the right-hand side of the `=` symbol
         -- Note: GHRS is Guarded Right-Hand Side
         grhsChanges = concat (splitEverywhere grhss
