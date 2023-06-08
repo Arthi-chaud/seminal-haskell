@@ -3,20 +3,20 @@
 </span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Paths</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">libdir</span></span><span class="hs-special">)</span><span>
 </span><span id="line-4"></span><span>
 </span><span id="line-5"></span><span class="hs-comment">-- | Allows runnning function exposed by the compiler's API</span><span>
-</span><span id="line-6"></span><span id="local-6989586621679114781"><span class="annot"><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-type">runCompiler</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="annot"><a href="#local-6989586621679114781"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679114781"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-6"></span><span id="local-6989586621679115062"><span class="annot"><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-type">runCompiler</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="annot"><a href="#local-6989586621679115062"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="#local-6989586621679115062"><span class="hs-identifier hs-type">a</span></a></span></span><span>
 </span><span id="line-7"></span><span id="runCompiler"><span class="annot"><span class="annottext">runCompiler :: forall a. Ghc a -&gt; IO a
-</span><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-var hs-var">runCompiler</span></a></span></span><span> </span><span id="local-6989586621679114755"><span class="annot"><span class="annottext">Ghc a
-</span><a href="#local-6989586621679114755"><span class="hs-identifier hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. Maybe FilePath -&gt; Ghc a -&gt; IO a
+</span><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-var hs-var">runCompiler</span></a></span></span><span> </span><span id="local-6989586621679115036"><span class="annot"><span class="annottext">Ghc a
+</span><a href="#local-6989586621679115036"><span class="hs-identifier hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a. Maybe FilePath -&gt; Ghc a -&gt; IO a
 </span><span class="hs-identifier hs-var">runGhc</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-identifier hs-var">libdir</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-8"></span><span>    </span><span id="local-6989586621679114754"><span class="annot"><span class="annottext">DynFlags
-</span><a href="#local-6989586621679114754"><span class="hs-identifier hs-var">flags</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *). GhcMonad m =&gt; m DynFlags
+</span><span id="line-8"></span><span>    </span><span id="local-6989586621679115035"><span class="annot"><span class="annottext">DynFlags
+</span><a href="#local-6989586621679115035"><span class="hs-identifier hs-var">flags</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *). GhcMonad m =&gt; m DynFlags
 </span><span class="hs-identifier hs-var">getSessionDynFlags</span></span><span>
 </span><span id="line-9"></span><span>    </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *). GhcMonad m =&gt; DynFlags -&gt; m ()
 </span><span class="hs-identifier hs-var">setSessionDynFlags</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DynFlags
-</span><a href="#local-6989586621679114754"><span class="hs-identifier hs-var">flags</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ghcMode :: GhcMode
+</span><a href="#local-6989586621679115035"><span class="hs-identifier hs-var">flags</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">ghcMode :: GhcMode
 </span><span class="hs-identifier hs-var">ghcMode</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GhcMode
 </span><span class="hs-identifier hs-var">OneShot</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ghcLink :: GhcLink
 </span><span class="hs-identifier hs-var">ghcLink</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GhcLink
@@ -25,5 +25,5 @@
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;undefined&quot;</span></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
 </span><span id="line-10"></span><span>    </span><span class="annot"><span class="annottext">Ghc a
-</span><a href="#local-6989586621679114755"><span class="hs-identifier hs-var">action</span></a></span><span>
+</span><a href="#local-6989586621679115036"><span class="hs-identifier hs-var">action</span></a></span><span>
 </span><span id="line-11"></span></pre></body></html>
