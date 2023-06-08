@@ -102,5 +102,17 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         "if/else-expect-string"
         "If-Else: Got a Char, expected a string" 
-        "'.'" "\".\""
+        "'.'" "\".\"",
+    testSeminal
+        "case/match-expect-char"
+        "Case-Match: Got a List, expected a Char" 
+        "\"L\"" "'L'",
+    testSeminal
+        "case/root-expect-list"
+        "Case-Root: Got a Tuple, expected a List" 
+        "(1, 2)" "[1, 2]",
+    testSeminal
+        "case/value-expect-int"
+        "Case-Value: Got a List, expected an Int" 
+        "[2]" "2"
     ]

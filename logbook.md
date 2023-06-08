@@ -101,6 +101,10 @@
 - Enumeration for Expressions uses multiple types of wildcards: `undefined`, `[]`, `True`
 - Enumeration goes through expressions in parenthesis
 
+### June 8
+
+- Enumerator goes through `case of` expressions
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined

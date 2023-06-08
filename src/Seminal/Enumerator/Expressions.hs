@@ -39,13 +39,13 @@ import Seminal.Change
       ChangeType(Removal),
       newChange,
       rewriteSrc,
-      ChangeType(Terminal, Wildcard, Wrapping, Removal), ChangeDoc (message) )
+      ChangeType(Terminal, Wildcard, Wrapping, Removal) )
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Data.Bag (bagToList, listToBag)
 import Seminal.Enumerator.Signatures (enumerateChangeInSignature)
-import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkRdrQual, mkDataCOcc, mkDataOcc)
+import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkDataOcc)
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
 
 -- | Enumerate possible changes for expressions,
@@ -150,6 +150,19 @@ enumerateChangesInExpression' expr loc = case expr of
             enumThen = let (L lthen thenExpr) = lthenExpr in enumerateChangesInExpression thenExpr (locA lthen)
                 <&> fmap (L lthen)
                 <&> fmap (\newthen -> HsIf ext lifExpr newthen lelseExpr)
+    (HsCase xcase lrootExpr lmatchExpr) -> enumRoot ++ enumMatches
+        where
+            enumRoot = let (L lroot root) = lrootExpr in enumerateChangesInExpression root (locA lroot)
+                <&> fmap (L lroot)
+                <&> fmap (\newRoot -> HsCase xcase newRoot lmatchExpr)
+            enumMatches = let (MG xmatch (L lmatches matches) origin) = lmatchExpr in concat (splitEverywhere matches
+                <&> (\(h, L lmatch match, t) -> enumerateChangesInMatch match (locA lmatch)
+                        <&> fmap (L lmatch)
+                        <&> fmap (\newMatch -> h ++ [newMatch] ++ t)
+                        <&> fmap (L lmatches)
+                        <&> fmap (\newMatches -> MG xmatch newMatches origin)
+                        <&> fmap (HsCase xcase lrootExpr)
+                ))
     _ -> []
 
 -- | Expression for `undefined`
@@ -181,7 +194,7 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
                 (enumerateChangesInPattern e loc
                     <&> wrapLoc (L . SrcSpanAnn ep)
                     <&> fmap (\r ->  h ++ [r] ++ t))
-                Nothing Removal
+                (return "Remove this pattern from the list") Removal
             )
             <&> fmap (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
         -- | Changes for the right-hand side of the `=` symbol
