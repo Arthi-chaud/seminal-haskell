@@ -32,14 +32,16 @@ import GHC
       HsValBindsLR(XValBindsLR, ValBinds),
       noSrcSpan,
       HsIPBinds(IPBinds),
-      IPBind(IPBind), mkModuleName )
+      IPBind(IPBind) )
 import Seminal.Change
     ( wrapLoc,
       newChange,
       ChangeType(Removal),
       newChange,
       rewriteSrc,
-      ChangeType(Terminal, Wildcard, Wrapping, Removal) )
+      ChangeType(Terminal, Wildcard, Wrapping, Removal),
+      (<&&>)
+    )
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -93,9 +95,9 @@ enumerateChangesInExpression' expr loc = case expr of
                 (ExplicitList ext $ h ++ t) -- Removing element in list
                 loc
                 (enumerateChangesInExpression removed (locA lremoved)
-                    <&> fmap (L lremoved)
-                    <&> fmap (\i -> h ++ [i] ++ t)
-                    <&> fmap (ExplicitList ext))
+                    <&&> (L lremoved)
+                    <&&> (\i -> h ++ [i] ++ t)
+                    <&&> (ExplicitList ext))
                 Nothing
                 Removal
             )
@@ -112,7 +114,7 @@ enumerateChangesInExpression' expr loc = case expr of
                 -- Enumerate each change for each element in the tuple
                 concat (splitEverywhere args <&> (\(h, Present ext (L lunit unit), t) ->
                     (enumerateChangesInExpression unit (locA lunit))
-                    <&> fmap (\i -> ExplicitTuple xtuple (h ++ [Present ext (L lunit i)] ++ t) box)
+                    <&&> (\i -> ExplicitTuple xtuple (h ++ [Present ext (L lunit i)] ++ t) box)
                 ))
             else []
         where
@@ -121,47 +123,47 @@ enumerateChangesInExpression' expr loc = case expr of
             getTupleArg (Present _ arg) = arg
     -- Attempts tweaks with litterals
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
-        <&> fmap (HsLit ext)
+        <&&> (HsLit ext)
     -- In function application: try changes on functions and parameters
     (HsApp a func param) -> enumF ++ enumParam
         where
             -- | Enumeration on the function
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
-                <&> fmap (\c -> HsApp a (L lf c) param)
+                <&&> (\c -> HsApp a (L lf c) param)
             -- | Enumeration on the parameters
             enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
-                <&> fmap (HsApp a func . L lp)
+                <&&> (HsApp a func . L lp)
     -- `let _ = xx in ...` expressions
     (HsLet x bind e) -> enumExpr ++ enumBind
         where
             enumBind = enumerateChangesInLocalBinds bind loc
-                <&> fmap (\newbind -> HsLet x newbind e)
+                <&&> (\newbind -> HsLet x newbind e)
             enumExpr = let (L lexpr letExpr) = e in enumerateChangesInExpression letExpr (locA lexpr)
-                <&> fmap (L lexpr)
-                <&> fmap (HsLet x bind)
+                <&&> (L lexpr)
+                <&&> (HsLet x bind)
     (HsIf ext lifExpr lthenExpr lelseExpr) -> enumIf ++ enumElse ++ enumThen
         where
             enumIf = let (L lif ifExpr) = lifExpr in enumerateChangesInExpression ifExpr (locA lif)
-                <&> fmap (L lif)
-                <&> fmap (\newIf -> HsIf ext newIf lthenExpr lelseExpr)
+                <&&> (L lif)
+                <&&> (\newIf -> HsIf ext newIf lthenExpr lelseExpr)
             enumElse = let (L lelse elseExpr) = lelseExpr in enumerateChangesInExpression elseExpr (locA lelse)
-                <&> fmap (L lelse)
-                <&> fmap (HsIf ext lifExpr lthenExpr)
+                <&&> (L lelse)
+                <&&> (HsIf ext lifExpr lthenExpr)
             enumThen = let (L lthen thenExpr) = lthenExpr in enumerateChangesInExpression thenExpr (locA lthen)
-                <&> fmap (L lthen)
-                <&> fmap (\newthen -> HsIf ext lifExpr newthen lelseExpr)
+                <&&> (L lthen)
+                <&&> (\newthen -> HsIf ext lifExpr newthen lelseExpr)
     (HsCase xcase lrootExpr lmatchExpr) -> enumRoot ++ enumMatches
         where
             enumRoot = let (L lroot root) = lrootExpr in enumerateChangesInExpression root (locA lroot)
-                <&> fmap (L lroot)
-                <&> fmap (\newRoot -> HsCase xcase newRoot lmatchExpr)
+                <&&> (L lroot)
+                <&&> (\newRoot -> HsCase xcase newRoot lmatchExpr)
             enumMatches = let (MG xmatch (L lmatches matches) origin) = lmatchExpr in concat (splitEverywhere matches
                 <&> (\(h, L lmatch match, t) -> enumerateChangesInMatch match (locA lmatch)
-                        <&> fmap (L lmatch)
-                        <&> fmap (\newMatch -> h ++ [newMatch] ++ t)
-                        <&> fmap (L lmatches)
-                        <&> fmap (\newMatches -> MG xmatch newMatches origin)
-                        <&> fmap (HsCase xcase lrootExpr)
+                        <&&> (L lmatch)
+                        <&&> (\newMatch -> h ++ [newMatch] ++ t)
+                        <&&> (L lmatches)
+                        <&&> (\newMatches -> MG xmatch newMatches origin)
+                        <&&> (HsCase xcase lrootExpr)
                 ))
     _ -> []
 
@@ -186,24 +188,24 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
     where
         -- | Changes for the left-hand side of the `=` symbol
         patChanges = concat $ splitEverywhere pats
-            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in enumerateChangesInPattern e loc
-                    <&> wrapLoc (L . SrcSpanAnn ep)
-                    <&> fmap (\r ->  h ++ [r] ++ t)
-                    <&> fmap (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
+            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in (enumerateChangesInPattern e loc
+                    <&> wrapLoc (L . SrcSpanAnn ep))
+                    <&&> (\r ->  h ++ [r] ++ t)
+                    <&&> (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
             )
         -- | Changes for the right-hand side of the `=` symbol
         -- Note: GHRS is Guarded Right-Hand Side
         grhsChanges = concat (splitEverywhere grhss
             <&> (\(h, L l (GRHS grhsx p (L lbody body)), t) ->  enumerateChangesInExpression body (locA lbody)
-                    <&> fmap (L lbody)
-                    <&> fmap (GRHS grhsx p)
-                    <&> fmap (L l)
-                    <&> fmap (\b -> h ++ [b] ++ t)
+                    <&&> (L lbody)
+                    <&&> (GRHS grhsx p)
+                    <&&> (L l)
+                    <&&> (\b -> h ++ [b] ++ t)
             ))
-            <&> fmap (\grhs -> Match x ctxt pats (GRHSs ext grhs localBinds))
+            <&&> (\grhs -> Match x ctxt pats (GRHSs ext grhs localBinds))
         -- | The enumeration of changes for the `where` clause of the match
         localbindChanges = enumerateChangesInLocalBinds localBinds noSrcSpan
-            <&> fmap (Match x ctxt pats . GRHSs ext grhss)
+            <&&> (Match x ctxt pats . GRHSs ext grhss)
 
         bindingChanges = patChanges ++ grhsChanges ++ localbindChanges
 
@@ -212,8 +214,8 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
 enumerateChangesInBinding :: Enumerator (HsBind GhcPs)
 enumerateChangesInBinding (FunBind a b c d) l = enumerateChangesInFuncBinding (FunBind a b c d) l
 enumerateChangesInBinding (PatBind a (L loc pat) c d) _ = enumerateChangesInPattern pat (locA loc)
-    <&> fmap (L loc)
-    <&> fmap (\b -> PatBind a b c d)
+    <&&> (L loc)
+    <&&> (\b -> PatBind a b c d)
 enumerateChangesInBinding (VarBind _ _ _) loc = []
 enumerateChangesInBinding (AbsBinds {}) loc = []
 enumerateChangesInBinding (PatSynBind {}) loc = []
@@ -223,10 +225,10 @@ enumerateChangesInBinding (PatSynBind {}) loc = []
 -- Basically get changes for each match
 enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
 enumerateChangesInFuncBinding (FunBind a b (MG c1 (L la ats) c3) d) _ = concat $ splitEverywhere ats
-    <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in enumerateChangesInMatch e loc
-            <&> wrapLoc (L . SrcSpanAnn ep)
-            <&> fmap (\r ->  h ++ [r] ++ t)
-            <&> fmap (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
+    <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in (enumerateChangesInMatch e loc
+            <&> wrapLoc (L . SrcSpanAnn ep))
+            <&&> (\r ->  h ++ [r] ++ t)
+            <&&> (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
     )
 enumerateChangesInFuncBinding _ _ = []
 
@@ -240,19 +242,19 @@ enumerateChangesInLocalBinds (HsValBinds ext valbind) _ = case valbind of
         where
             enumBinds = concat $ splitEverywhere (bagToList binds)
                 <&> (\(h, L lbind bind, t) -> enumerateChangesInBinding bind (locA lbind)
-                        <&> fmap (L lbind)
-                        <&> fmap (\r ->  listToBag $ h ++ [r] ++ t)
-                        <&> fmap (\b -> ValBinds xbind b signatures)
-                        <&> fmap (HsValBinds ext)
+                        <&&> (L lbind)
+                        <&&> (\r ->  listToBag $ h ++ [r] ++ t)
+                        <&&> (\b -> ValBinds xbind b signatures)
+                        <&&> (HsValBinds ext)
                 )
             enumSignatures = concat $ splitEverywhere signatures
                 <&> (\(h, L lsig sign, t) -> enumerateChangeInSignature sign (locA lsig)
-                        <&> fmap (L lsig)
-                        <&> fmap (\r ->  h ++ [r] ++ t)
-                        <&> fmap (HsValBinds ext . ValBinds xbind binds)
+                        <&&> (L lsig)
+                        <&&> (\r ->  h ++ [r] ++ t)
+                        <&&> (HsValBinds ext . ValBinds xbind binds)
                 )
 enumerateChangesInLocalBinds (HsIPBinds ext implicitbind) l = case implicitbind of
-    IPBinds xbind bindlist -> splitEverywhere bindlist
+    IPBinds xbind bindlist -> (splitEverywhere bindlist
         <&> (\(h, L lbind bind, t) -> newChange
             bindlist
             (h ++ t) -- Remove bind
@@ -260,16 +262,16 @@ enumerateChangesInLocalBinds (HsIPBinds ext implicitbind) l = case implicitbind 
             (case bind of
                 IPBind bext lname (L lexpr expr) ->
                     enumerateChangesInExpression expr (locA lexpr)
-                    <&> fmap (L lexpr)
-                    <&> fmap (IPBind bext lname)
-                    <&> fmap (L lbind)
-                    <&> fmap (\b -> h ++ [b] ++ t)
+                    <&&> (L lexpr)
+                    <&&> (IPBind bext lname)
+                    <&&> (L lbind)
+                    <&&> (\b -> h ++ [b] ++ t)
                 _ -> []
             )
             Nothing
             Removal
-        )
-        <&> fmap (HsIPBinds ext . IPBinds xbind)
+        ))
+        <&&> (HsIPBinds ext . IPBinds xbind)
     _ -> []
 -- The other cases (`EmptyLocalBinds`, and extensions) do not need to be considered 
 enumerateChangesInLocalBinds _ _ = []

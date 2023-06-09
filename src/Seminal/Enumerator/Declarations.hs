@@ -2,8 +2,7 @@ module Seminal.Enumerator.Declarations(enumerateChangesInDeclaration) where
 import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (HsDecl(..), GhcPs)
 import Seminal.Enumerator.Expressions (enumerateChangesInBinding)
-import Seminal.Change ()
-import Data.Functor ((<&>))
+import Seminal.Change ((<&&>))
 
 -- | Enumerate changes for a declaration.
 -- A declaration could be of a type, function, instalce, class etc.
@@ -12,7 +11,7 @@ enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
 enumerateChangesInDeclaration (TyClD _ e) loc = []
 enumerateChangesInDeclaration (InstD _ _) loc = []
 enumerateChangesInDeclaration (DerivD _ _) loc = []
-enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&> fmap (ValD i)
+enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&&> (ValD i)
 enumerateChangesInDeclaration (SigD _ e) loc = []
 enumerateChangesInDeclaration _ _ = []
 

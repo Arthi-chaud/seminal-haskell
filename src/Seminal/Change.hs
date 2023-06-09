@@ -1,5 +1,5 @@
-module Seminal.Change (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc, ChangeType(..)) where
-import GHC.Plugins
+module Seminal.Change (Change(exec, followups, doc), newChange, wrapLoc, ChangeDoc(..), rewriteSrc, ChangeType(..), (<&&>)) where
+import GHC.Plugins hiding ((<&&>))
 import Text.Printf
 
 -- | Exported constructor for `Change`.
@@ -58,6 +58,9 @@ instance Functor Change where
         exec = f $ exec change,
         followups = fmap f <$> followups change
     }
+
+(<&&>) :: [Change a] -> (a -> b) -> [Change b]
+list <&&> f = fmap f <$> list 
 
 -- | Gives information about a change
 data ChangeDoc = ChangeDoc {
