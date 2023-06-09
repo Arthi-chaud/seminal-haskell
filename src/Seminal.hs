@@ -30,7 +30,7 @@ data Status =
 -- If it returns Nothing, the file typechecks,
 -- otherwise, provides an ordered list of change suggestions 
 runSeminal :: Options -> FilePath -> IO Status
-runSeminal (Options searchMethod)filePath = do
+runSeminal (Options searchMethod) filePath = do
     r <- parseFile filePath
     case r of
         Left err -> return $ InvalidFile (show err)
@@ -60,10 +60,12 @@ findChanges method test m = findValidChanges (enumerateChangesInModule m)
         evaluateAll = mapM evaluate
         -- | Checks if change typechecks, and make tuple out of result 
         evaluate change = test (exec change) <&> (change,)
+        -- | If list of changes to evaluate is empty, return
+        findValidChanges [] = return []
         -- | Takes a list of change, and 
         findValidChanges clist = do
             successfulchanges <- evaluateAll clist <&> filter ((TypeChecker.Success ==) . snd) <&> map fst
-            -- | Stop searching if no successful change is found or `method` is lazy and a temrinal change is found
-            if null successfulchanges || ((method == Lazy) && any ((Terminal ==) . category . doc) successfulchanges)
+            -- | Stop searching if `method` is lazy and a terminal change is found
+            if (method == Lazy) && any ((Terminal ==) . category . doc) successfulchanges
                 then return successfulchanges
                 else (successfulchanges ++) <$> findValidChanges (concatMap followups successfulchanges)
