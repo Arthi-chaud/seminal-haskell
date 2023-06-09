@@ -55,6 +55,7 @@ Wrapping :: ChangeType
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
 Terminal :: ChangeType
+(<&&>) :: [Change a] -> (a -> b) -> [Change b]
 instance GHC.Show.Show Seminal.Change.ChangeType
 instance GHC.Classes.Eq Seminal.Change.ChangeType
 instance GHC.Show.Show (Seminal.Change.Change node)
