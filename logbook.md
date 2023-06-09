@@ -104,6 +104,11 @@
 ### June 8
 
 - Enumerator goes through `case of` expressions
+- Enumerating on Patterns: Instead of removing the pattern, replaces it with a wildcard
+
+### June 9
+
+- Create custom Change infix `<&&>` to allow fmap-ing on lists of arrays
 
 ## Difficulties encountered
 
