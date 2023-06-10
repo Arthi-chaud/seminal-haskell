@@ -4,7 +4,7 @@ import Seminal.Change (Change, newChange, wrapLoc, ChangeType (Removal), (<&&>))
 import Seminal.Enumerator.Declarations (enumerateChangesInDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
-import Seminal.Enumerator.Expressions (enumerateChangesInFuncBinding)
+import Seminal.Enumerator.Bindings (enumerateChangesInFuncBinding)
 
 enumerateChangesInModule :: HsModule -> [Change HsModule]
 enumerateChangesInModule hsmod = case hsmod of
