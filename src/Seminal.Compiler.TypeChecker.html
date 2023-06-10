@@ -21,7 +21,7 @@
 </span><span id="line-21"></span><span>    </span><span id="Success"><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#Success"><span class="hs-identifier hs-var">Success</span></a></span></span><span> </span><span class="hs-glyph">|</span><span>
 </span><span id="line-22"></span><span>    </span><span class="hs-comment">-- | An error happened while typechecking</span><span>
 </span><span id="line-23"></span><span>    </span><span id="Error"><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#Error"><span class="hs-identifier hs-var">Error</span></a></span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span><span>
-</span><span id="line-24"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115067"><span id="local-6989586621679115069"><span id="local-6989586621679115074"><span class="annot"><span class="annottext">Int -&gt; TypeCheckStatus -&gt; ShowS
+</span><span id="line-24"></span><span>    </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679115103"><span id="local-6989586621679115105"><span id="local-6989586621679115110"><span class="annot"><span class="annottext">Int -&gt; TypeCheckStatus -&gt; ShowS
 [TypeCheckStatus] -&gt; ShowS
 TypeCheckStatus -&gt; String
 forall a.
@@ -32,7 +32,7 @@ show :: TypeCheckStatus -&gt; String
 $cshow :: TypeCheckStatus -&gt; String
 showsPrec :: Int -&gt; TypeCheckStatus -&gt; ShowS
 $cshowsPrec :: Int -&gt; TypeCheckStatus -&gt; ShowS
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679115061"><span id="local-6989586621679115064"><span class="annot"><span class="annottext">TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679115097"><span id="local-6989586621679115100"><span class="annot"><span class="annottext">TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 /= :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 $c/= :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
@@ -47,9 +47,9 @@ $c== :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 </span><span id="line-30"></span><span>    </span><span class="hs-comment">-- | It comes with the compiler's error message</span><span>
 </span><span id="line-31"></span><span>    </span><span id="ScopeError"><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ScopeError"><span class="hs-identifier hs-var">ScopeError</span></a></span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
 </span><span id="line-32"></span><span>
-</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115055"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-33"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115091"><span class="annot"><span class="hs-identifier hs-type">Eq</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-34"></span><span>    </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-type">TypeCheckError</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679115054"><span class="annot"><span class="annottext">== :: ErrorType -&gt; ErrorType -&gt; Bool
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679115090"><span class="annot"><span class="annottext">== :: ErrorType -&gt; ErrorType -&gt; Bool
 </span><span class="hs-operator hs-var hs-var hs-var hs-var">==</span></span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-type">TypeCheckError</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span>
@@ -63,26 +63,26 @@ $c== :: TypeCheckStatus -&gt; TypeCheckStatus -&gt; Bool
 </span><span class="hs-identifier hs-var">False</span></span><span>
 </span><span id="line-37"></span><span>
 </span><span id="line-38"></span><span class="hs-comment">-- | Pretty-print of Error types</span><span>
-</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115049"><span id="local-6989586621679115052"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-40"></span><span>    </span><span id="local-6989586621679115039"><span class="annot"><span class="annottext">show :: ErrorType -&gt; String
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-type">TypeCheckError</span></a></span><span> </span><span id="local-6989586621679115037"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115037"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall r. PrintfType r =&gt; String -&gt; r
+</span><span id="line-39"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679115085"><span id="local-6989586621679115088"><span class="annot"><span class="hs-identifier hs-type">Show</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ErrorType"><span class="hs-identifier hs-type">ErrorType</span></a></span></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-40"></span><span>    </span><span id="local-6989586621679115075"><span class="annot"><span class="annottext">show :: ErrorType -&gt; String
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">show</span></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-type">TypeCheckError</span></a></span><span> </span><span id="local-6989586621679115073"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679115073"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall r. PrintfType r =&gt; String -&gt; r
 </span><span class="hs-identifier hs-var">printf</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Typecheck Error: %s&quot;</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115037"><span class="hs-identifier hs-var">err</span></a></span><span>
-</span><span id="line-41"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ScopeError"><span class="hs-identifier hs-type">ScopeError</span></a></span><span> </span><span id="local-6989586621679115036"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115036"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall r. PrintfType r =&gt; String -&gt; r
+</span><a href="#local-6989586621679115073"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><span id="line-41"></span><span>    </span><span class="annot"><span class="hs-identifier hs-var">show</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#ScopeError"><span class="hs-identifier hs-type">ScopeError</span></a></span><span> </span><span id="local-6989586621679115072"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679115072"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall r. PrintfType r =&gt; String -&gt; r
 </span><span class="hs-identifier hs-var">printf</span></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Scope Error: %s&quot;</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115036"><span class="hs-identifier hs-var">err</span></a></span><span>
+</span><a href="#local-6989586621679115072"><span class="hs-identifier hs-var">err</span></a></span><span>
 </span><span id="line-42"></span><span>    </span><span>
 </span><span id="line-43"></span><span class="hs-comment">-- | Typecheck Module</span><span>
 </span><span id="line-44"></span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-type">typecheckModule</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.TypeChecker.html#TypeCheckStatus"><span class="hs-identifier hs-type">TypeCheckStatus</span></a></span><span>
 </span><span id="line-45"></span><span id="typecheckModule"><span class="annot"><span class="annottext">typecheckModule :: ParsedModule -&gt; Ghc TypeCheckStatus
-</span><a href="Seminal.Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-var hs-var">typecheckModule</span></a></span></span><span> </span><span id="local-6989586621679115035"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679115035"><span class="hs-identifier hs-var">parsedModule</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-46"></span><span>    </span><span id="local-6989586621679115034"><span class="annot"><span class="annottext">Either String TypecheckedModule
-</span><a href="#local-6989586621679115034"><span class="hs-identifier hs-var">maybeT</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a.
+</span><a href="Seminal.Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-var hs-var">typecheckModule</span></a></span></span><span> </span><span id="local-6989586621679115071"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679115071"><span class="hs-identifier hs-var">parsedModule</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-46"></span><span>    </span><span id="local-6989586621679115070"><span class="annot"><span class="annottext">Either String TypecheckedModule
+</span><a href="#local-6989586621679115070"><span class="hs-identifier hs-var">maybeT</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a.
 MonadCatch m =&gt;
 (SourceError -&gt; m a) -&gt; m a -&gt; m a
 </span><span class="hs-identifier hs-var">handleSourceError</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
@@ -94,36 +94,36 @@ MonadCatch m =&gt;
 GhcMonad m =&gt;
 ParsedModule -&gt; m TypecheckedModule
 </span><span class="hs-identifier hs-var">GHC.typecheckModule</span></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679115035"><span class="hs-identifier hs-var">parsedModule</span></a></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
+</span><a href="#local-6989586621679115071"><span class="hs-identifier hs-var">parsedModule</span></a></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
 </span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span class="hs-special">)</span><span>
 </span><span id="line-47"></span><span>    </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either String TypecheckedModule
-</span><a href="#local-6989586621679115034"><span class="hs-identifier hs-var">maybeT</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679115070"><span class="hs-identifier hs-var">maybeT</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-48"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span class="annot"><span class="annottext">TypecheckedModule
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#Success"><span class="hs-identifier hs-var">Success</span></a></span><span>
-</span><span id="line-49"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679115032"><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115032"><span class="hs-identifier hs-var">errMsg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ErrorType -&gt; TypeCheckStatus
+</span><span id="line-49"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679115068"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679115068"><span class="hs-identifier hs-var">errMsg</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ErrorType -&gt; TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#Error"><span class="hs-identifier hs-var">Error</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
 </span><span class="hs-identifier hs-var">any</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; String -&gt; Bool
 </span><span class="hs-operator hs-var">`isContainedIn`</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115032"><span class="hs-identifier hs-var">errMsg</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679115068"><span class="hs-identifier hs-var">errMsg</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Variable not in scope&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;Not in scope: type constructor or class&quot;</span></span><span class="hs-special">]</span><span>
 </span><span id="line-50"></span><span>            </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">String -&gt; ErrorType
 </span><a href="Seminal.Compiler.TypeChecker.html#ScopeError"><span class="hs-identifier hs-var">ScopeError</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115030"><span class="hs-identifier hs-var">strippedMsg</span></a></span><span>
+</span><a href="#local-6989586621679115066"><span class="hs-identifier hs-var">strippedMsg</span></a></span><span>
 </span><span id="line-51"></span><span>            </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">String -&gt; ErrorType
 </span><a href="Seminal.Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-var">TypeCheckError</span></a></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115030"><span class="hs-identifier hs-var">strippedMsg</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-52"></span><span>                </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679115030"><span class="annot"><span class="annottext">strippedMsg :: String
-</span><a href="#local-6989586621679115030"><span class="hs-identifier hs-var hs-var">strippedMsg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
+</span><a href="#local-6989586621679115066"><span class="hs-identifier hs-var">strippedMsg</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-52"></span><span>                </span><span class="hs-keyword">where</span><span> </span><span id="local-6989586621679115066"><span class="annot"><span class="annottext">strippedMsg :: String
+</span><a href="#local-6989586621679115066"><span class="hs-identifier hs-var hs-var">strippedMsg</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
 </span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Text
 </span><span class="hs-identifier hs-var">strip</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">String -&gt; Text
 </span><span class="hs-identifier hs-var">pack</span></span><span> </span><span class="annot"><span class="annottext">String
-</span><a href="#local-6989586621679115032"><span class="hs-identifier hs-var">errMsg</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679115068"><span class="hs-identifier hs-var">errMsg</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-53"></span><span>
 </span><span id="line-54"></span></pre></body></html>
