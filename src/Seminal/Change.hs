@@ -17,15 +17,15 @@ newChange :: (Outputable node) =>
     ChangeType ->
     -- | Output
     Change node
-newChange src exec loc followups message category = Change {
-    exec = exec,
-    followups = followups,
+newChange src newexec newloc newfollowups newmessage newcategory = Change {
+    exec = newexec,
+    followups = newfollowups,
     doc = ChangeDoc {
-        location = loc,
+        location = newloc,
         pprSrc = ppr src,
-        pprExec = ppr exec,
-        message = message,
-        category = category
+        pprExec = ppr newexec,
+        message = newmessage,
+        category = newcategory
     }
 }
 
@@ -118,10 +118,13 @@ rewriteSrc node change = updatedChange
         changedoc = doc change
 
 instance Show ChangeDoc where
-    show (ChangeDoc loc src exec maybeMsg _) = replacement ++ case maybeMsg of
+    show changedoc = replacement ++ case message changedoc of
         (Just msg) -> '\n' : msg
         _ -> ""
         where
-            replacement = printf "%s: Replace %s with %s" (showNode loc) (showNode src) (showNode exec)
+            replacement = printf "%s: Replace %s with %s"
+                (showNode $ location changedoc)
+                (showNode $ pprSrc changedoc)
+                (showNode $ pprExec changedoc)
             showNode :: Outputable a => a -> String
             showNode = showSDocUnsafe . ppr

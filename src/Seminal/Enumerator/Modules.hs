@@ -12,7 +12,7 @@ enumerateChangesInModule hsmod = case hsmod of
         <&&> (\decls -> hsmod { hsmodDecls = decls })
     -- We do not need to consider extensions
     -- (From 9.6.x)
-    _ -> []
+    -- _ -> []
 
 -- | Enumerate changes for the root declaration of a module
 enumerateChangesAtModuleRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]

@@ -110,6 +110,10 @@
 
 - Create custom Change infix `<&&>` to allow fmap-ing on lists of arrays
 
+### June 10
+
+- Setup Linter
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined

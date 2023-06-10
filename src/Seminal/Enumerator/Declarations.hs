@@ -8,11 +8,11 @@ import Seminal.Change ((<&&>))
 -- A declaration could be of a type, function, instalce, class etc.
 -- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/GHC-Hs-Decls.html#t:HsDecl)
 enumerateChangesInDeclaration :: Enumerator (HsDecl GhcPs)
-enumerateChangesInDeclaration (TyClD _ e) loc = []
-enumerateChangesInDeclaration (InstD _ _) loc = []
-enumerateChangesInDeclaration (DerivD _ _) loc = []
+enumerateChangesInDeclaration (TyClD _ _) _ = []
+enumerateChangesInDeclaration (InstD _ _) _ = []
+enumerateChangesInDeclaration (DerivD _ _) _ = []
 enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&&> (ValD i)
-enumerateChangesInDeclaration (SigD _ e) loc = []
+enumerateChangesInDeclaration (SigD _ _) _ = []
 enumerateChangesInDeclaration _ _ = []
 
 -- wildcardDecl :: HsDecl GhcPs

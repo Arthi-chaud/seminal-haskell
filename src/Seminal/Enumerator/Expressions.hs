@@ -1,4 +1,3 @@
-{-# HLINT ignore "Use list comprehension" #-}
 module Seminal.Enumerator.Expressions (
     enumerateChangesInExpression,
     enumerateChangesInBinding,
@@ -49,6 +48,7 @@ import GHC.Data.Bag (bagToList, listToBag)
 import Seminal.Enumerator.Signatures (enumerateChangeInSignature)
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkDataOcc)
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
+import Data.Maybe (mapMaybe)
 
 -- | Enumerate possible changes for expressions,
 -- starting with replacing them with undefined.
@@ -110,17 +110,19 @@ enumerateChangesInExpression' expr loc = case expr of
     (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
             then reverse $ -- Reverse because we started here w/ most specific
                 -- Turn a tuple into a list
-                newChange expr (ExplicitList EpAnnNotUsed $ getTupleArg <$> args) loc [] Nothing Terminal:
+                newChange expr (ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args) loc [] Nothing Terminal:
                 -- Enumerate each change for each element in the tuple
-                concat (splitEverywhere args <&> (\(h, Present ext (L lunit unit), t) ->
-                    (enumerateChangesInExpression unit (locA lunit))
-                    <&&> (\i -> ExplicitTuple xtuple (h ++ [Present ext (L lunit i)] ++ t) box)
+                concat (splitEverywhere args <&> (\(h, arg, t) -> case arg of
+                    Present ext (L lunit unit) -> (enumerateChangesInExpression unit (locA lunit))
+                        <&&> (\i -> ExplicitTuple xtuple (h ++ [Present ext (L lunit i)] ++ t) box)
+                    _ -> []
                 ))
             else []
         where
             tupleArgIsPresent (Present {}) = True
             tupleArgIsPresent _ = False
-            getTupleArg (Present _ arg) = arg
+            getTupleArg (Present _ arg) = Just arg
+            getTupleArg _ = Nothing
     -- Attempts tweaks with litterals
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
         <&&> (HsLit ext)
@@ -216,9 +218,9 @@ enumerateChangesInBinding (FunBind a b c d) l = enumerateChangesInFuncBinding (F
 enumerateChangesInBinding (PatBind a (L loc pat) c d) _ = enumerateChangesInPattern pat (locA loc)
     <&&> (L loc)
     <&&> (\b -> PatBind a b c d)
-enumerateChangesInBinding (VarBind _ _ _) loc = []
-enumerateChangesInBinding (AbsBinds {}) loc = []
-enumerateChangesInBinding (PatSynBind {}) loc = []
+enumerateChangesInBinding (VarBind {}) _ = []
+enumerateChangesInBinding (AbsBinds {}) _ = []
+enumerateChangesInBinding (PatSynBind {}) _ = []
 
 -- | Enumerates changes to apply on function binding, e.g. `a True = True`.
 -- One function binding groups all the matches
@@ -266,12 +268,12 @@ enumerateChangesInLocalBinds (HsIPBinds ext implicitbind) l = case implicitbind 
                     <&&> (IPBind bext lname)
                     <&&> (L lbind)
                     <&&> (\b -> h ++ [b] ++ t)
-                _ -> []
+                -- _ -> []
             )
             Nothing
             Removal
         ))
         <&&> (HsIPBinds ext . IPBinds xbind)
-    _ -> []
+    -- _ -> []
 -- The other cases (`EmptyLocalBinds`, and extensions) do not need to be considered 
 enumerateChangesInLocalBinds _ _ = []
