@@ -11,35 +11,42 @@ module Seminal.Change
 -- | Defines a change to apply on the AST. The namings are inspired by the
 --   <tt>astRepl</tt> (Seminal, 2006, p. 5)
 data Change node
+Change :: ChangeNode node -> ChangeNode node -> ChangeLocation -> [Change node] -> Maybe String -> ChangeType -> Change node
+[src] :: Change node -> ChangeNode node
 
--- | Exported constructor for <a>Change</a>. It will allow easier build of
---   related doc
-newChange :: Outputable node => node -> node -> SrcSpan -> [Change node] -> Maybe String -> ChangeType -> Change node
+-- | Run the change, returns the new node
+[exec] :: Change node -> ChangeNode node
+[location] :: Change node -> ChangeLocation
 
--- | Rewraps tha location to the change type
-wrapLoc :: (SrcSpan -> a -> l) -> Change a -> Change l
+-- | List of subsequent changes to consider, if the <tt>change</tt>
+--   typechecks
+[followups] :: Change node -> [Change node]
+[message] :: Change node -> Maybe String
+[category] :: Change node -> ChangeType
+ChangeGroup :: ChangeNode node -> [ChangeNode node] -> ChangeLocation -> [Change node] -> Maybe String -> ChangeType -> Change node
+[src] :: Change node -> ChangeNode node
 
--- | Gives information about a change
-data ChangeDoc
-ChangeDoc :: SrcSpan -> SDoc -> SDoc -> Maybe String -> ChangeType -> ChangeDoc
+-- | Run the changes, returns the new nodes
+[execs] :: Change node -> [ChangeNode node]
+[location] :: Change node -> ChangeLocation
 
--- | Location (in the source code) of the changed node.
-[location] :: ChangeDoc -> SrcSpan
+-- | List of subsequent changes to consider, if the <tt>change</tt>
+--   typechecks
+[followups] :: Change node -> [Change node]
+[message] :: Change node -> Maybe String
+[category] :: Change node -> ChangeType
 
--- | The PrettyPrint of the changed subnode
-[pprSrc] :: ChangeDoc -> SDoc
+-- | Builds <a>ChangeNode</a> from an AST node
+node :: Outputable n => n -> ChangeNode n
+getNode :: ChangeNode n -> n
 
--- | The PrettyPrint of the new subnode
-[pprExec] :: ChangeDoc -> SDoc
+-- | Sub-data, that could be either the original node, or the change
+data ChangeNode nodeType
+(<$$>) :: (a -> b) -> [Change a] -> [Change b]
+(<&&>) :: [Change a] -> (a -> b) -> [Change b]
+show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> Maybe String -> String
 
--- | An optional message to give to the user
-[message] :: ChangeDoc -> Maybe String
-
--- | A 'type' of Change, which allows ranking them
-[category] :: ChangeDoc -> ChangeType
-
--- | Reset the originally changed node.
-rewriteSrc :: Outputable node => node -> Change leaf -> Change leaf
+-- | Categories of changes, that allow ordering them
 data ChangeType
 
 -- | The Change basically replaces the node with a wildcard. It is not a
@@ -55,15 +62,13 @@ Wrapping :: ChangeType
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
 Terminal :: ChangeType
-(<&&>) :: [Change a] -> (a -> b) -> [Change b]
+changeGroupToSingle :: Change node -> ChangeNode node -> Change node
+rewritePretty :: Outputable n => n -> ChangeNode n -> ChangeNode n
 instance GHC.Show.Show Seminal.Change.ChangeType
 instance GHC.Classes.Eq Seminal.Change.ChangeType
-instance GHC.Show.Show (Seminal.Change.Change node)
-instance GHC.Classes.Eq (Seminal.Change.Change node)
 instance GHC.Base.Functor Seminal.Change.Change
-instance GHC.Classes.Eq Seminal.Change.ChangeDoc
-instance GHC.Show.Show Seminal.Change.ChangeDoc
 instance GHC.Classes.Ord Seminal.Change.ChangeType
+instance GHC.Base.Functor Seminal.Change.ChangeNode
 
 module Seminal.Compiler.Runner
 
@@ -159,4 +164,3 @@ InvalidFile :: String -> Status
 -- | An ordered list of change suggestions, Along with the original
 --   typecheck error
 Changes :: (String, [Change HsModule]) -> Status
-instance GHC.Show.Show Seminal.Status
