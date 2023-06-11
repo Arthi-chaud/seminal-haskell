@@ -113,6 +113,7 @@
 ### June 10
 
 - Setup Linter
+- Use `.hs-boot` files to allow circular imports and better code splitting
 
 ## Difficulties encountered
 
