@@ -5,7 +5,7 @@ module Seminal (
     Status(..),
 ) where
 import Seminal.Options
-import Seminal.Change (Change (..), ChangeType(..), ChangeDoc (..))
+import Seminal.Change (Change (..), ChangeType(..), getNode, changeGroupToSingle)
 import qualified Seminal.Compiler.TypeChecker as TypeChecker
 import Seminal.Compiler.Parser (parseFile)
 import Seminal.Compiler.Runner (runCompiler)
@@ -14,6 +14,8 @@ import Data.Functor ((<&>))
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Ranker (sortChanges)
 import Seminal.Compiler.TypeChecker (ErrorType(..))
+import Data.List (find)
+import Data.Maybe (fromMaybe)
 
 data Status =
     -- | When the file typechecks without any changes
@@ -24,7 +26,6 @@ data Status =
     -- | An ordered list of change suggestions,
     -- Along with the original typecheck error
     Changes (String, [Change HsModule])
-    deriving Show
 
 -- | Run Seminal on a source file.
 -- If it returns Nothing, the file typechecks,
@@ -47,8 +48,8 @@ runSeminal (Options searchMethod) filePath = do
                     typecheckPm = runCompiler . TypeChecker.typecheckModule
                     hsModToParsedModule :: HsModule -> ParsedModule
                     hsModToParsedModule m = let
-                        (ParsedModule _ src _) = pm
-                        srcLoc = getLoc src
+                        (ParsedModule _ modsrc _) = pm
+                        srcLoc = getLoc modsrc
                         in pm { pm_parsed_source = L srcLoc m }
 
 -- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
@@ -59,13 +60,21 @@ findChanges method test m = findValidChanges (enumerateChangesInModule m)
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate
         -- | Checks if change typechecks, and make tuple out of result 
-        evaluate change = test (exec change) <&> (change,)
+        evaluate change = case change of
+            Change {} -> test (getNode $ exec change) <&> (change,)
+            ChangeGroup {} -> do
+                tests <- mapM (\c -> test (getNode c) >>= (\a -> return (c, a))) (execs change)
+                let
+                    fallbackChange = (head $ execs change, TypeChecker.Error (TypeCheckError "{From Change Group}"))
+                    (topChange, status) = fromMaybe fallbackChange (find ((TypeChecker.Success ==) . snd) tests)
+                return (changeGroupToSingle change topChange, status)
+                    -- )
         -- | If list of changes to evaluate is empty, return
         findValidChanges [] = return []
         -- | Takes a list of change, and 
         findValidChanges clist = do
             successfulchanges <- evaluateAll clist <&> filter ((TypeChecker.Success ==) . snd) <&> map fst
             -- | Stop searching if `method` is lazy and a terminal change is found
-            if (method == Lazy) && any ((Terminal ==) . category . doc) successfulchanges
+            if (method == Lazy) && any ((Terminal ==) . category) successfulchanges
                 then return successfulchanges
                 else (successfulchanges ++) <$> findValidChanges (concatMap followups successfulchanges)

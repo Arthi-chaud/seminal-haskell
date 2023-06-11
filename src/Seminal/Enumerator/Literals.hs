@@ -1,7 +1,7 @@
 module Seminal.Enumerator.Literals (enumerateChangeInLiteral) where
 import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (HsLit(..), GhcPs)
-import Seminal.Change (newChange, ChangeType (Terminal))
+import Seminal.Change (Change(..), ChangeType (Terminal), node)
 import Data.ByteString (unpack)
 import Data.ByteString.Internal (w2c)
 import GHC.Data.FastString (mkFastString)
@@ -23,9 +23,9 @@ enumerateChangeInLiteral literal loc = case literal of
     _ -> []
     where
         changeForChar char = [
-            newChange literal (HsString NoSourceText (mkFastString [char])) loc [] Nothing Terminal -- Turn into String
+            Change (node literal) (node $ HsString NoSourceText (mkFastString [char])) loc [] Nothing Terminal -- Turn into String
             ]
         changeForString [char] = [
-            newChange literal (HsChar NoSourceText char) loc [] Nothing Terminal -- If Singleton, extract it to char
+            Change (node literal) (node $ HsChar NoSourceText char) loc [] Nothing Terminal -- If Singleton, extract it to char
             ]
         changeForString _ = []

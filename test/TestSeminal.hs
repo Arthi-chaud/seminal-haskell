@@ -4,20 +4,11 @@ import Test.HUnit ((@?=), assertFailure)
 import Test.Framework (Test, testGroup, buildTest)
 import Test.Framework.Providers.HUnit (testCase)
 import Seminal (runSeminal, Status (..))
-import Seminal.Change (Change(doc), ChangeDoc(..))
+import Seminal.Change (Change(..), ChangeNode(pretty))
 import Seminal.Options
-import GHC.Plugins (showSDocUnsafe)
 
 buildAssetPath :: [Char] -> [Char]
 buildAssetPath filename = "test/assets/invalid/" ++ filename ++ ".hs"
-
-showSrc :: ChangeDoc -> String
-showSrc = showSDocUnsafe . pprSrc
-showExec :: ChangeDoc -> String
-showExec = showSDocUnsafe . pprExec
-
-getBestSuggestion :: [Change node] -> ChangeDoc
-getBestSuggestion = doc . head
 
 testSeminal ::
     -- | Name of the file to run seminal on
@@ -29,13 +20,13 @@ testSeminal ::
     -- | Expectd exec
     -> String
     -> IO Test
-testSeminal file name src exec = do
+testSeminal file name expectedSrc expectedExec = do
     res <- runSeminal (Options Eager) $ buildAssetPath file
     return $ testCase name $ case res of
-        Changes m -> let bestChange = getBestSuggestion (snd m) in do
-            showSrc bestChange @?= src
-            showExec bestChange @?= exec
-        err -> assertFailure $ "Seminal Failed: " ++ show err
+        Changes m -> let bestChange = head (snd m) in do
+            (show $ pretty $ src bestChange) @?= expectedSrc
+            (show $ pretty $ exec bestChange) @?= expectedExec
+        _ -> assertFailure $ "Seminal Failed"
 
 testSuite :: Test
 testSuite = testGroup "Seminal" $ buildTest <$> [

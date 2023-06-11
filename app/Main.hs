@@ -4,9 +4,8 @@ import Seminal (runSeminal, Status(..))
 import Seminal.Options
 import qualified Options as Program
 import Options.Applicative (execParser)
-import Seminal.Change (ChangeDoc(..), Change (doc))
+import Seminal.Change (Change(..), show)
 import Control.Monad (unless)
-import Data.List (nub)
 
 main :: IO ()
 main = do
@@ -23,12 +22,17 @@ main = do
             -- We add one more newline for format
             unless quiet $ putStrLn (errMsg ++ "\n")
             putStrLn "Suggestions:"
-            mapM_ print windowedList
+            mapM_ printChange windowedList
             where
+                printChange c = putStrLn $ Seminal.Change.show
+                    (src c)
+                    (exec c)
+                    (location c)
+                    (message c)
                 -- Select the n best changes
                 windowedList = case n of
                     Nothing -> filteredList
                     Just size -> take size filteredList
                 -- Filters the changes by level
-                filteredList = filter ((minLevel <=) . category . doc) (nub list)
+                filteredList = filter ((minLevel <=) . category) list
                 

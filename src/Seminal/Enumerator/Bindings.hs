@@ -13,10 +13,7 @@ import GHC
       MatchGroup(MG),
       HsBind,
       GenLocated(L) )
-import Seminal.Change
-    ( wrapLoc,
-      (<&&>)
-    )
+import Seminal.Change ((<&&>))
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -38,9 +35,8 @@ enumerateChangesInBinding (PatSynBind {}) _ = []
 -- Basically get changes for each match
 enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)
 enumerateChangesInFuncBinding (FunBind a b (MG c1 (L la ats) c3) d) _ = concat $ splitEverywhere ats
-    <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in (enumerateChangesInMatch e loc
-            <&> wrapLoc (L . SrcSpanAnn ep))
-            <&&> (\r ->  h ++ [r] ++ t)
+    <&> (\(h, L l e, t) -> let (SrcSpanAnn _ loc) = l in enumerateChangesInMatch e loc
+            <&&> (\r ->  h ++ [L l r] ++ t)
             <&&> (\c2 -> FunBind a b (MG c1 (L la c2) c3) d)
     )
 enumerateChangesInFuncBinding _ _ = []

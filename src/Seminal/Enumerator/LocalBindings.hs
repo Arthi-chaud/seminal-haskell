@@ -15,10 +15,9 @@ import GHC
       HsIPBinds(IPBinds),
       IPBind(IPBind) )
 import Seminal.Change
-    ( newChange,
+    ( node,
       ChangeType(Removal),
-      newChange,
-      ChangeType(Removal),
+      Change(Change),
       (<&&>)
     )
 import Data.Functor ((<&>))
@@ -50,9 +49,9 @@ enumerateChangesInLocalBinds (HsValBinds ext valbind) _ = case valbind of
                 )
 enumerateChangesInLocalBinds (HsIPBinds ext implicitbind) l = case implicitbind of
     IPBinds xbind bindlist -> (splitEverywhere bindlist
-        <&> (\(h, L lbind bind, t) -> newChange
-            bindlist
-            (h ++ t) -- Remove bind
+        <&> (\(h, L lbind bind, t) -> Change
+            (node bindlist)
+            (node $ h ++ t) -- Remove bind
             l
             (case bind of
                 IPBind bext lname (L lexpr expr) ->

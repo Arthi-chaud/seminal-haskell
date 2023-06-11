@@ -16,10 +16,7 @@ import GHC
       GRHSs(GRHSs),
       GRHS(GRHS),
       noSrcSpan )
-import Seminal.Change
-    ( wrapLoc,
-      (<&&>)
-    )
+import Seminal.Change ((<&&>))
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -33,9 +30,8 @@ enumerateChangesInMatch (Match x ctxt pats (GRHSs ext grhss localBinds)) _ = bin
     where
         -- | Changes for the left-hand side of the `=` symbol
         patChanges = concat $ splitEverywhere pats
-            <&> (\(h, L l e, t) -> let (SrcSpanAnn ep loc) = l in (enumerateChangesInPattern e loc
-                    <&> wrapLoc (L . SrcSpanAnn ep))
-                    <&&> (\r ->  h ++ [r] ++ t)
+            <&> (\(h, L l e, t) -> let (SrcSpanAnn _ loc) = l in enumerateChangesInPattern e loc
+                    <&&> (\r ->  h ++ [L l r] ++ t)
                     <&&> (\newPats -> Match x ctxt newPats (GRHSs ext grhss localBinds))
             )
         -- | Changes for the right-hand side of the `=` symbol

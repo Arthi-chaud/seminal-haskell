@@ -1,6 +1,6 @@
 module Seminal.Enumerator.Modules(enumerateChangesInModule) where
 import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
-import Seminal.Change (Change, newChange, wrapLoc, ChangeType (Removal), (<&&>))
+import Seminal.Change (Change(Change), ChangeType (Removal), (<&&>), node)
 import Seminal.Enumerator.Declarations (enumerateChangesInDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
@@ -16,16 +16,13 @@ enumerateChangesInModule hsmod = case hsmod of
 
 -- | Enumerate changes for the root declaration of a module
 enumerateChangesAtModuleRoot :: [LHsDecl GhcPs] -> [Change [LHsDecl GhcPs]]
-enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> (\(h, L l removed, t) -> let
-    (SrcSpanAnn ep removedLoc) = l
-    followups = (enumerateChangesInDeclaration removed removedLoc
-        <&> wrapLoc (L . SrcSpanAnn ep))
-        <&&> (\r -> h ++ [r] ++ t)
+enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> \(h, L l removed, t) -> let
+    (SrcSpanAnn _ removedLoc) = l
+    followups = enumerateChangesInDeclaration removed removedLoc <&&> (\r -> h ++ [L l r] ++ t)
     in case removed of
         -- | In the case of a variable, we do not try to remove it, as it may be accompanied by a type declaration,
         -- And standalone type declaration are not allowed
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&&> (L l . ValD v)
             <&&> (\change -> h ++ [change] ++ t)
-        _ -> [newChange list (h ++ t) removedLoc followups Nothing Removal]
-    )
+        _ -> [Change (node list) (node $ h ++ t) removedLoc followups Nothing Removal]

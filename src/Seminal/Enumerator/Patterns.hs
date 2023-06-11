@@ -2,7 +2,7 @@ module Seminal.Enumerator.Patterns (enumerateChangesInPattern) where
 import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (Pat(..), GhcPs, GenLocated (L), SrcSpanAnn' (locA), noExtField)
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
-import Seminal.Change (newChange, ChangeType (Wildcard), (<&&>))
+import Seminal.Change (Change(..), ChangeType (Wildcard), (<&&>), node)
 
 -- | Enumerate possible changes for patterns,
 -- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Pat.html#t:Pat)
@@ -15,4 +15,4 @@ enumerateChangesInPattern pat loc = wildpatChange : case pat of
         <&&> (ParPat xpar)
     _ -> []
     where
-        wildpatChange = newChange pat (WildPat noExtField) loc [] Nothing Wildcard
+        wildpatChange = Change (node pat) (node $ WildPat noExtField) loc [] Nothing Wildcard

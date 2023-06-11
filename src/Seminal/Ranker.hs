@@ -1,6 +1,6 @@
 -- | The Ranker allows sorting valid changes, before presenting them to the user
 module Seminal.Ranker (sortChanges) where
-import Seminal.Change (Change (doc), ChangeDoc (category, location))
+import Seminal.Change (Change(..))
 import Data.List (sortOn)
 import Data.Ix (Ix(range))
 import GHC (realSrcSpan)
@@ -16,8 +16,8 @@ sortChanges list = snd <$> sortOn cmp (indexed list)
         -- (Reverted using `Down`)
         cmp (index, change) = Down (
             -- | The change type is the most important to sort on
-            category $ doc change,
-            realSrcSpan $ location $ doc change,
+            category change,
+            realSrcSpan $ location change,
             -- | Then we order by 'when' the change was found
             -- If we found it later, it was deeper in the AST => it's better
             index

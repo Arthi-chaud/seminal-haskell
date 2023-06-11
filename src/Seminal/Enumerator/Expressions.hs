@@ -21,12 +21,10 @@ import GHC
       LHsExpr,
       noSrcSpan )
 import Seminal.Change
-    ( newChange,
+    ( Change(Change, ChangeGroup, src), node,
       ChangeType(Removal),
-      newChange,
-      rewriteSrc,
       ChangeType(Terminal, Wildcard, Wrapping, Removal),
-      (<&&>)
+      (<&&>), rewritePretty
     )
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -40,17 +38,20 @@ import {-# SOURCE #-} Seminal.Enumerator.Matches (enumerateChangesInMatch)
 -- starting with replacing them with undefined.
 -- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Expr.html#t:HsExpr)
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression expr loc = [changeToUndefined, changeToNil]
+enumerateChangesInExpression expr loc = [change]
     where
-        -- | Change the expression to `undefined`, used as a wildcard
-        changeToUndefined = newChange expr undefinedExpression loc (changeToList:changeToString:changeToTrue:subchanges) Nothing Wildcard
-        changeToNil = newChange expr (ExplicitList EpAnnNotUsed []) loc (changeToString:changeToList:subchanges) Nothing Wildcard
+        change = ChangeGroup
+            (node expr)
+            (node <$> [undefinedExpression, ExplicitList EpAnnNotUsed []])
+            loc
+            (changeToString:changeToList:changeToTrue:subchanges)
+            Nothing Wildcard
         -- | Wrap the expression into a list
-        changeToList = newChange expr (ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Wrapping
+        changeToList = Change (node expr) (node $ ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Wrapping
         -- | Try to call `show` on the Expression
-        changeToString = newChange expr (HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
+        changeToString = Change (node expr) (node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
             <&> (wrapExprInPar . locMe)
-        changeToTrue = newChange expr (HsVar noExtField ltrue) loc [] message Wildcard
+        changeToTrue = Change (node expr) (node $ HsVar noExtField ltrue) loc [] message Wildcard
             where
                 message = return "This expression needs to evaluate to a boolean value. It is not the case here. Check the type of the value."
                 ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
@@ -68,17 +69,19 @@ enumerateChangesInExpression' expr loc = case expr of
         (if length elems == 1
             -- Extract Singleton into item
             then let L _ single = head elems in (
-                newChange expr single loc [] Nothing Terminal :
-                (rewriteSrc expr <$> enumerateChangesInExpression' single loc)
+                Change (node expr) (node single) loc [] Nothing Terminal :
+                (enumerateChangesInExpression' single loc
+                    <&> (\c -> c { src = rewritePretty expr (src c) })
+                )
             )
             else []) ++
         -- Turn a list into a tuple
-        (newChange expr (ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc [] Nothing Terminal:
+        (Change (node expr) (node $ ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc [] Nothing Terminal:
         -- Remove element in list
         (splitEverywhere elems
-            <&> (\(h, L lremoved removed, t) -> newChange
-                expr
-                (ExplicitList ext $ h ++ t) -- Removing element in list
+            <&> (\(h, L lremoved removed, t) -> Change
+                (node expr)
+                (node $ ExplicitList ext $ h ++ t) -- Removing element in list
                 loc
                 (enumerateChangesInExpression removed (locA lremoved)
                     <&&> (L lremoved)
@@ -91,12 +94,12 @@ enumerateChangesInExpression' expr loc = case expr of
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
         -- Turn a unit into an item
         -- Note: How to build a 1-tuple ?
-        newChange expr unit (locA lunit) [] Nothing Terminal
+        Change (node expr) (node unit) (locA lunit) [] Nothing Terminal
         ]
     (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
             then reverse $ -- Reverse because we started here w/ most specific
                 -- Turn a tuple into a list
-                newChange expr (ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args) loc [] Nothing Terminal:
+                Change (node expr) (node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args) loc [] Nothing Terminal:
                 -- Enumerate each change for each element in the tuple
                 concat (splitEverywhere args <&> (\(h, arg, t) -> case arg of
                     Present ext (L lunit unit) -> (enumerateChangesInExpression unit (locA lunit))
