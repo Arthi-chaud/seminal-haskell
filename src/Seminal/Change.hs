@@ -1,6 +1,6 @@
 {-# OPTIONS_GHC -Wno-partial-fields #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeGroupToSingle, rewritePretty, changeTypes) where
+module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeGroupToSingle, changeTypes) where
 
 import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
@@ -22,9 +22,6 @@ instance Functor ChangeNode where
 -- | Builds `ChangeNode` from an AST node
 node :: (Outputable n) => n -> ChangeNode n
 node n = ChangeNode n (ppr n)
-
-rewritePretty :: (Outputable n) => n -> ChangeNode n -> ChangeNode n
-rewritePretty n c = c { pretty = ppr n }
 
 getNode :: ChangeNode n -> n
 getNode = astNode

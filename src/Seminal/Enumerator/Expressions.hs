@@ -24,7 +24,7 @@ import Seminal.Change
     ( Change(Change, ChangeGroup, src), node,
       ChangeType(Removal),
       ChangeType(Terminal, Wildcard, Wrapping, Removal),
-      (<&&>), rewritePretty
+      (<&&>)
     )
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
@@ -70,9 +70,8 @@ enumerateChangesInExpression' expr loc = case expr of
             -- Extract Singleton into item
             then let L _ single = head elems in (
                 Change (node expr) (node single) loc [] Nothing Terminal :
-                (enumerateChangesInExpression' single loc
-                    <&> (\c -> c { src = rewritePretty expr (src c) })
-                )
+                -- We rewrite the source, because it is the list, not the element inside it
+                (enumerateChangesInExpression' single loc <&> (\c -> c { src = node expr }))
             )
             else []) ++
         -- Turn a list into a tuple

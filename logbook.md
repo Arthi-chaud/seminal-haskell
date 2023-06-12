@@ -121,7 +121,7 @@
 
 ### June 12
 
-- ChangeType: Deriving from Data, to allow better help for CLI args
+- ChangeType: Deriving from Data, to allow better help for CLI arguments
 
 ## Difficulties encountered
 
