@@ -14,14 +14,16 @@ This implementation of Seminal for Haskell is a Master's Degree Project for the 
 
 ---
 
-```text
-Usage: seminal-haskell filePath [-n|--lines N] [--lazy] [-q|--quiet] [-l|--minLevel LEVEL]
+```
+seminal-haskell filePath [-n|--lines N] [--lazy] [-q|--quiet] [-l|--minLevel LEVEL]
 
 Available options:
   filePath                 The path to the Haskell source file
   -n,--lines N             Output the best N suggestions
   --lazy                   Stops searching at the first *good* change
   -q,--quiet               Hide the original type-check error
-  -l,--minLevel LEVEL      The minimal level of suggestions to display (default: Wrapping)
+  -l,--minLevel LEVEL      The minimal level of suggestions to display.
+                           Possible values: Wildcard, Removal, Wrapping, Terminal
+                           (default: Wrapping)
   -h,--help                Show this help text
 ```
