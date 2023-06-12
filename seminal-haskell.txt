@@ -63,7 +63,8 @@ Wrapping :: ChangeType
 --   to the user as if
 Terminal :: ChangeType
 changeGroupToSingle :: Change node -> ChangeNode node -> Change node
-rewritePretty :: Outputable n => n -> ChangeNode n -> ChangeNode n
+changeTypes :: [String]
+instance Data.Data.Data Seminal.Change.ChangeType
 instance GHC.Read.Read Seminal.Change.ChangeType
 instance GHC.Show.Show Seminal.Change.ChangeType
 instance GHC.Classes.Eq Seminal.Change.ChangeType
