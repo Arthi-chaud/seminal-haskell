@@ -64,6 +64,7 @@ Wrapping :: ChangeType
 Terminal :: ChangeType
 changeGroupToSingle :: Change node -> ChangeNode node -> Change node
 rewritePretty :: Outputable n => n -> ChangeNode n -> ChangeNode n
+instance GHC.Read.Read Seminal.Change.ChangeType
 instance GHC.Show.Show Seminal.Change.ChangeType
 instance GHC.Classes.Eq Seminal.Change.ChangeType
 instance GHC.Base.Functor Seminal.Change.Change
