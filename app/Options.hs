@@ -1,8 +1,9 @@
 {-# LANGUAGE LambdaCase #-}
 module Options (Options(..), optionParser) where
 import Options.Applicative (long, metavar, help, showDefault, value, short, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str)
-import Seminal.Change (ChangeType(..))
-import Text.Read (readEither)
+import Seminal.Change (ChangeType(..), changeTypes)
+import Text.Read (readMaybe)
+import Data.List (intercalate)
 
 data Options = Options {
     filePath :: String,
@@ -50,6 +51,10 @@ optionParser = info (parser <**> helper) description
                     <> metavar "LEVEL"
                     <> showDefault
                     <> value Wrapping
-                    <> help "The minimal level of suggestions to display"
+                    <> help ("The minimal level of suggestions to display.\nPossible values: " ++ formattedChangeTypes)
                 )
-        changeTypeParser = eitherReader readEither
+        changeTypeParser = eitherReader (\i -> case readMaybe i of
+            Nothing -> Left $ "Invalid Value.\nExpected one of: " ++ formattedChangeTypes
+            Just e -> return e
+            )
+        formattedChangeTypes = intercalate ", " changeTypes

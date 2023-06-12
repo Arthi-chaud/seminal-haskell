@@ -1,10 +1,11 @@
 {-# OPTIONS_GHC -Wno-partial-fields #-}
-module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeGroupToSingle, rewritePretty) where
+{-# LANGUAGE DeriveDataTypeable #-}
+module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeGroupToSingle, rewritePretty, changeTypes) where
 
 import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
 import Text.Printf (printf)
-
+import Data.Data (dataTypeConstrs, Data (dataTypeOf), showConstr)
 type ChangeLocation = SrcSpan
 
 -- | Sub-data, that could be either the original node, or the change 
@@ -103,7 +104,10 @@ data ChangeType =
     -- | The Change is good enough to terminate the search and/or
     -- be presented to the user as if
     Terminal
-    deriving (Eq, Show, Read)
+    deriving (Eq, Show, Read, Data)
+
+changeTypes :: [String]
+changeTypes = showConstr <$> dataTypeConstrs  (dataTypeOf Terminal)
 
 instance Ord ChangeType where
     -- | Ordering Change types by giving each type a number
