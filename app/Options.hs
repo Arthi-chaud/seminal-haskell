@@ -2,6 +2,7 @@
 module Options (Options(..), optionParser) where
 import Options.Applicative (long, metavar, help, showDefault, value, short, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str)
 import Seminal.Change (ChangeType(..))
+import Text.Read (readEither)
 
 data Options = Options {
     filePath :: String,
@@ -51,9 +52,4 @@ optionParser = info (parser <**> helper) description
                     <> value Wrapping
                     <> help "The minimal level of suggestions to display"
                 )
-        changeTypeParser = eitherReader $ \case
-            "Terminal" -> Right Terminal
-            "Wildcard" -> Right Wildcard
-            "Removal" -> Right Removal
-            "Wrapping" -> Right Wrapping
-            _ -> Left "Invalid Value"
+        changeTypeParser = eitherReader readEither
