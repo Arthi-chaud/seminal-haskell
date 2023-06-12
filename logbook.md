@@ -115,6 +115,14 @@
 - Setup Linter
 - Use `.hs-boot` files to allow circular imports and better code splitting
 
+### June 11
+
+- Implement Change Groups
+
+### June 12
+
+- ChangeType: Deriving from Data, to allow better help for CLI args
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
