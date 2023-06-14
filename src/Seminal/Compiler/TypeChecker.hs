@@ -2,7 +2,7 @@
 -- | according to Seminal's algorithm
 module Seminal.Compiler.TypeChecker (
     TypeCheckStatus (..),
-    ErrorType (..),
+    ErrorType (..), isScopeError, isTypecheckError, getTypeCheckError,
     Seminal.Compiler.TypeChecker.typecheckModule
 ) where
 
@@ -29,6 +29,18 @@ data ErrorType =
     -- | A type or variable could not be resolved
     -- | It comes with the compiler's error message
     ScopeError String
+
+getTypeCheckError :: TypeCheckStatus -> Maybe ErrorType
+getTypeCheckError (Error e) = return e
+getTypeCheckError _ = Nothing
+
+isScopeError :: ErrorType -> Bool
+isScopeError (ScopeError _) = True
+isScopeError _ = False
+
+isTypecheckError :: ErrorType -> Bool
+isTypecheckError (TypeCheckError _) = True
+isTypecheckError _ = False 
 
 instance Eq ErrorType where
     TypeCheckError _ == TypeCheckError _ = True

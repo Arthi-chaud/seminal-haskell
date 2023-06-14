@@ -1,6 +1,7 @@
+{-# LANGUAGE TupleSections #-}
 -- | Provides utilities to parse a file/source code using the compiler's API
 module Seminal.Compiler.Parser (
-    parseFile,
+    parseFiles,
     ParsingResult,
     ParsingErrorType (..)
 ) where
@@ -9,7 +10,7 @@ import GHC
       parseModule,
       setTargets,
       mgModSummaries, depanal, ParsedModule, Ghc )
-import Data.List ( find )
+import Data.List (find)
 import Data.Monoid ()
 import Control.Monad.Catch (try)
 import GHC.Plugins (msHsFilePath)
@@ -17,9 +18,12 @@ import GHC.Types.SourceError (SourceError)
 import System.Directory (getPermissions, Permissions (readable))
 import System.Directory.Internal.Prelude (isDoesNotExistError)
 import Seminal.Compiler.Runner (runCompiler)
+import Data.Either (lefts, rights)
+import Data.Maybe (fromJust, isJust)
+import Control.Arrow (second)
 
 -- | Result of Parsing process
-type ParsingResult = Either ParsingErrorType ParsedModule
+type ParsingResult = Either [(FilePath, ParsingErrorType)] [(FilePath, ParsedModule)]
 
 data ParsingErrorType =
     -- | Permission to read the file denied
@@ -33,30 +37,47 @@ data ParsingErrorType =
     UnknownError String
     deriving (Show, Eq)
 
--- | Parse a file, retrieve its module
-parseFile :: FilePath -> IO ParsingResult
-parseFile filePath = do
+-- | Parse files and retrieve their modules
+parseFiles :: [FilePath] -> IO ParsingResult
+parseFiles filePaths = do
+    checks <- mapM (\f -> (f, ) <$> checkFileAvailability f) filePaths
+    case filter (isJust . snd) checks of
+        [] -> parseFiles' filePaths
+        -- If there is at least one parsing Error 
+        errors -> return $ Left (second fromJust <$> errors)
+
+-- | Checks if a file exists and is readable
+checkFileAvailability :: FilePath -> IO (Maybe ParsingErrorType)
+checkFileAvailability filePath = do
     permRes <- try (getPermissions filePath) :: IO (Either IOError Permissions)
     case permRes of
         Left err -> if isDoesNotExistError err
-            then return (Left FileNotFound)
-            else return (Left $ UnknownError "")
+            then return (Just FileNotFound)
+            else return (Just $ UnknownError "")
         Right perms -> if readable perms
-            then parseFile' filePath
-            else return $ Left PermissionDenied
+            then return Nothing
+            else return $ Just PermissionDenied
 
--- | Parse File, does not handle related to permissions/existence of file 
-parseFile' :: FilePath -> IO ParsingResult
-parseFile' filePath = runCompiler action
+-- | Invoke GHC's typechecker for all files at once.
+-- Does not handle related to permissions/existence of file 
+parseFiles' :: [FilePath] -> IO ParsingResult
+parseFiles' filePaths = runCompiler action
     where
         action = do
-            target <- guessTarget filePath Nothing
-            setTargets [target]
+            targets <- guessTargets filePaths
+            setTargets targets
             modGraph <- depanal [] True
-            case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
-                Nothing -> return $ Left $ UnknownError "Could not find module" 
-                Just modsum -> do
-                    res <- try (parseModule modsum) :: Ghc (Either SourceError ParsedModule)
-                    return $ case res of
-                        Left _ -> Left SyntaxError
-                        Right p -> Right p
+            parseResults <- mapM (getModule modGraph) filePaths
+            return $ case lefts parseResults of
+                [] -> Right (rights parseResults)
+                -- If there is 1+ error, return them
+                errs -> Left errs
+        guessTargets = mapM (`guessTarget` Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
+        -- Retrieves the module of a file using its paths and the modgraph
+        getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
+            Nothing -> return $ Left (filePath, UnknownError "Could not find module")
+            Just modsum -> do
+                res <- try (parseModule modsum) :: Ghc (Either SourceError ParsedModule)
+                return $ case res of
+                    Right pm -> Right (filePath, pm)
+                    _ -> Left (filePath, SyntaxError)

@@ -7,47 +7,53 @@ module Seminal (
 import Seminal.Options
 import Seminal.Change (Change (..), ChangeType(..), getNode, changeGroupToSingle)
 import qualified Seminal.Compiler.TypeChecker as TypeChecker
-import Seminal.Compiler.Parser (parseFile)
+import Seminal.Compiler.Parser (parseFiles)
 import Seminal.Compiler.Runner (runCompiler)
 import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule)
 import Data.Functor ((<&>))
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
-import Seminal.Ranker (sortChanges)
-import Seminal.Compiler.TypeChecker (ErrorType(..))
+import Seminal.Compiler.TypeChecker (ErrorType(..), isScopeError, getTypeCheckError)
 import Data.List (find)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, mapMaybe)
+import Control.Arrow (second)
+import Prelude hiding (mod)
+import Data.Tuple.HT (thd3)
+import Seminal.Ranker (sortChanges)
+
+type ErrorMessage = String
 
 data Status =
     -- | When the file typechecks without any changes
     Success |
     -- | When an error occurs while parsing the file,
     -- unrelated to typechecking
-    InvalidFile String |
-    -- | An ordered list of change suggestions,
+    InvalidFile [(FilePath, ErrorMessage)] |
+    -- | For each file that does not typecheck, an ordered list of change suggestions,
     -- Along with the original typecheck error
-    Changes (String, [Change HsModule])
+    Changes [(FilePath, ErrorMessage, [Change HsModule])]
 
 -- | Run Seminal on a source file.
 -- If it returns Nothing, the file typechecks,
 -- otherwise, provides an ordered list of change suggestions 
-runSeminal :: Options -> FilePath -> IO Status
-runSeminal (Options searchMethod) filePath = do
-    r <- parseFile filePath
-    case r of
-        Left err -> return $ InvalidFile (show err)
-        Right pm -> do
-            res <- typecheckPm pm
-            case res of
-                TypeChecker.Success -> return Seminal.Success
-                TypeChecker.Error err -> case err of
-                    (ScopeError _) -> return $ InvalidFile (show err)
-                    (TypeCheckError msg) -> Changes . (msg,) . sortChanges <$> changes
+runSeminal :: Options -> [FilePath] -> IO Status
+runSeminal (Options searchMethod) filePaths = do
+    parseRes <- parseFiles filePaths
+    case parseRes of
+        Left err -> return $ InvalidFile (second show <$> err)
+        Right filesAndModules -> do
+            res <- mapM (\(f, m) -> (f,m,) <$> typecheckPm m) filesAndModules
+            case mapMaybe (\(f, mod, status) -> (f,mod,) <$> getTypeCheckError status) res of
+                -- If nothing is unsuccessful <-> If all typechecks
+                [] -> undefined
+                errs -> case filter (isScopeError . thd3) errs of
+                    [] -> Changes <$> mapM (\(f, m, err) -> (f, show err, ) . sortChanges <$> changes m) errs
+                    scopeErrors -> return $ InvalidFile ((\(f, _, err) -> (f, show err)) <$> scopeErrors)
                 where
-                    changes = findChanges searchMethod (typecheckPm . hsModToParsedModule) hsModule
-                    hsModule = unLoc $ pm_parsed_source pm
+                    changes pm = findChanges searchMethod (typecheckPm . wrapHsModule pm) (hsModule pm)
+                    hsModule = unLoc . pm_parsed_source
                     typecheckPm = runCompiler . TypeChecker.typecheckModule
-                    hsModToParsedModule :: HsModule -> ParsedModule
-                    hsModToParsedModule m = let
+                    wrapHsModule :: ParsedModule -> HsModule -> ParsedModule
+                    wrapHsModule pm m = let
                         (ParsedModule _ modsrc _) = pm
                         srcLoc = getLoc modsrc
                         in pm { pm_parsed_source = L srcLoc m }
@@ -68,7 +74,6 @@ findChanges method test m = findValidChanges (enumerateChangesInModule m)
                     fallbackChange = (head $ execs change, TypeChecker.Error (TypeCheckError "{From Change Group}"))
                     (topChange, status) = fromMaybe fallbackChange (find ((TypeChecker.Success ==) . snd) tests)
                 return (changeGroupToSingle change topChange, status)
-                    -- )
         -- | If list of changes to evaluate is empty, return
         findValidChanges [] = return []
         -- | Takes a list of change, and 

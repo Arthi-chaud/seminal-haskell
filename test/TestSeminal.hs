@@ -21,9 +21,9 @@ testSeminal ::
     -> String
     -> IO Test
 testSeminal file name expectedSrc expectedExec = do
-    res <- runSeminal (Options Eager) $ buildAssetPath file
+    res <- runSeminal (Options Eager) [buildAssetPath file]
     return $ testCase name $ case res of
-        Changes m -> let bestChange = head (snd m) in do
+        Changes [(_, _, (bestChange:_))] -> do
             (show $ pretty $ src bestChange) @?= expectedSrc
             (show $ pretty $ exec bestChange) @?= expectedExec
         _ -> assertFailure $ "Seminal Failed"
