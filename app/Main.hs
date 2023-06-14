@@ -9,11 +9,11 @@ import Control.Monad (unless)
 
 main :: IO ()
 main = do
-    (Program.Options filePath n isLazy quiet minLevel) <- execParser Program.optionParser
+    (Program.Options filePaths n isLazy quiet minLevel) <- execParser Program.optionParser
     let options = Options {
         search = if isLazy then Lazy else Eager 
     }
-    res <- runSeminal options filePath
+    res <- runSeminal options $ head filePaths
     case res of
         Success -> putStrLn "File Typechecks"
         InvalidFile err -> putStrLn err >> exitFailure
@@ -35,4 +35,3 @@ main = do
                     Just size -> take size filteredList
                 -- Filters the changes by level
                 filteredList = filter ((minLevel <=) . category) list
-                

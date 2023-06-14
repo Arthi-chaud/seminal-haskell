@@ -1,12 +1,11 @@
-{-# LANGUAGE LambdaCase #-}
 module Options (Options(..), optionParser) where
-import Options.Applicative (long, metavar, help, showDefault, value, short, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str)
+import Options.Applicative (long, metavar, help, showDefault, value, short, eitherReader, option, auto, switch, fullDesc, header, helper, (<**>), info, ParserInfo, optional, argument, str, some)
 import Seminal.Change (ChangeType(..), changeTypes)
 import Text.Read (readMaybe)
 import Data.List (intercalate)
 
 data Options = Options {
-    filePath :: String,
+    filePaths :: [String],
     -- | The number of suggestions to print.
     -- It takes the `n` best suggestions that are at least of `level` category
     n :: Maybe Int,
@@ -26,10 +25,10 @@ optionParser = info (parser <**> helper) description
         description = fullDesc
             <> header "Seminal for Haskell"
         parser = Options <$>
-            argument str
-                ( metavar "filePath"
-                    <> help "The path to the Haskell source file"
-                ) <*>
+            some (argument str
+                ( metavar "files..."
+                    <> help "The paths to the Haskell source files"
+                )) <*>
             optional (option auto
                 ( long "lines"
                     <> short 'n'
