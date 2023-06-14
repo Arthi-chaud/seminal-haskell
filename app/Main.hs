@@ -19,10 +19,10 @@ main = do
         InvalidFile errs -> mapM_ (putStrLn . snd) errs >> exitFailure
         Changes changes -> mapM_ (printChange quiet n minLevel) changes
         where
-            printChange quiet n minLevel (_, errMsg, list) = do
+            printChange quiet n minLevel (filePath, errMsg, list) = do
                 -- When it is not quiet, print typecheck error message
                 -- We add one more newline for format
-                unless quiet $ putStrLn (errMsg ++ "\n")
+                unless quiet $ putStrLn (filePath ++ " - " ++ errMsg ++ "\n")
                 putStrLn "Suggestions:"
                 let 
                     -- Select the n best changes

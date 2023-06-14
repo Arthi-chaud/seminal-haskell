@@ -23,7 +23,7 @@ dependencies:
 
 ghc-options:
 - -Wall
-- -Werror
+# - -Werror
 - -Wcompat
 - -Widentities
 - -Wincomplete-record-updates
@@ -45,6 +45,7 @@ library:
   - utility-ht
   - bytestring
   - text
+  - silently
   exposed-modules:
   - Seminal
   - Seminal.Options

@@ -6,8 +6,7 @@ module Seminal.Compiler.TypeChecker (
     Seminal.Compiler.TypeChecker.typecheckModule
 ) where
 
-import GHC
-    ( typecheckModule, ParsedModule, Ghc )
+import GHC (typecheckModule, ParsedModule, Ghc)
 import Data.Monoid ()
 import GHC.Types.SourceError (handleSourceError)
 import Text.Printf (printf)
@@ -49,8 +48,8 @@ instance Eq ErrorType where
 
 -- | Pretty-print of Error types
 instance Show ErrorType where
-    show (TypeCheckError err) = printf "Typecheck Error: %s" err
-    show (ScopeError err) = printf "Scope Error: %s" err
+    show (TypeCheckError err) = printf "Typecheck Error:\n%s" err
+    show (ScopeError err) = printf "Scope Error:\n%s" err
     
 -- | Typecheck Module
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus

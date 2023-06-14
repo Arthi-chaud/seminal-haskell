@@ -6,18 +6,15 @@ module Seminal.Compiler.Parser (
     ParsingErrorType (..)
 ) where
 import GHC
-    ( guessTarget,
-      parseModule,
-      setTargets,
+    ( parseModule,
       mgModSummaries, depanal, ParsedModule, Ghc )
 import Data.List (find)
 import Data.Monoid ()
 import Control.Monad.Catch (try)
-import GHC.Plugins (msHsFilePath)
+import GHC.Plugins (msHsFilePath, liftIO)
 import GHC.Types.SourceError (SourceError)
 import System.Directory (getPermissions, Permissions (readable))
 import System.Directory.Internal.Prelude (isDoesNotExistError)
-import Seminal.Compiler.Runner (runCompiler)
 import Data.Either (lefts, rights)
 import Data.Maybe (fromJust, isJust)
 import Control.Arrow (second)
@@ -38,9 +35,9 @@ data ParsingErrorType =
     deriving (Show, Eq)
 
 -- | Parse files and retrieve their modules
-parseFiles :: [FilePath] -> IO ParsingResult
+parseFiles :: [FilePath] -> Ghc ParsingResult
 parseFiles filePaths = do
-    checks <- mapM (\f -> (f, ) <$> checkFileAvailability f) filePaths
+    checks <- mapM (\f -> (f, ) <$> liftIO (checkFileAvailability f)) filePaths
     case filter (isJust . snd) checks of
         [] -> parseFiles' filePaths
         -- If there is at least one parsing Error 
@@ -60,19 +57,15 @@ checkFileAvailability filePath = do
 
 -- | Invoke GHC's typechecker for all files at once.
 -- Does not handle related to permissions/existence of file 
-parseFiles' :: [FilePath] -> IO ParsingResult
-parseFiles' filePaths = runCompiler action
-    where
-        action = do
-            targets <- guessTargets filePaths
-            setTargets targets
-            modGraph <- depanal [] True
-            parseResults <- mapM (getModule modGraph) filePaths
-            return $ case lefts parseResults of
-                [] -> Right (rights parseResults)
-                -- If there is 1+ error, return them
-                errs -> Left errs
-        guessTargets = mapM (`guessTarget` Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
+parseFiles' :: [FilePath] -> Ghc ParsingResult
+parseFiles' filePaths = do
+        modGraph <- depanal [] True
+        parseResults <- mapM (getModule modGraph) filePaths
+        return $ case lefts parseResults of
+            [] -> Right (rights parseResults)
+            -- If there is 1+ error, return them
+            errs -> Left errs
+        where
         -- Retrieves the module of a file using its paths and the modgraph
         getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
             Nothing -> return $ Left (filePath, UnknownError "Could not find module")

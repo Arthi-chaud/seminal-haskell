@@ -9,7 +9,7 @@ import Seminal.Change (Change (..), ChangeType(..), getNode, changeGroupToSingle
 import qualified Seminal.Compiler.TypeChecker as TypeChecker
 import Seminal.Compiler.Parser (parseFiles)
 import Seminal.Compiler.Runner (runCompiler)
-import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule)
+import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc)
 import Data.Functor ((<&>))
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Compiler.TypeChecker (ErrorType(..), isScopeError, getTypeCheckError)
@@ -36,7 +36,7 @@ data Status =
 -- If it returns Nothing, the file typechecks,
 -- otherwise, provides an ordered list of change suggestions 
 runSeminal :: Options -> [FilePath] -> IO Status
-runSeminal (Options searchMethod) filePaths = do
+runSeminal (Options searchMethod) filePaths = runCompiler filePaths $ do
     parseRes <- parseFiles filePaths
     case parseRes of
         Left err -> return $ InvalidFile (second show <$> err)
@@ -44,14 +44,14 @@ runSeminal (Options searchMethod) filePaths = do
             res <- mapM (\(f, m) -> (f,m,) <$> typecheckPm m) filesAndModules
             case mapMaybe (\(f, mod, status) -> (f,mod,) <$> getTypeCheckError status) res of
                 -- If nothing is unsuccessful <-> If all typechecks
-                [] -> undefined
+                [] -> return Success
                 errs -> case filter (isScopeError . thd3) errs of
                     [] -> Changes <$> mapM (\(f, m, err) -> (f, show err, ) . sortChanges <$> changes m) errs
                     scopeErrors -> return $ InvalidFile ((\(f, _, err) -> (f, show err)) <$> scopeErrors)
                 where
                     changes pm = findChanges searchMethod (typecheckPm . wrapHsModule pm) (hsModule pm)
                     hsModule = unLoc . pm_parsed_source
-                    typecheckPm = runCompiler . TypeChecker.typecheckModule
+                    typecheckPm = TypeChecker.typecheckModule
                     wrapHsModule :: ParsedModule -> HsModule -> ParsedModule
                     wrapHsModule pm m = let
                         (ParsedModule _ modsrc _) = pm
@@ -60,7 +60,7 @@ runSeminal (Options searchMethod) filePaths = do
 
 -- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
-findChanges :: SearchMethod -> (HsModule -> IO TypeChecker.TypeCheckStatus) -> HsModule -> IO [Change HsModule]
+findChanges :: SearchMethod -> (HsModule -> Ghc TypeChecker.TypeCheckStatus) -> HsModule -> Ghc [Change HsModule]
 findChanges method test m = findValidChanges (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
