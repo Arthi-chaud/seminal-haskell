@@ -15,10 +15,10 @@ This implementation of Seminal for Haskell is a Master's Degree Project for the 
 ---
 
 ```
-seminal-haskell filePath [-n|--lines N] [--lazy] [-q|--quiet] [-l|--minLevel LEVEL]
+Usage: seminal-haskell files... [-n|--lines N] [--lazy] [-q|--quiet] [-l|--minLevel LEVEL]
 
 Available options:
-  filePath                 The path to the Haskell source file
+  files...                 The paths to the Haskell source files
   -n,--lines N             Output the best N suggestions
   --lazy                   Stops searching at the first *good* change
   -q,--quiet               Hide the original type-check error
