@@ -21,9 +21,11 @@ description:         Enhance Type Error Messages
 dependencies:
 - base >= 4.7 && < 5
 
+default-extensions: TupleSections
+
 ghc-options:
 - -Wall
-# - -Werror
+- -Werror
 - -Wcompat
 - -Widentities
 - -Wincomplete-record-updates
@@ -51,7 +53,6 @@ library:
   - Seminal.Options
   - Seminal.Change
   ## For testing purposes, ugh
-  - Seminal.Compiler.Parser
   - Seminal.Compiler.Runner
   - Seminal.Compiler.TypeChecker
 

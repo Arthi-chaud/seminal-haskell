@@ -16,7 +16,7 @@ main = do
     res <- runSeminal options filePaths
     case res of
         Success -> putStrLn "File Typechecks"
-        InvalidFile errs -> mapM_ (putStrLn . snd) errs >> exitFailure
+        Error errs -> putStrLn errs >> exitFailure
         Changes changes -> mapM_ (printChange quiet n minLevel) changes
         where
             printChange quiet n minLevel (filePath, errMsg, list) = do

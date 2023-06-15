@@ -23,10 +23,10 @@ testSeminal ::
 testSeminal file name expectedSrc expectedExec = do
     res <- runSeminal (Options Eager) [buildAssetPath file]
     return $ testCase name $ case res of
-        Changes [(_, _, (bestChange:_))] -> do
+        Changes [(_, _, bestChange:_)] -> do
             (show $ pretty $ src bestChange) @?= expectedSrc
             (show $ pretty $ exec bestChange) @?= expectedExec
-        _ -> assertFailure $ "Seminal Failed"
+        _ -> assertFailure "Seminal Failed"
 
 testSuite :: Test
 testSuite = testGroup "Seminal" $ buildTest <$> [
