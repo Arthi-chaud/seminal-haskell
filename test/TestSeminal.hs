@@ -11,8 +11,8 @@ buildAssetPath :: [Char] -> [Char]
 buildAssetPath filename = "test/assets/invalid/" ++ filename ++ ".hs"
 
 testSeminal ::
-    -- | Name of the file to run seminal on
-    FilePath
+    -- | Name of the files to run seminal on
+    [FilePath]
     -- | Name of the test
     -> String
     -- | expected src
@@ -20,8 +20,8 @@ testSeminal ::
     -- | Expectd exec
     -> String
     -> IO Test
-testSeminal file name expectedSrc expectedExec = do
-    res <- runSeminal (Options Eager) [buildAssetPath file]
+testSeminal files name expectedSrc expectedExec = do
+    res <- runSeminal (Options Eager) (buildAssetPath <$> files)
     return $ testCase name $ case res of
         Changes [(_, _, bestChange:_)] -> do
             (show $ pretty $ src bestChange) @?= expectedSrc
@@ -31,79 +31,83 @@ testSeminal file name expectedSrc expectedExec = do
 testSuite :: Test
 testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
-        "expect-char-from-string-list"
+        ["expect-char-from-string-list"]
         "Got a singleton of string, expected a char" 
         "[\"a\"]"  "'a'",
     testSeminal
-        "expect-char-in-tuple"
+        ["expect-char-in-tuple"]
         "Got a string, expected a char, in a typed tuple" 
         "\"1\""  "'1'",
     testSeminal
-        "expect-char"
+        ["expect-char"]
         "Got a string, expected a char" 
         "\"a\""  "'a'",
     testSeminal
-        "expect-foldable"
+        ["expect-foldable"]
         "Got an int, expected a list (for overloaded function)" 
         "1"  "[1]",
     testSeminal
-        "expect-item"
+        ["expect-item"]
         "Got a list, expected an item" 
         "['a']"  "'a'",
     testSeminal
-        "expect-list-not-tuple"
+        ["expect-list-not-tuple"]
         "Got an tuple, expected a list" 
         "('a', 'b')" "['a', 'b']",
     testSeminal
-        "expect-list"
+        ["expect-list"]
         "Got an int, expected a list" 
         "1"  "[1]",
     testSeminal
-        "expect-string-in-list"
+        ["expect-string-in-list"]
         "List of String, with a Char in the middle" 
         "'A'"  "\"A\"",
     testSeminal
-        "expect-string-not-int"
+        ["expect-string-not-int"]
         "Got an int, expected a string" 
         "1"  "show 1",
     testSeminal
-        "expect-string"
+        ["expect-string"]
         "Got a Char, expected a String" 
         "'A'"  "\"A\"",
     testSeminal
-        "expect-tuple"
+        ["expect-tuple"]
         "Got a list, expected a tuple" 
         "['a', 'b']"  "('a', 'b')",
     testSeminal
-        "let/expect-char"
+        ["let/expect-char"]
         "Let: Got a String, expected a char" 
         "\"a\""  "'a'",
     testSeminal
-        "where/expect-char"
+        ["where/expect-char"]
         "Where: Got a String, expected a char" 
         "\"a\""  "'a'",
     testSeminal
-        "if/then-expect-int"
+        ["if/then-expect-int"]
         "If-Then: Got a List, expected an Int" 
         "[1]" "1",
     testSeminal
-        "if/if-expect-bool"
+        ["if/if-expect-bool"]
         "If: Got an Int, expected a Bool" 
         "1" "True",
     testSeminal
-        "if/else-expect-string"
+        ["if/else-expect-string"]
         "If-Else: Got a Char, expected a string" 
         "'.'" "\".\"",
     testSeminal
-        "case/match-expect-char"
+        ["case/match-expect-char"]
         "Case-Match: Got a List, expected a Char" 
         "\"L\"" "'L'",
     testSeminal
-        "case/root-expect-list"
+        ["case/root-expect-list"]
         "Case-Root: Got a Tuple, expected a List" 
         "(1, 2)" "[1, 2]",
     testSeminal
-        "case/value-expect-int"
+        ["case/value-expect-int"]
         "Case-Value: Got a List, expected an Int" 
-        "[2]" "2"
+        "[2]" "2",
+    testSeminal
+        ["modules/A", "modules/B", "modules/Main"]
+        "Modules: Got a Char, expected a String" 
+        "'a'" "\"a\""
     ]
