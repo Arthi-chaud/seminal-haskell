@@ -109,5 +109,5 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["modules/A", "modules/B", "modules/Main"]
         "Modules: Got a Char, expected a String" 
-        "'a'" "\"a\""
+        "a" "[a]"
     ]
