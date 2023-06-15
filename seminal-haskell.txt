@@ -74,34 +74,10 @@ instance GHC.Base.Functor Seminal.Change.ChangeNode
 
 module Seminal.Compiler.Runner
 
--- | Allows runnning function exposed by the compiler's API
-runCompiler :: Ghc a -> IO a
-
-
--- | Provides utilities to parse a file/source code using the compiler's
---   API
-module Seminal.Compiler.Parser
-
--- | Parse a file, retrieve its module
-parseFile :: FilePath -> IO ParsingResult
-
--- | Result of Parsing process
-type ParsingResult = Either ParsingErrorType ParsedModule
-data ParsingErrorType
-
--- | Permission to read the file denied
-PermissionDenied :: ParsingErrorType
-
--- | The file was not found
-FileNotFound :: ParsingErrorType
-
--- | There was an error syntax in the source code
-SyntaxError :: ParsingErrorType
-
--- | An unknown error occured | Comes with an error messag
-UnknownError :: String -> ParsingErrorType
-instance GHC.Classes.Eq Seminal.Compiler.Parser.ParsingErrorType
-instance GHC.Show.Show Seminal.Compiler.Parser.ParsingErrorType
+-- | Setup and run a GHC Session. The file paths are the paths to the
+--   source files to load. The action to run takes the list of loaded
+--   modules. Upon error (file access, syntax, ...), throws
+runCompiler :: forall a. [FilePath] -> ([(FilePath, ParsedModule)] -> Ghc a) -> IO (Either ErrorMessage a)
 
 
 -- | Provide a way to access Compiler/Typechecker as a black box, |
@@ -125,6 +101,9 @@ TypeCheckError :: String -> ErrorType
 -- | A type or variable could not be resolved | It comes with the
 --   compiler's error message
 ScopeError :: String -> ErrorType
+isScopeError :: ErrorType -> Bool
+isTypecheckError :: ErrorType -> Bool
+getTypeCheckError :: TypeCheckStatus -> Maybe ErrorType
 
 -- | Typecheck Module
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
@@ -154,15 +133,15 @@ module Seminal
 
 -- | Run Seminal on a source file. If it returns Nothing, the file
 --   typechecks, otherwise, provides an ordered list of change suggestions
-runSeminal :: Options -> FilePath -> IO Status
+runSeminal :: Options -> [FilePath] -> IO Status
 data Status
 
 -- | When the file typechecks without any changes
 Success :: Status
 
--- | When an error occurs while parsing the file, unrelated to typechecking
-InvalidFile :: String -> Status
+-- | When an error occurs during the GHC session, unrelated to typechecking
+Error :: ErrorMessage -> Status
 
--- | An ordered list of change suggestions, Along with the original
---   typecheck error
-Changes :: (String, [Change HsModule]) -> Status
+-- | For each file that does not typecheck, an ordered list of change
+--   suggestions, Along with the original typecheck error
+Changes :: [(FilePath, ErrorMessage, [Change HsModule])] -> Status
