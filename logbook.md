@@ -131,3 +131,4 @@
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
 - For overloaded functions, like `length`, replacing the parameters with `undefined` leads to type ambiguity. The solution was to use multiple kinds of wildcards
+- In the case of multiple files loading: The runner only goes through the files that do not typecheck. This is not always what we want. (cf. `test/assets/invalid/modules`)
