@@ -43,7 +43,7 @@ runSeminal (Options searchMethod) filePaths = either Error id <$> ghcAction
                 [] -> return Success
                 errs -> case filter (isScopeError . thd3) errs of
                     [] -> Changes <$> mapM (\(f, m, err) -> (f, show err, ) . sortChanges <$> changes m) errs
-                    scopeErrors -> return $ Error $ concat ((\(f, _, err) -> show f ++ show err) <$> scopeErrors)
+                    scopeErrors -> return $ Error $ concatMap (\(f, _, err) -> f ++ show err) scopeErrors
         changes pm = findChanges searchMethod (typecheckPm . wrapHsModule pm) (hsModule pm)
         hsModule = unLoc . pm_parsed_source
         typecheckPm = TypeChecker.typecheckModule
