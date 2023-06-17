@@ -98,6 +98,10 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         ["case/match-expect-char"]
         "Case-Match: Got a List, expected a Char" 
         "\"L\"" "'L'",
+     testSeminal
+        ["case/match-expect-wildcard"]
+        "Case-Match: Got an Int, expected a wildcard" 
+        "1" "_",
     testSeminal
         ["case/root-expect-list"]
         "Case-Root: Got a Tuple, expected a List" 
