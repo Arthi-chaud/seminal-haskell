@@ -127,8 +127,13 @@
 
 - Allow Seminal to load multiple files
 
+### June 17
+
+- Enumeration goes through operations
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
 - For overloaded functions, like `length`, replacing the parameters with `undefined` leads to type ambiguity. The solution was to use multiple kinds of wildcards
 - In the case of multiple files loading: The runner only goes through the files that do not typecheck. This is not always what we want. (cf. `test/assets/invalid/modules`)
+- Using built-in infixes (such as `(:)`) can be done in a straight-forward way.
