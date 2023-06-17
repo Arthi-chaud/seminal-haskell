@@ -57,7 +57,7 @@ typecheckModule parsedModule = do
     maybeT <- handleSourceError (return . Left . show) (GHC.typecheckModule parsedModule <&> Right)
     return $ case maybeT of
         Right _ -> Success
-        Left errMsg -> Error (if any (`isContainedIn` errMsg) ["Variable not in scope", "Not in scope: type constructor or class"]
+        Left errMsg -> Error (if any (`isContainedIn` errMsg) ["not in scope", "Not in scope"]
             then ScopeError strippedMsg
             else TypeCheckError strippedMsg)
                 where strippedMsg = unpack (strip $ pack errMsg)

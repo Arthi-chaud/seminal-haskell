@@ -26,5 +26,8 @@ testSuite = testGroup "Compiler's Typechecker" [
         return $ testCase "Typecheck Fail (Expected String, got Char)" $ res @=? Error (TypeCheckError ""),
     buildTest $ do
         res <- runTest ["test/assets/invalid/scope-error.hs"]
-        return $ testCase "Typecheck Fail (Variable out of scope)" $ res @=? Error (ScopeError "")
+        return $ testCase "Typecheck Fail (Variable out of scope)" $ res @=? Error (ScopeError ""),
+    buildTest $ do
+        res <- runTest ["test/assets/invalid/scope-error-dconstructor.hs"]
+        return $ testCase "Typecheck Fail (Data Constructor not in scope)" $ res @=? Error (ScopeError "")
     ]
