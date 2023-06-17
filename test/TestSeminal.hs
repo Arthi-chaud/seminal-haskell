@@ -98,7 +98,7 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         ["case/match-expect-char"]
         "Case-Match: Got a List, expected a Char" 
         "\"L\"" "'L'",
-     testSeminal
+    testSeminal
         ["case/match-expect-wildcard"]
         "Case-Match: Got an Int, expected a wildcard" 
         "1" "_",
@@ -113,5 +113,13 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["modules/A", "modules/B", "modules/Main"]
         "Modules: Got a Char, expected a String" 
-        "a" "[a]"
+        "a" "[a]",
+    testSeminal
+        ["operations/plus-expect-int"]
+        "Operations (+): Got a List, expected an Int" 
+        "[1]" "1",
+    testSeminal
+        ["operations/neg-expect-int"]
+        "Operations (-): Got a List, expected an Int" 
+        "[1]" "1"
     ]

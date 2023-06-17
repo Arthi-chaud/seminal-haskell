@@ -155,6 +155,20 @@ enumerateChangesInExpression' expr loc = case expr of
                         <&&> (\newMatches -> MG xmatch newMatches origin)
                         <&&> (HsCase xcase lrootExpr)
                 ))
+    (OpApp xapp lleftExpr lopExpr lrightExpr) -> enumLeft ++ enumOp ++ enumRight
+        where
+            enumLeft = let (L lleft leftExpr) = lleftExpr in enumerateChangesInExpression leftExpr (locA lleft)
+                <&&> (L lleft)
+                <&&> (\newLeft -> OpApp xapp newLeft lopExpr lrightExpr)
+            enumRight = let (L lright rightExpr) = lrightExpr in enumerateChangesInExpression rightExpr (locA lright)
+                <&&> (L lright)
+                <&&> (OpApp xapp lleftExpr lopExpr)
+            enumOp = let (L lop opExpr) = lopExpr in enumerateChangesInExpression opExpr (locA lop)
+                <&&> (L lop)
+                <&&> (\newOp -> OpApp xapp lleftExpr newOp lrightExpr)
+    (NegApp xapp lexpr syntaxExpr) -> let (L l e) = lexpr in enumerateChangesInExpression e (locA l)
+            <&&> (L l)
+            <&&> (\nexExpt -> NegApp xapp nexExpt syntaxExpr)
     _ -> []
 
 -- | Expression for `undefined`
