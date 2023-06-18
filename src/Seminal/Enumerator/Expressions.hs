@@ -117,7 +117,7 @@ enumerateChangesInExpression' expr loc = case expr of
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
         <&&> (HsLit ext)
     -- In function application: try changes on functions and parameters
-    (HsApp a func param) -> paramRemovals ++ enumF ++ enumParam ++ paramSwap
+    (HsApp a func param) -> paramInsert ++ paramRemovals ++ enumF ++ enumParam ++ paramSwap
         where
             -- | Enumeration on the function
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
@@ -134,6 +134,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     Nothing
                     Terminal
                 )
+            -- Swap Parameter
             paramSwap = permutations paramList
                 <&> exprListToHsApp
                 <&> (\c -> Change
@@ -144,7 +145,18 @@ enumerateChangesInExpression' expr loc = case expr of
                     Nothing
                     Terminal
                 )
+            -- Insert Parameter
+            paramInsert = splitEverywhere paramList
+                <&> (\(h, e, t) -> Change
+                    (node expr)
+                    (node (exprListToHsApp (h ++ [e, undefinedExpression] ++ t)))
+                    loc
+                    []
+                    (return "An argument is missing.")
+                    Terminal
+                )
             paramList = hsAppToList expr
+
     -- `let _ = xx in ...` expressions
     (HsLet x bind e) -> enumExpr ++ enumBind
         where
