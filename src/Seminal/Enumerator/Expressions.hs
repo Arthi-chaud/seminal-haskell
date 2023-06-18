@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-incomplete-record-updates #-}
 module Seminal.Enumerator.Expressions (
     enumerateChangesInExpression
 ) where
@@ -19,7 +20,7 @@ import GHC
       MatchGroup(MG),
       GenLocated(L),
       LHsExpr,
-      noSrcSpan, unLoc )
+      noSrcSpan, noLoc, reLocA )
 import Seminal.Change
     ( Change(..), node,
       ChangeType(Removal),
@@ -115,7 +116,7 @@ enumerateChangesInExpression' expr loc = case expr of
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
         <&&> (HsLit ext)
     -- In function application: try changes on functions and parameters
-    (HsApp a func param) -> enumF ++ enumParam ++ [removeLastParam]
+    (HsApp a func param) -> paramRemovals ++ enumF ++ enumParam
         where
             -- | Enumeration on the function
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
@@ -123,14 +124,15 @@ enumerateChangesInExpression' expr loc = case expr of
             -- | Enumeration on the parameters
             enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
                 <&&> (HsApp a func . L lp)
-            removeLastParam = Change {
-                src = node expr,
-                exec = node (unLoc func),
-                location = loc,
-                followups = [],
-                message = Nothing,
-                category = Terminal
-            }
+            paramRemovals = splitEverywhere (hsAppToList expr)
+                <&> (\(h, _, t) -> Change
+                    (node expr)
+                    (node (exprListToHsApp (h ++ t)))
+                    loc
+                    []
+                    Nothing
+                    Terminal
+                )
     -- `let _ = xx in ...` expressions
     (HsLet x bind e) -> enumExpr ++ enumBind
         where
@@ -191,3 +193,17 @@ buildFunctionName funcName = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRd
 -- Mainly used for pretty printing
 wrapExprInPar :: LHsExpr GhcPs -> HsExpr GhcPs
 wrapExprInPar = HsPar EpAnnNotUsed
+
+-- | Turns an HsApp into a list of expression.
+-- `const 1 2` -> [cons, 1, 2]
+hsAppToList :: (HsExpr GhcPs) -> [HsExpr GhcPs]
+hsAppToList (HsApp _ (L _ func) (L _ param)) = hsAppToList func ++ [param]
+hsAppToList e = [e]
+
+-- | Turns a list of expressions into a function application.
+-- [cons, 1, 2] -> `cons 1 2`
+exprListToHsApp :: [HsExpr GhcPs] -> (HsExpr GhcPs)
+exprListToHsApp [] = undefined
+exprListToHsApp [f, p] = HsApp EpAnnNotUsed (reLocA $ noLoc f) (reLocA $ noLoc p)
+exprListToHsApp [e] = e
+exprListToHsApp list = HsApp EpAnnNotUsed (reLocA $ noLoc $ exprListToHsApp (init list)) (reLocA $ noLoc $ last list)

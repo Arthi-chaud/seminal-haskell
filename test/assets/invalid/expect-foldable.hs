@@ -1,1 +1,5 @@
-a = length 1
+
+a :: (Bool, Bool)
+a = b 1
+
+b [_] = (True, False)

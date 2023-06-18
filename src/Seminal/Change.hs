@@ -83,7 +83,7 @@ show src_ exec_ loc message_  = replacement ++ case message_ of
         (Just msg) -> '\n' : msg
         _ -> ""
         where
-            replacement = printf "%s: Replace %s with %s"
+            replacement = printf "%s: Replace `%s` with `%s`"
                 (showSDocUnsafe $ ppr loc)
                 (showSDocUnsafe $ pretty src_)
                 (showSDocUnsafe $ pretty exec_)

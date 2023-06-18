@@ -123,6 +123,14 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         "Operations (-): Got a List, expected an Int" 
         "[1]" "1",
     testSeminal
+        ["application/remove-first-param"]
+        "Application: Remove First Param" 
+        "head 1 [2]" "head [2]",
+    testSeminal
+        ["application/remove-only-param"]
+        "Application: Remove only Param" 
+        "head 1" "head",
+    testSeminal
         ["application/remove-last-param"]
         "Application: Remove Last Param" 
         "fmap (+ 1) [1, 2, 3] 1" "fmap (+ 1) [1, 2, 3]"
