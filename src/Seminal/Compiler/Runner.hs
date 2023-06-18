@@ -1,12 +1,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Seminal.Compiler.Runner (runCompiler) where
-import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic))
+import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors))
 import GHC.Paths (libdir)
 import GHC.Driver.Session
     ( DynFlags(ghcLink, mainFunIs, mainModuleNameIs, backend),
       GhcLink(NoLink) )
-import System.IO (stderr, stdout)
-import System.IO.Silently (hSilence)
 import GHC.Plugins (msHsFilePath, throwGhcException)
 import Data.List (find)
 import Text.Printf (printf)
@@ -19,13 +17,12 @@ type ErrorMessage = String
 -- The action to run takes the list of loaded modules.
 -- Upon error (file access, syntax, ...), throws
 runCompiler :: forall a . [FilePath] -> ([(FilePath, ParsedModule)] -> Ghc a) -> IO (Either ErrorMessage a)
-runCompiler filePaths action = silencer $ do
+runCompiler filePaths action = do
     res <- try session :: IO (Either SomeException a)
     return $ case res of
         Left e -> Left $ show e
         Right r -> Right r
     where
-        silencer = hSilence [stderr, stdout]
         session = runGhc (Just libdir) $ do
             targets <- guessTargets filePaths
             setTargets targets
@@ -34,7 +31,8 @@ runCompiler filePaths action = silencer $ do
                 mainFunIs = Just "undefined",
                 mainModuleNameIs = mkModuleName "Prelude",
                 backend = NoBackend,
-                ghcLink = NoLink
+                ghcLink = NoLink,
+                maxErrors = Just 0
                 })
             _ <- load LoadAllTargets
             modGraph <- depanal [] True

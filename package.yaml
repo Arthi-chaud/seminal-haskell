@@ -47,7 +47,6 @@ library:
   - utility-ht
   - bytestring
   - text
-  - silently
   exposed-modules:
   - Seminal
   - Seminal.Options
