@@ -34,6 +34,7 @@ import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
 import Data.Maybe (mapMaybe)
 import Seminal.Enumerator.LocalBindings (enumerateChangesInLocalBinds)
 import {-# SOURCE #-} Seminal.Enumerator.Matches (enumerateChangesInMatch)
+import Data.List (permutations)
 
 -- | Enumerate possible changes for expressions,
 -- starting with replacing them with undefined.
@@ -116,7 +117,7 @@ enumerateChangesInExpression' expr loc = case expr of
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
         <&&> (HsLit ext)
     -- In function application: try changes on functions and parameters
-    (HsApp a func param) -> paramRemovals ++ enumF ++ enumParam
+    (HsApp a func param) -> paramRemovals ++ enumF ++ enumParam ++ paramSwap
         where
             -- | Enumeration on the function
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
@@ -124,7 +125,7 @@ enumerateChangesInExpression' expr loc = case expr of
             -- | Enumeration on the parameters
             enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
                 <&&> (HsApp a func . L lp)
-            paramRemovals = splitEverywhere (hsAppToList expr)
+            paramRemovals = splitEverywhere paramList
                 <&> (\(h, _, t) -> Change
                     (node expr)
                     (node (exprListToHsApp (h ++ t)))
@@ -133,6 +134,17 @@ enumerateChangesInExpression' expr loc = case expr of
                     Nothing
                     Terminal
                 )
+            paramSwap = permutations paramList
+                <&> exprListToHsApp
+                <&> (\c -> Change
+                    (node expr)
+                    (node c)
+                    loc
+                    []
+                    Nothing
+                    Terminal
+                )
+            paramList = hsAppToList expr
     -- `let _ = xx in ...` expressions
     (HsLet x bind e) -> enumExpr ++ enumBind
         where

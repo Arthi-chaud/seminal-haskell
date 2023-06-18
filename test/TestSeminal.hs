@@ -88,8 +88,8 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         "[1]" "1",
     testSeminal
         ["if/if-expect-bool"]
-        "If: Got an Int, expected a Bool" 
-        "1" "True",
+        "If: Got an Int, expected a Bool (Parm Swap)" 
+        "const 1 True" "const True 1",
     testSeminal
         ["if/else-expect-string"]
         "If-Else: Got a Char, expected a string" 
@@ -133,5 +133,13 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["application/remove-last-param"]
         "Application: Remove Last Param" 
-        "fmap (+ 1) [1, 2, 3] 1" "fmap (+ 1) [1, 2, 3]"
+        "fmap (+ 1) [1, 2, 3] 1" "fmap (+ 1) [1, 2, 3]",
+    testSeminal
+        ["application/swap-first-and-last"]
+        "Application: Swap First and Last Param" 
+        "b 'a' 1 [3]" "b [3] 1 'a'",
+    testSeminal
+        ["application/swap-first-two"]
+        "Application: Swap First and Second Param" 
+        "b 'a' 1 [3]" "b 1 'a' [3]"
     ]
