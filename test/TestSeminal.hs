@@ -121,5 +121,9 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["operations/neg-expect-int"]
         "Operations (-): Got a List, expected an Int" 
-        "[1]" "1"
+        "[1]" "1",
+    testSeminal
+        ["application/remove-last-param"]
+        "Application: Remove Last Param" 
+        "fmap (+ 1) [1, 2, 3] 1" "fmap (+ 1) [1, 2, 3]"
     ]

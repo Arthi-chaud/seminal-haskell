@@ -19,9 +19,9 @@ import GHC
       MatchGroup(MG),
       GenLocated(L),
       LHsExpr,
-      noSrcSpan )
+      noSrcSpan, unLoc )
 import Seminal.Change
-    ( Change(Change, ChangeGroup, src), node,
+    ( Change(..), node,
       ChangeType(Removal),
       ChangeType(Terminal, Wildcard, Wrapping, Removal),
       (<&&>)
@@ -51,9 +51,9 @@ enumerateChangesInExpression expr loc = [change]
         -- | Try to call `show` on the Expression
         changeToString = Change (node expr) (node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
             <&> (wrapExprInPar . locMe)
-        changeToTrue = Change (node expr) (node $ HsVar noExtField ltrue) loc [] message Wildcard
+        changeToTrue = Change (node expr) (node $ HsVar noExtField ltrue) loc [] msg Wildcard
             where
-                message = return "This expression needs to evaluate to a boolean value. It is not the case here. Check the type of the value."
+                msg = return "This expression might need to evaluate to a boolean value. It is not the case here. Check the type of the value."
                 ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
@@ -115,7 +115,7 @@ enumerateChangesInExpression' expr loc = case expr of
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
         <&&> (HsLit ext)
     -- In function application: try changes on functions and parameters
-    (HsApp a func param) -> enumF ++ enumParam
+    (HsApp a func param) -> enumF ++ enumParam ++ [removeLastParam]
         where
             -- | Enumeration on the function
             enumF = let (L lf f) = func in enumerateChangesInExpression f (locA lf)
@@ -123,6 +123,14 @@ enumerateChangesInExpression' expr loc = case expr of
             -- | Enumeration on the parameters
             enumParam = let (L lp p) = param in enumerateChangesInExpression p (locA lp)
                 <&&> (HsApp a func . L lp)
+            removeLastParam = Change {
+                src = node expr,
+                exec = node (unLoc func),
+                location = loc,
+                followups = [],
+                message = Nothing,
+                category = Terminal
+            }
     -- `let _ = xx in ...` expressions
     (HsLet x bind e) -> enumExpr ++ enumBind
         where

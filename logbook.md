@@ -130,6 +130,11 @@
 ### June 17
 
 - Enumeration goes through operations
+- Attempt to suggest `cons` as change
+
+### June 18
+
+- Remove the Silencer, and use DynFlags to hide errors during the GHC Session
 
 ## Difficulties encountered
 

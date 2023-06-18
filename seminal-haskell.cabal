@@ -55,7 +55,6 @@ library
     , ghc-lib
     , ghc-lib-parser
     , ghc-paths
-    , silently
     , text
     , time
     , utility-ht
