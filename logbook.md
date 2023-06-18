@@ -135,7 +135,9 @@
 ### June 18
 
 - Remove the Silencer, and use DynFlags to hide errors during the GHC Session
-- Enumeration in Function Application: Try to remove last parameter
+- Enumeration in Function Application: Try to remove parameter
+- Enumeration in Function Application: Try to swap parameter
+- Enumeration in Function Application: Try to add parameter
 
 ## Difficulties encountered
 
