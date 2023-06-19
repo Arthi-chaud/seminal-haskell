@@ -11,23 +11,11 @@ module Seminal.Change
 -- | Defines a change to apply on the AST. The namings are inspired by the
 --   <tt>astRepl</tt> (Seminal, 2006, p. 5)
 data Change node
-Change :: ChangeNode node -> ChangeNode node -> ChangeLocation -> [Change node] -> Maybe String -> ChangeType -> Change node
+Change :: ChangeNode node -> [ChangeNode node] -> ChangeLocation -> [Change node] -> Maybe String -> ChangeType -> Change node
 [src] :: Change node -> ChangeNode node
 
 -- | Run the change, returns the new node
-[exec] :: Change node -> ChangeNode node
-[location] :: Change node -> ChangeLocation
-
--- | List of subsequent changes to consider, if the <tt>change</tt>
---   typechecks
-[followups] :: Change node -> [Change node]
-[message] :: Change node -> Maybe String
-[category] :: Change node -> ChangeType
-ChangeGroup :: ChangeNode node -> [ChangeNode node] -> ChangeLocation -> [Change node] -> Maybe String -> ChangeType -> Change node
-[src] :: Change node -> ChangeNode node
-
--- | Run the changes, returns the new nodes
-[execs] :: Change node -> [ChangeNode node]
+[exec] :: Change node -> [ChangeNode node]
 [location] :: Change node -> ChangeLocation
 
 -- | List of subsequent changes to consider, if the <tt>change</tt>
@@ -62,7 +50,6 @@ Wrapping :: ChangeType
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
 Terminal :: ChangeType
-changeGroupToSingle :: Change node -> ChangeNode node -> Change node
 changeTypes :: [String]
 instance Data.Data.Data Seminal.Change.ChangeType
 instance GHC.Read.Read Seminal.Change.ChangeType
