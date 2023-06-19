@@ -23,6 +23,12 @@ declare -A vmap=(
 
 LTS_VERSION="$1"
 
+if ! [ "${vmap[$LTS_VERSION]}" ];
+then
+	echo "LTS not supported"
+	exit 1
+fi
+
 IN="stack.yaml"
 OUT=stack-lts-"$LTS_VERSION".yaml
 
