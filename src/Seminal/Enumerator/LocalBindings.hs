@@ -51,7 +51,7 @@ enumerateChangesInLocalBinds (HsIPBinds ext implicitbind) l = case implicitbind 
     IPBinds xbind bindlist -> (splitEverywhere bindlist
         <&> (\(h, L lbind bind, t) -> Change
             (node bindlist)
-            (node $ h ++ t) -- Remove bind
+            [node $ h ++ t] -- Remove bind
             l
             (case bind of
                 IPBind bext lname (L lexpr expr) ->

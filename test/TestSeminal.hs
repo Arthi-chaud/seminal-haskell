@@ -25,7 +25,7 @@ testSeminal files name expectedSrc expectedExec = do
     return $ testCase name $ case res of
         Changes [(_, _, bestChange:_)] -> do
             (show $ pretty $ src bestChange) @?= expectedSrc
-            (show $ pretty $ exec bestChange) @?= expectedExec
+            (show $ pretty $ head $ exec bestChange) @?= expectedExec
         _ -> assertFailure "Seminal Failed"
 
 testSuite :: Test

@@ -15,4 +15,4 @@ enumerateChangesInPattern pat loc = wildpatChange : case pat of
         <&&> (ParPat xpar)
     _ -> []
     where
-        wildpatChange = Change (node pat) (node $ WildPat noExtField) loc [] Nothing Wildcard
+        wildpatChange = Change (node pat) [node $ WildPat noExtField] loc [] Nothing Wildcard

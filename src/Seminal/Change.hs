@@ -1,6 +1,5 @@
-{-# OPTIONS_GHC -Wno-partial-fields #-}
 {-# LANGUAGE DeriveDataTypeable #-}
-module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeGroupToSingle, changeTypes) where
+module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeTypes) where
 
 import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
@@ -31,44 +30,19 @@ getNode = astNode
 data Change node = Change {
     src :: ChangeNode node,
     -- | Run the change, returns the new node
-    exec :: ChangeNode node,
+    exec :: [ChangeNode node],
     location :: ChangeLocation,
     -- | List of subsequent changes to consider, if the `change` typechecks
     followups :: [Change node],
     message :: Maybe String,
     category :: ChangeType
-} | ChangeGroup {
-    src :: ChangeNode node,
-    -- | Run the changes, returns the new nodes
-    execs :: [ChangeNode node],
-    location :: ChangeLocation,
-
-    -- | List of subsequent changes to consider, if one of the `changes` typechecks
-    followups :: [Change node],
-    message :: Maybe String,
-    category :: ChangeType
-}
-
-changeGroupToSingle :: Change node -> ChangeNode node -> Change node
-changeGroupToSingle group n = Change {
-    src = src group,
-    exec = n,
-    followups = followups group,
-    message = message group,
-    location = location group,
-    category = category group
 }
 
 instance Functor Change where
     fmap f c = case c of
         Change {} -> c {
             src = f <$> src c,
-            exec = f <$> exec c,
-            followups = fmap f <$> followups c
-        }
-        ChangeGroup {} -> c {
-            src = f <$> src c,
-            execs = fmap f <$> execs c,
+            exec = fmap f <$> exec c,
             followups = fmap f <$> followups c
         }
 

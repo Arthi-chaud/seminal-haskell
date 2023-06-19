@@ -41,18 +41,18 @@ import Data.List (permutations)
 enumerateChangesInExpression :: Enumerator (HsExpr GhcPs)
 enumerateChangesInExpression expr loc = [change]
     where
-        change = ChangeGroup
+        change = Change
             (node expr)
             (node <$> [undefinedExpression, ExplicitList EpAnnNotUsed []])
             loc
             (changeToString:changeToList:changeToTrue:subchanges)
             Nothing Wildcard
         -- | Wrap the expression into a list
-        changeToList = Change (node expr) (node $ ExplicitList EpAnnNotUsed [lexpr]) loc [] Nothing Wrapping
+        changeToList = Change (node expr) [node $ ExplicitList EpAnnNotUsed [lexpr]] loc [] Nothing Wrapping
         -- | Try to call `show` on the Expression
-        changeToString = Change (node expr) (node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr) loc [] Nothing Wrapping
+        changeToString = Change (node expr) [node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr] loc [] Nothing Wrapping
             <&> (wrapExprInPar . locMe)
-        changeToTrue = Change (node expr) (node $ HsVar noExtField ltrue) loc [] msg Wildcard
+        changeToTrue = Change (node expr) [node $ HsVar noExtField ltrue] loc [] msg Wildcard
             where
                 msg = return "This expression might need to evaluate to a boolean value. It is not the case here. Check the type of the value."
                 ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
@@ -70,18 +70,18 @@ enumerateChangesInExpression' expr loc = case expr of
         (if length elems == 1
             -- Extract Singleton into item
             then let L _ single = head elems in (
-                Change (node expr) (node single) loc [] Nothing Terminal :
+                Change (node expr) [node single] loc [] Nothing Terminal :
                 -- We rewrite the source, because it is the list, not the element inside it
                 (enumerateChangesInExpression' single loc <&> (\c -> c { src = node expr }))
             )
             else []) ++
         -- Turn a list into a tuple
-        (Change (node expr) (node $ ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed) loc [] Nothing Terminal:
+        (Change (node expr) [node $ ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed] loc [] Nothing Terminal:
         -- Remove element in list
         (splitEverywhere elems
             <&> (\(h, L lremoved removed, t) -> Change
                 (node expr)
-                (node $ ExplicitList ext $ h ++ t) -- Removing element in list
+                [node $ ExplicitList ext $ h ++ t] -- Removing element in list
                 loc
                 (enumerateChangesInExpression removed (locA lremoved)
                     <&&> (L lremoved)
@@ -94,12 +94,12 @@ enumerateChangesInExpression' expr loc = case expr of
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
         -- Turn a unit into an item
         -- Note: How to build a 1-tuple ?
-        Change (node expr) (node unit) (locA lunit) [] Nothing Terminal
+        Change (node expr) [node unit] (locA lunit) [] Nothing Terminal
         ]
     (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
             then reverse $ -- Reverse because we started here w/ most specific
                 -- Turn a tuple into a list
-                Change (node expr) (node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args) loc [] Nothing Terminal:
+                Change (node expr) [node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args] loc [] Nothing Terminal:
                 -- Enumerate each change for each element in the tuple
                 concat (splitEverywhere args <&> (\(h, arg, t) -> case arg of
                     Present ext (L lunit unit) -> (enumerateChangesInExpression unit (locA lunit))
@@ -127,7 +127,7 @@ enumerateChangesInExpression' expr loc = case expr of
             paramRemovals = splitEverywhere paramList
                 <&> (\(h, _, t) -> Change
                     (node expr)
-                    (node (exprListToHsApp (h ++ t)))
+                    [node (exprListToHsApp (h ++ t))]
                     loc
                     []
                     Nothing
@@ -138,7 +138,7 @@ enumerateChangesInExpression' expr loc = case expr of
                 <&> exprListToHsApp
                 <&> (\c -> Change
                     (node expr)
-                    (node c)
+                    [node c]
                     loc
                     []
                     Nothing
@@ -148,7 +148,7 @@ enumerateChangesInExpression' expr loc = case expr of
             paramInsert = splitEverywhere paramList
                 <&> (\(h, e, t) -> Change
                     (node expr)
-                    (node (exprListToHsApp (h ++ [e, undefinedExpression] ++ t)))
+                    [node (exprListToHsApp (h ++ [e, undefinedExpression] ++ t))]
                     loc
                     []
                     (return "An argument is missing.")

@@ -34,7 +34,7 @@ main = do
                 mapM_ formatChange windowedList
             formatChange c = putStrLn $ Seminal.Change.show
                 (src c)
-                (exec c)
+                (head $ exec c)
                 (location c)
                 (message c)
             

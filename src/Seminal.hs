@@ -5,7 +5,7 @@ module Seminal (
     Status(..),
 ) where
 import Seminal.Options (Options(Options), SearchMethod(Lazy))
-import Seminal.Change (Change (..), ChangeType(..), getNode, changeGroupToSingle)
+import Seminal.Change (Change (..), ChangeType(..), getNode)
 import qualified Seminal.Compiler.TypeChecker as TypeChecker
 import Seminal.Compiler.Runner (runCompiler)
 import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc)
@@ -61,14 +61,14 @@ findChanges method test m = findValidChanges (enumerateChangesInModule m)
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate
         -- | Checks if change typechecks, and make tuple out of result 
-        evaluate change = case change of
-            Change {} -> test (getNode $ exec change) <&> (change,)
-            ChangeGroup {} -> do
-                tests <- mapM (\c -> test (getNode c) >>= (\a -> return (c, a))) (execs change)
+        evaluate change = case exec change  of
+            [exe] -> test (getNode exe) <&> (change,)
+            execs -> do
+                tests <- mapM (\c -> test (getNode c) >>= (\a -> return (c, a))) execs
                 let
-                    fallbackChange = (head $ execs change, TypeChecker.Error (TypeCheckError "{From Change Group}"))
+                    fallbackChange = (head execs, TypeChecker.Error (TypeCheckError "{From Change Group}"))
                     (topChange, status) = fromMaybe fallbackChange (find ((TypeChecker.Success ==) . snd) tests)
-                return (changeGroupToSingle change topChange, status)
+                return (change { exec = [topChange] }, status)
         -- | If list of changes to evaluate is empty, return
         findValidChanges [] = return []
         -- | Takes a list of change, and 

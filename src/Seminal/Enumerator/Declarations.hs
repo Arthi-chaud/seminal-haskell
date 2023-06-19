@@ -14,11 +14,3 @@ enumerateChangesInDeclaration (DerivD _ _) _ = []
 enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&&> (ValD i)
 enumerateChangesInDeclaration (SigD _ _) _ = []
 enumerateChangesInDeclaration _ _ = []
-
--- wildcardDecl :: HsDecl GhcPs
--- wildcardDecl = ValD NoExtField wildcardBind
---     where
---         wildcardBind = PatBind EpAnnNotUsed (L noSrcSpanA wildcardPattern) wildcardGRHS ([], [])
---         wildcardPattern= WildPat NoExtField
---         wildcardGRHS = GRHSs emptyComments [L noSrcSpan wildcardGRHS'] (EmptyLocalBinds NoExtField)
---         wildcardGRHS' = GRHS EpAnnNotUsed [] (L noSrcSpanA undefinedExpression)

@@ -23,9 +23,9 @@ enumerateChangeInLiteral literal loc = case literal of
     _ -> []
     where
         changeForChar char = [
-            Change (node literal) (node $ HsString NoSourceText (mkFastString [char])) loc [] Nothing Terminal -- Turn into String
+            Change (node literal) [node $ HsString NoSourceText (mkFastString [char])] loc [] Nothing Terminal -- Turn into String
             ]
         changeForString [char] = [
-            Change (node literal) (node $ HsChar NoSourceText char) loc [] Nothing Terminal -- If Singleton, extract it to char
+            Change (node literal) [node $ HsChar NoSourceText char] loc [] Nothing Terminal -- If Singleton, extract it to char
             ]
         changeForString _ = []
