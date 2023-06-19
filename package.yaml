@@ -21,7 +21,9 @@ description:         Enhance Type Error Messages
 dependencies:
 - base >= 4.7 && < 5
 
-default-extensions: TupleSections
+default-extensions:
+- TupleSections
+- PackageImports
 
 ghc-options:
 - -Wall
@@ -40,7 +42,6 @@ library:
   dependencies:
   - directory
   - ghc-lib
-  - ghc-lib-parser
   - exceptions
   - time
   - ghc-paths
@@ -76,7 +77,6 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - ghc-lib
     - directory
     - filepath
     - text

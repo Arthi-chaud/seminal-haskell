@@ -46,6 +46,7 @@ library
       src
   default-extensions:
       TupleSections
+      PackageImports
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
@@ -53,7 +54,6 @@ library
     , directory
     , exceptions
     , ghc-lib
-    , ghc-lib-parser
     , ghc-paths
     , text
     , time
@@ -69,6 +69,7 @@ executable seminal-haskell
       app
   default-extensions:
       TupleSections
+      PackageImports
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -88,13 +89,13 @@ test-suite seminal-haskell-test
       test
   default-extensions:
       TupleSections
+      PackageImports
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       HUnit
     , base >=4.7 && <5
     , directory
     , filepath
-    , ghc-lib
     , seminal-haskell
     , test-framework
     , test-framework-hunit
