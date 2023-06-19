@@ -2,6 +2,12 @@
 # This script takes the root stack.yaml file (used for dev), and creates a new one,
 # based on the given LTS version, and the matching ghc-lib version we want.
 
+if ! [[ "$1" =~ ^[0-9]{1,2}.[0-9]{1,2}$ ]];
+then
+	echo "Expected an LTS Version (e.g. 19.22). Got '$1'"
+	exit 1
+fi
+
 declare -A vmap=(
 	# 9.2.8
 	["20.23"]="9.2.7.20230228"
