@@ -2,3 +2,5 @@
 *~
 haddock/
 codecov.json
+# Avoid commiting generated stack files
+stack-*.yaml*

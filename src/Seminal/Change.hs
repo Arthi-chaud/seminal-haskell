@@ -5,6 +5,7 @@ import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
 import Text.Printf (printf)
 import Data.Data (dataTypeConstrs, Data (dataTypeOf), showConstr)
+
 type ChangeLocation = SrcSpan
 
 -- | Sub-data, that could be either the original node, or the change 
