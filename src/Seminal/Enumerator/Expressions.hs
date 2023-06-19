@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-incomplete-record-updates #-}
 module Seminal.Enumerator.Expressions (
     enumerateChangesInExpression
 ) where
