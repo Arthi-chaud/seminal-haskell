@@ -45,7 +45,7 @@ jobs:
       - name: Check Basic Suggestion
         run: |
           OUT="$(stack run --stack-yaml stack-lts-${{ matrix.lts-version }}.yaml test/assets/invalid/expect-char.hs )"
-          EXPECTED="Replace `"a"` with `'a'`"
+          EXPECTED="Replace \`\"a\"\` with \`'a'\`"
           if ! echo "$OUT" | grep -q "$EXPECTED";
           then
             echo "Runtime Check failed."
