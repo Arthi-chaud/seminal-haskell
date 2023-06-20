@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Seminal.Enumerator.Patterns (enumerateChangesInPattern) where
 import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (Pat(..), GhcPs, GenLocated (L), SrcSpanAnn' (locA), noExtField)
@@ -10,9 +11,17 @@ enumerateChangesInPattern :: Enumerator (Pat GhcPs)
 enumerateChangesInPattern (WildPat _) _ = []
 enumerateChangesInPattern pat loc = wildpatChange : case pat of
     (LitPat xlit litExpr) -> enumerateChangeInLiteral litExpr loc <&&> (LitPat xlit)
-    (ParPat xpar (L lpat subpat)) -> enumerateChangesInPattern subpat (locA lpat)
-        <&&> (L lpat)
+#if MIN_VERSION_ghc_lib(9,2,8)
+    (ParPat xpar p1 (L lpat subpat) p2) ->   
+#else
+    (ParPat xpar (L lpat subpat)) ->
+#endif
+        enumerateChangesInPattern subpat (locA lpat) <&&> (L lpat)
+#if MIN_VERSION_ghc_lib(9,2,8)
+        <&&> (\c -> ParPat xpar p1 c p2) 
+#else
         <&&> (ParPat xpar)
+#endif
     _ -> []
     where
         wildpatChange = Change (node pat) [node $ WildPat noExtField] loc [] "The pattern is invalid." Wildcard

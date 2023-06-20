@@ -10,6 +10,10 @@ fi
 
 declare -A vmap=(
 	# 9.2.8
+	["20.26"]="9.4.1.20220807"
+	# 9.2.7
+	["20.24"]="9.2.7.20230228"
+	# 9.2.7
 	["20.23"]="9.2.7.20230228"
 	# 9.2.7
     ["20.21"]="9.2.7.20230228"
@@ -34,7 +38,7 @@ OUT=stack-lts-"$LTS_VERSION".yaml
 
 rm -f "$OUT"
 
-sed -r "s/^(\s*)(resolver\s*:\s*lts-\d{2}\.\d{2}\s*$)/resolver: lts-$LTS_VERSION/" "$IN" > "$OUT"
+sed -r "s/^(\s*)(resolver\s*:\s*lts-.*\s*$)/resolver: lts-$LTS_VERSION/" "$IN" > "$OUT"
 
 echo -e "extra-deps:
 - ghc-lib-${vmap[$LTS_VERSION]}

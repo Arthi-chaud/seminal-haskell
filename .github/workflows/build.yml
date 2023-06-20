@@ -11,6 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         lts-version: [
+          20.26,
+          20.24,
           20.23,
           20.21,
           20.12,
@@ -38,3 +40,14 @@ jobs:
         run: bash gen-stack.sh ${{ matrix.lts-version }}
       - name: Compile Project
         run: stack build --stack-yaml stack-lts-${{ matrix.lts-version }}.yaml
+      # This is to check if the project has been compiled with the correct version of ghc-lib.
+      # For example, if there is a mismatch, we would get something like "Unknown Constructor: Char" 
+      - name: Check Basic Suggestion
+        run: |
+          OUT="$(stack run --stack-yaml stack-lts-${{ matrix.lts-version }}.yaml test/assets/invalid/expect-char.hs )"
+          EXPECTED="Replace `"a"` with `'a'`"
+          if ! echo "$OUT" | grep -q "$EXPECTED";
+          then
+            echo "Runtime Check failed."
+            exit 1
+          fi

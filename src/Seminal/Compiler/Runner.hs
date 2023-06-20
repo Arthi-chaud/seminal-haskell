@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE CPP #-}
 module Seminal.Compiler.Runner (runCompiler) where
 import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors, extensionFlags))
 import GHC.Paths (libdir)
@@ -41,7 +42,11 @@ runCompiler filePaths action = do
             modGraph <- depanal [] True
             parseResults <- mapM (\f -> (f,) <$> getModule modGraph f) filePaths
             action parseResults
+#if MIN_VERSION_ghc_lib(9,2,8)
+        guessTargets = mapM (\t -> guessTarget t Nothing Nothing)
+#else
         guessTargets = mapM (`guessTarget` Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
+#endif
         -- Retrieves the module of a file using its paths and the modgraph
         getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
             -- Do not worry, this should never happen.

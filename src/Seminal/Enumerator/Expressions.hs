@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Seminal.Enumerator.Expressions (
     enumerateChangesInExpression
 ) where
@@ -19,7 +20,9 @@ import GHC
       MatchGroup(MG),
       GenLocated(L),
       LHsExpr,
-      noSrcSpan, noLoc, reLocA, StmtLR (..))
+      HsToken(..),
+      TokenLocation(..),
+      noSrcSpan, noLoc, reLocA, StmtLR (..) )
 import Seminal.Change
     ( Change(..), node,
       ChangeType(Removal, Addition),
@@ -69,7 +72,12 @@ enumerateChangesInExpression expr loc = [change]
         locMe = L noSrcSpanA
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression' (HsPar _ (L lexpr expr)) _ = enumerateChangesInExpression' expr (locA lexpr)
+#if MIN_VERSION_ghc_lib(9,2,8)
+enumerateChangesInExpression' (HsPar _ _ (L lexpr expr) _ ) _
+#else
+enumerateChangesInExpression' (HsPar _ (L lexpr expr)) _
+#endif
+    = enumerateChangesInExpression' expr (locA lexpr)
 enumerateChangesInExpression' expr loc = case expr of
     (ExplicitList ext elems) -> reverse -- Reverse because we started here w/ most specific
         (if length elems == 1
@@ -165,13 +173,26 @@ enumerateChangesInExpression' expr loc = case expr of
                 )
             paramList = hsAppToList expr
     -- `let _ = xx in ...` expressions
-    (HsLet x bind e) -> enumExpr ++ enumBind
+#if MIN_VERSION_ghc_lib(9,2,8)
+    (HsLet x letToken bind inToken e) ->
+#else
+    (HsLet x bind e) ->
+#endif
+        enumExpr ++ enumBind
         where
             enumBind = enumerateChangesInLocalBinds bind loc
+#if MIN_VERSION_ghc_lib(9,2,8)
+                <&&> (\newbind -> HsLet x letToken newbind inToken e)
+#else
                 <&&> (\newbind -> HsLet x newbind e)
+#endif
             enumExpr = let (L lexpr letExpr) = e in enumerateChangesInExpression letExpr (locA lexpr)
                 <&&> (L lexpr)
+#if MIN_VERSION_ghc_lib(9,2,8)
+                <&&> (HsLet x letToken bind inToken)
+#else
                 <&&> (HsLet x bind)
+#endif
     (HsIf ext lifExpr lthenExpr lelseExpr) -> enumIf ++ enumElse ++ enumThen
         where
             enumIf = let (L lif ifExpr) = lifExpr in enumerateChangesInExpression ifExpr (locA lif)
@@ -243,7 +264,11 @@ buildFunctionName funcName = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRd
 -- | Wraps an expression in parenthesis (AST-wise).
 -- Mainly used for pretty printing
 wrapExprInPar :: LHsExpr GhcPs -> HsExpr GhcPs
+#if MIN_VERSION_ghc_lib(9,2,8)
+wrapExprInPar x = HsPar EpAnnNotUsed (L NoTokenLoc HsTok) x (L NoTokenLoc HsTok)
+#else
 wrapExprInPar = HsPar EpAnnNotUsed
+#endif
 
 -- | Turns an HsApp into a list of expression.
 -- `const 1 2` -> [cons, 1, 2]
