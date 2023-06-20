@@ -20,8 +20,10 @@ import GHC
       MatchGroup(MG),
       GenLocated(L),
       LHsExpr,
+#if MIN_VERSION_ghc_lib(9,2,8)
       HsToken(..),
       TokenLocation(..),
+#endif
       noSrcSpan, noLoc, reLocA )
 import Seminal.Change
     ( Change(..), node,
