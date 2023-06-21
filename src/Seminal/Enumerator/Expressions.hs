@@ -43,10 +43,11 @@ enumerateChangesInExpression expr loc = [change]
     where
         change = Change
             (node expr)
-            (node <$> [undefinedExpression, ExplicitList EpAnnNotUsed []])
+            (node <$> [undefinedExpression, emptyListExpression])
             loc
-            (changeToString:changeToList:changeToTrue:subchanges)
+            (changeToString:changeToList:changeToTrue:changeToUnit:subchanges)
             Nothing Wildcard
+        changeToUnit = Change (node expr) [node unitExpression] loc [] Nothing Terminal
         -- | Wrap the expression into a list
         changeToList = Change (node expr) [node $ ExplicitList EpAnnNotUsed [lexpr]] loc [] Nothing Wrapping
         -- | Try to call `show` on the Expression
@@ -207,6 +208,14 @@ enumerateChangesInExpression' expr loc = case expr of
 -- | Expression for `undefined`
 undefinedExpression :: HsExpr GhcPs
 undefinedExpression = buildFunctionName "undefined"
+
+-- | Expression for `[]`
+emptyListExpression :: HsExpr GhcPs
+emptyListExpression = ExplicitList EpAnnNotUsed []
+
+-- | Expression for `()`
+unitExpression :: HsExpr GhcPs
+unitExpression = ExplicitTuple EpAnnNotUsed [] Boxed
 
 -- | Build HsExpr (HsVar) from a symbol name
 buildFunctionName :: String -> HsExpr GhcPs
