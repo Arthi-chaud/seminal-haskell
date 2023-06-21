@@ -139,6 +139,14 @@
 - Enumeration in Function Application: Try to swap parameter
 - Enumeration in Function Application: Try to add parameter
 
+### June 19
+
+- Refactorisation of the `Change` type. `execs` is always a list
+
+### June 21
+
+- Enumeration: Try replacing with `()`
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
