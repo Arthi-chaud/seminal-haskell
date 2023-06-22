@@ -11,7 +11,7 @@ main :: IO ()
 main = do
     (Program.Options filePaths n isLazy quiet minLevel) <- execParser Program.optionParser
     let options = Options {
-        search = if isLazy then Lazy else Eager 
+        search = if isLazy then Lazy else Eager
     }
     res <- runSeminal options filePaths
     case res of
@@ -24,7 +24,7 @@ main = do
                 -- We add one more newline for format
                 unless quiet $ putStrLn (filePath ++ " - " ++ errMsg ++ "\n")
                 putStrLn "Suggestions:"
-                let 
+                let
                     -- Select the n best changes
                     windowedList = case n of
                         Nothing -> filteredList
@@ -32,9 +32,8 @@ main = do
                     -- Filters the changes by level
                     filteredList = filter ((minLevel <=) . category) list
                 mapM_ formatChange windowedList
-            formatChange c = (putStrLn $ Seminal.Change.show
+            formatChange c = putStrLn (Seminal.Change.show
                 (src c)
                 (head $ exec c)
                 (location c)
                 (message c)) >> putStrLn ""
-            
