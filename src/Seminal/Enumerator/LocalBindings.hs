@@ -62,7 +62,7 @@ enumerateChangesInLocalBinds (HsIPBinds ext implicitbind) l = case implicitbind 
                     <&&> (\b -> h ++ [b] ++ t)
                 -- _ -> []
             )
-            Nothing
+            "The removed binding is invalid."
             Removal
         ))
         <&&> (HsIPBinds ext . IPBinds xbind)

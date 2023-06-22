@@ -34,7 +34,9 @@ data Change node = Change {
     location :: ChangeLocation,
     -- | List of subsequent changes to consider, if the `change` typechecks
     followups :: [Change node],
-    message :: Maybe String,
+    -- | A User-friendly message to explain why the change worked
+    message :: String,
+    -- | Allows ranking the changes.
     category :: ChangeType
 }
 
@@ -52,15 +54,13 @@ f <$$> list = fmap f <$> list
 (<&&>) :: [Change a] -> (a -> b) -> [Change b]
 (<&&>) = flip (<$$>)
 
-show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> Maybe String -> String
-show src_ exec_ loc message_  = replacement ++ case message_ of
-        (Just msg) -> '\n' : msg
-        _ -> ""
-        where
-            replacement = printf "%s: Replace `%s` with `%s`"
-                (showSDocUnsafe $ ppr loc)
-                (showSDocUnsafe $ pretty src_)
-                (showSDocUnsafe $ pretty exec_)
+show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
+show src_ exec_ loc message_  = replacement ++ '\n' : message_
+    where
+        replacement = printf "%s: Replace `%s` with `%s`"
+            (showSDocUnsafe $ ppr loc)
+            (showSDocUnsafe $ pretty src_)
+            (showSDocUnsafe $ pretty exec_)
 
 -- | Categories of changes, that allow ordering them
 data ChangeType =

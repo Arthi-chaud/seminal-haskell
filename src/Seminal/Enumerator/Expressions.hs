@@ -46,16 +46,20 @@ enumerateChangesInExpression expr loc = [change]
             (node <$> [undefinedExpression, emptyListExpression])
             loc
             (changeToString:changeToList:changeToTrue:changeToUnit:subchanges)
-            Nothing Wildcard
-        changeToUnit = Change (node expr) [node unitExpression] loc [] Nothing Terminal
+            "The type of the expression is incorrect."
+            Wildcard
+        changeToUnit = Change (node expr) [node unitExpression] loc []
+            "The expected type of the expression is `()`." Terminal
         -- | Wrap the expression into a list
-        changeToList = Change (node expr) [node $ ExplicitList EpAnnNotUsed [lexpr]] loc [] Nothing Wrapping
+        changeToList = Change (node expr) [node $ ExplicitList EpAnnNotUsed [lexpr]] loc []
+            "The expected type of the expression is a list. You may have forgotten to wrap the expression into a list" Wrapping
         -- | Try to call `show` on the Expression
-        changeToString = Change (node expr) [node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr] loc [] Nothing Wrapping
+        changeToString = Change (node expr) [node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr] loc []
+            "The expected type of the expression is a String. You may have forgotten to call the `show` method on the expression" Wrapping
             <&> (wrapExprInPar . locMe)
         changeToTrue = Change (node expr) [node $ HsVar noExtField ltrue] loc [] msg Wildcard
             where
-                msg = return "This expression might need to evaluate to a boolean value. It is not the case here. Check the type of the value."
+                msg = "This expression might need to evaluate to a boolean value. It is not the case here. Check the type of the value."
                 ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
         -- | The other, specalised, changes to consider
         subchanges = enumerateChangesInExpression' expr loc
@@ -71,13 +75,15 @@ enumerateChangesInExpression' expr loc = case expr of
         (if length elems == 1
             -- Extract Singleton into item
             then let L _ single = head elems in (
-                Change (node expr) [node single] loc [] Nothing Terminal :
+                Change (node expr) [node single] loc [] 
+                "The expected type of the expression is not a list of the given expression. You may need to remove brackets around it." Terminal :
                 -- We rewrite the source, because it is the list, not the element inside it
                 (enumerateChangesInExpression' single loc <&> (\c -> c { src = node expr }))
             )
             else []) ++
         -- Turn a list into a tuple
-        (Change (node expr) [node $ ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed] loc [] Nothing Terminal:
+        (Change (node expr) [node $ ExplicitTuple EpAnnNotUsed (Present EpAnnNotUsed <$> elems) Boxed] loc []
+            "The expected type of the expression is a tuple, not a list." Terminal:
         -- Remove element in list
         (splitEverywhere elems
             <&> (\(h, L lremoved removed, t) -> Change
@@ -88,19 +94,21 @@ enumerateChangesInExpression' expr loc = case expr of
                     <&&> (L lremoved)
                     <&&> (\i -> h ++ [i] ++ t)
                     <&&> (ExplicitList ext))
-                Nothing
+                "The removed element is either of the wrong type, or its sub-expression does not type-check."
                 Removal
             )
         ))
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
         -- Turn a unit into an item
         -- Note: How to build a 1-tuple ?
-        Change (node expr) [node unit] (locA lunit) [] Nothing Terminal
+        Change (node expr) [node unit] (locA lunit) [] 
+            "The expected type of the expression is a list, not a tuple." Terminal
         ]
     (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
             then reverse $ -- Reverse because we started here w/ most specific
                 -- Turn a tuple into a list
-                Change (node expr) [node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args] loc [] Nothing Terminal:
+                Change (node expr) [node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args] loc [] 
+                    "The expected type of the expression is a list, not a tuple." Terminal:
                 -- Enumerate each change for each element in the tuple
                 concat (splitEverywhere args <&> (\(h, arg, t) -> case arg of
                     Present ext (L lunit unit) -> (enumerateChangesInExpression unit (locA lunit))
@@ -131,7 +139,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     [node (exprListToHsApp (h ++ t))]
                     loc
                     []
-                    Nothing
+                    "The removed parameter is superfluous. Please, remove it."
                     Terminal
                 )
             -- Swap Parameter
@@ -142,7 +150,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     [node c]
                     loc
                     []
-                    Nothing
+                    "The order of the arguments is invalid."
                     Terminal
                 )
             -- Insert Parameter
@@ -152,7 +160,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     [node (exprListToHsApp (h ++ [e, undefinedExpression] ++ t))]
                     loc
                     []
-                    (return "An argument is missing.")
+                    "An argument is missing in the function application. Check the number of expected arguments."
                     Terminal
                 )
             paramList = hsAppToList expr

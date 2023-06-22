@@ -25,4 +25,4 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> \(h, L l r
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&&> (L l . ValD v)
             <&&> (\change -> h ++ [change] ++ t)
-        _ -> [Change (node list) [node $ h ++ t] removedLoc followups Nothing Removal]
+        _ -> [Change (node list) [node $ h ++ t] removedLoc followups "The removed expression does not type-check." Removal]

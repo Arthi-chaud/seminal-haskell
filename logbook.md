@@ -147,6 +147,10 @@
 
 - Enumeration: Try replacing with `()`
 
+### June 22
+
+- Changes: Write an error message for each one
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined

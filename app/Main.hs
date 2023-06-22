@@ -32,9 +32,9 @@ main = do
                     -- Filters the changes by level
                     filteredList = filter ((minLevel <=) . category) list
                 mapM_ formatChange windowedList
-            formatChange c = putStrLn $ Seminal.Change.show
+            formatChange c = (putStrLn $ Seminal.Change.show
                 (src c)
                 (head $ exec c)
                 (location c)
-                (message c)
+                (message c)) >> putStrLn ""
             
