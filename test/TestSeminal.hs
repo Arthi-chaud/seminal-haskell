@@ -149,5 +149,9 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["do/final-expect-return"]
         "Do expression: Missing 'return' in final statement" 
-        "()" "return ()"
+        "()" "return ()",
+    testSeminal
+        ["do/final-expect-unit"]
+        "Do expression: Wrong type after 'return'" 
+        "1" "()"
     ]
