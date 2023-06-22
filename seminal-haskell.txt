@@ -11,7 +11,7 @@ module Seminal.Change
 -- | Defines a change to apply on the AST. The namings are inspired by the
 --   <tt>astRepl</tt> (Seminal, 2006, p. 5)
 data Change node
-Change :: ChangeNode node -> [ChangeNode node] -> ChangeLocation -> [Change node] -> Maybe String -> ChangeType -> Change node
+Change :: ChangeNode node -> [ChangeNode node] -> ChangeLocation -> [Change node] -> String -> ChangeType -> Change node
 [src] :: Change node -> ChangeNode node
 
 -- | Run the change, returns the new node
@@ -21,7 +21,11 @@ Change :: ChangeNode node -> [ChangeNode node] -> ChangeLocation -> [Change node
 -- | List of subsequent changes to consider, if the <tt>change</tt>
 --   typechecks
 [followups] :: Change node -> [Change node]
-[message] :: Change node -> Maybe String
+
+-- | A User-friendly message to explain why the change worked
+[message] :: Change node -> String
+
+-- | Allows ranking the changes.
 [category] :: Change node -> ChangeType
 
 -- | Builds <a>ChangeNode</a> from an AST node
@@ -32,7 +36,7 @@ getNode :: ChangeNode n -> n
 data ChangeNode nodeType
 (<$$>) :: (a -> b) -> [Change a] -> [Change b]
 (<&&>) :: [Change a] -> (a -> b) -> [Change b]
-show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> Maybe String -> String
+show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
 
 -- | Categories of changes, that allow ordering them
 data ChangeType
