@@ -145,5 +145,9 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["application/swap-first-two"]
         "Application: Swap First and Second Param" 
-        "b 'a' 1 [3]" "b 1 'a' [3]"
+        "b 'a' 1 [3]" "b 1 'a' [3]",
+    testSeminal
+        ["do/final-expect-return"]
+        "Do expression: Missing 'return' in final statement" 
+        "()" "return ()"
     ]

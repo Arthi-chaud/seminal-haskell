@@ -19,7 +19,7 @@ import GHC
       MatchGroup(MG),
       GenLocated(L),
       LHsExpr,
-      noSrcSpan, noLoc, reLocA )
+      noSrcSpan, noLoc, reLocA, StmtLR (..))
 import Seminal.Change
     ( Change(..), node,
       ChangeType(Removal),
@@ -75,7 +75,7 @@ enumerateChangesInExpression' expr loc = case expr of
         (if length elems == 1
             -- Extract Singleton into item
             then let L _ single = head elems in (
-                Change (node expr) [node single] loc [] 
+                Change (node expr) [node single] loc []
                 "The expected type of the expression is not a list of the given expression. You may need to remove brackets around it." Terminal :
                 -- We rewrite the source, because it is the list, not the element inside it
                 (enumerateChangesInExpression' single loc <&> (\c -> c { src = node expr }))
@@ -101,13 +101,13 @@ enumerateChangesInExpression' expr loc = case expr of
     (ExplicitTuple _ [Present _ (L lunit unit)] _) -> [
         -- Turn a unit into an item
         -- Note: How to build a 1-tuple ?
-        Change (node expr) [node unit] (locA lunit) [] 
+        Change (node expr) [node unit] (locA lunit) []
             "The expected type of the expression is a list, not a tuple." Terminal
         ]
     (ExplicitTuple xtuple args box) -> if all tupleArgIsPresent args
             then reverse $ -- Reverse because we started here w/ most specific
                 -- Turn a tuple into a list
-                Change (node expr) [node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args] loc [] 
+                Change (node expr) [node $ ExplicitList EpAnnNotUsed $ mapMaybe getTupleArg args] loc []
                     "The expected type of the expression is a list, not a tuple." Terminal:
                 -- Enumerate each change for each element in the tuple
                 concat (splitEverywhere args <&> (\(h, arg, t) -> case arg of
@@ -164,7 +164,6 @@ enumerateChangesInExpression' expr loc = case expr of
                     Terminal
                 )
             paramList = hsAppToList expr
-
     -- `let _ = xx in ...` expressions
     (HsLet x bind e) -> enumExpr ++ enumBind
         where
@@ -211,6 +210,18 @@ enumerateChangesInExpression' expr loc = case expr of
     (NegApp xapp lexpr syntaxExpr) -> let (L l e) = lexpr in enumerateChangesInExpression e (locA l)
             <&&> (L l)
             <&&> (\nexExpt -> NegApp xapp nexExpt syntaxExpr)
+    (HsDo xdo flavor llstmts) -> let (L ll lstmts) = llstmts in concat (splitEverywhere lstmts <&> (\(h, (L l stmt), t) -> case stmt of
+        BodyStmt xbody (L le e) s1 s2 -> (enumerateChangesInExpression e (locA le) ++ (
+            -- If it is the last expression in the body, try to call `return`
+            [Change (node e) [node (HsApp EpAnnNotUsed (L le $ buildFunctionName "return") (L le e))] (locA le) []
+                "The type of the expression is correct, but it was not wrapped in the monad." Terminal | null t]
+            ))
+            <&&> (L le)
+            <&&> (\n -> BodyStmt xbody n s1 s2)
+            <&&> (\n -> h ++ [L l n] ++ t)
+        _ -> []
+        ))
+        <&&> (HsDo xdo flavor . L ll)
     _ -> []
 
 -- | Expression for `undefined`
