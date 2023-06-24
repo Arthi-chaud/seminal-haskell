@@ -5,11 +5,12 @@ import Seminal.Options
 import qualified Options as Program
 import Options.Applicative (execParser)
 import Seminal.Change (Change(..), show)
-import Control.Monad (unless)
+import Control.Monad (unless, when)
+import Text.Printf(printf)
 
 main :: IO ()
 main = do
-    (Program.Options filePaths n isLazy quiet minLevel) <- execParser Program.optionParser
+    (Program.Options filePaths n isLazy quiet minLevel countCalls) <- execParser Program.optionParser
     let options = Options {
         search = if isLazy then Lazy else Eager
     }
@@ -17,8 +18,11 @@ main = do
     case res of
         Success -> putStrLn "File Typechecks"
         Error errs -> putStrLn errs >> exitFailure
-        Changes changes -> mapM_ (printChange quiet n minLevel) changes
+        Result (counts, changes) -> do
+            when countCalls $ printTypecheckerCallCount counts
+            mapM_ (printChange quiet n minLevel) changes
         where
+            printTypecheckerCallCount c = putStrLn $ printf "Typechecker call count: %d" c
             printChange quiet n minLevel (filePath, errMsg, list) = do
                 -- When it is not quiet, print typecheck error message
                 -- We add one more newline for format

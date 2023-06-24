@@ -56,7 +56,8 @@ optionParser = info (parser <**> helper) description
                 ) <*>
             switch
                 ( long "count"
-                    <> help "Count the number of calls to the typechecker"
+                    <> short 'c'
+                    <> help "Count the number of calls to the typechecker while finding changes."
                 )
         changeTypeParser = eitherReader (\i -> case readMaybe i of
             Nothing -> Left $ "Invalid Value.\nExpected one of: " ++ formattedChangeTypes

@@ -17,6 +17,7 @@ import Data.Maybe (fromMaybe, mapMaybe)
 import Prelude hiding (mod)
 import Data.Tuple.HT (thd3)
 import Seminal.Ranker (sortChanges)
+import Data.Bifunctor (second)
 
 type ErrorMessage = String
 
@@ -28,7 +29,13 @@ data Status =
     Error ErrorMessage |
     -- | For each file that does not typecheck, an ordered list of change suggestions,
     -- Along with the original typecheck error
-    Changes [(FilePath, ErrorMessage, [Change HsModule])]
+    Result (
+        -- | The number of calls to the typechecker
+        Int,
+        -- | The valid changes found
+        [(FilePath, ErrorMessage, [Change HsModule])]
+    )
+
 
 -- | Run Seminal on a source file.
 -- If it returns Nothing, the file typechecks,
@@ -42,7 +49,12 @@ runSeminal (Options searchMethod) filePaths = either Error id <$> ghcAction
                 -- If nothing is unsuccessful <-> If all typechecks
                 [] -> return Success
                 errs -> case filter (isScopeError . thd3) errs of
-                    [] -> Changes <$> mapM (\(f, m, err) -> (f, show err, ) . sortChanges <$> changes m) errs
+                    [] -> do
+                        foundChanges <- mapM (\(f, m, err) -> (\(n, c) -> (n, (f, sortChanges c, err))) <$> changes m) errs
+                        let totalCall = sum $ fst <$> foundChanges
+                            formattedChanges = (\(f, m, err) -> (f, show err, m)) . snd <$> foundChanges
+                        return $ Result (totalCall, formattedChanges)
+                        -- (\r -> Result (0,r)) <$> mapM (\(n, (f, m, err)) -> (n, (f, show err, )) . sortChanges <$> changes m) errs
                     scopeErrors -> return $ Error $ concatMap (\(f, _, err) -> f ++ " - " ++ show err) scopeErrors
         changes pm = findChanges searchMethod (typecheckPm . wrapHsModule pm) (hsModule pm)
         hsModule = unLoc . pm_parsed_source
@@ -54,9 +66,10 @@ runSeminal (Options searchMethod) filePaths = either Error id <$> ghcAction
             in pm { pm_parsed_source = L srcLoc m }
 
 -- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
+-- | Returns the number of calls to the typechecker along with the found changes
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
-findChanges :: SearchMethod -> (HsModule -> Ghc TypeChecker.TypeCheckStatus) -> HsModule -> Ghc [Change HsModule]
-findChanges method test m = findValidChanges (enumerateChangesInModule m)
+findChanges :: SearchMethod -> (HsModule -> Ghc TypeChecker.TypeCheckStatus) -> HsModule -> Ghc (Int, [Change HsModule])
+findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
         evaluateAll = mapM evaluate
@@ -70,11 +83,15 @@ findChanges method test m = findValidChanges (enumerateChangesInModule m)
                     (topChange, status) = fromMaybe fallbackChange (find ((TypeChecker.Success ==) . snd) tests)
                 return (change { exec = [topChange] }, status)
         -- | If list of changes to evaluate is empty, return
-        findValidChanges [] = return []
+        findValidChanges n [] = return (n, [])
         -- | Takes a list of change, and 
-        findValidChanges clist = do
+        findValidChanges n clist = do
+            -- | Compute the number of changes to test using the 'exec' lists length
+            let execsCounts = length $ concatMap exec clist
+            -- | Predict the number of calls to the typechecker
+                tcCalls = n + execsCounts
             successfulchanges <- evaluateAll clist <&> filter ((TypeChecker.Success ==) . snd) <&> map fst
             -- | Stop searching if `method` is lazy and a terminal change is found
             if (method == Lazy) && any ((Terminal ==) . category) successfulchanges
-                then return successfulchanges
-                else (successfulchanges ++) <$> findValidChanges (concatMap followups successfulchanges)
+                then return (tcCalls, successfulchanges)
+                else second (successfulchanges ++) <$> findValidChanges tcCalls (concatMap followups successfulchanges)
