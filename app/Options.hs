@@ -15,7 +15,9 @@ data Options = Options {
     -- | If True, will hide the compiler's typecheck error
     quiet :: Bool,
     -- | The minimal level of suggestions to display
-    minLevel :: ChangeType
+    minLevel :: ChangeType,
+    -- | Specify if we want to know/print the number of calls to the Typechecker
+    count :: Bool
 }
 
 -- | Base parser for program options
@@ -51,6 +53,10 @@ optionParser = info (parser <**> helper) description
                     <> showDefault
                     <> value Wrapping
                     <> help ("The minimal level of suggestions to display.\nPossible values: " ++ formattedChangeTypes)
+                ) <*>
+            switch
+                ( long "count"
+                    <> help "Count the number of calls to the typechecker"
                 )
         changeTypeParser = eitherReader (\i -> case readMaybe i of
             Nothing -> Left $ "Invalid Value.\nExpected one of: " ++ formattedChangeTypes
