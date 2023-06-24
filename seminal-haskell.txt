@@ -135,4 +135,4 @@ Error :: ErrorMessage -> Status
 
 -- | For each file that does not typecheck, an ordered list of change
 --   suggestions, Along with the original typecheck error
-Changes :: [(FilePath, ErrorMessage, [Change HsModule])] -> Status
+Result :: (Int, [(FilePath, ErrorMessage, [Change HsModule])]) -> Status
