@@ -6,10 +6,9 @@ module Seminal (
 ) where
 import Seminal.Options (Options(Options), SearchMethod(Lazy))
 import Seminal.Change (Change (..), ChangeType(..), getNode, show)
-import qualified Seminal.Compiler.TypeChecker as TypeChecker
+import qualified Seminal.Compiler.TypeChecker as TypeChecker(typecheckModule, TypeCheckStatus(..))
 import Seminal.Compiler.Runner (runCompiler)
 import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc)
-import Data.Functor ((<&>))
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Compiler.TypeChecker (ErrorType(..), isScopeError, getTypeCheckError)
 import Data.Maybe (mapMaybe)
@@ -63,7 +62,7 @@ runSeminal (Options searchMethod traceCalls) filePaths = either Error id <$> ghc
 -- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
 -- | Returns the number of calls to the typechecker along with the found changes
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
-findChanges :: SearchMethod -> (Change HsModule -> Ghc (Change HsModule, TypeChecker.TypeCheckStatus)) -> HsModule -> Ghc (Int, [Change HsModule])
+findChanges :: SearchMethod -> (Change HsModule -> Ghc (Change HsModule, Int, TypeChecker.TypeCheckStatus)) -> HsModule -> Ghc (Int, [Change HsModule])
 findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
@@ -72,28 +71,29 @@ findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
         findValidChanges n [] = return (n, [])
         -- | Takes a list of change, and 
         findValidChanges n clist = do
+            changesWithTcCalls <- evaluateAll clist
             -- | Compute the number of changes to test using the 'exec' lists length
-            let execsCounts = length $ concatMap exec clist
+            let execsCounts = sum ((\(_, c, _) -> c) <$> changesWithTcCalls)
             -- | Predict the number of calls to the typechecker
                 tcCalls = n + execsCounts
-            successfulchanges <- evaluateAll clist <&> filter ((TypeChecker.Success ==) . snd) <&> map fst
+                changes = (\(a, _ , b) -> (a, b)) <$> changesWithTcCalls
+                successfulchanges = fst <$> filter ((TypeChecker.Success ==) . snd) changes
             -- | Stop searching if `method` is lazy and a terminal change is found
             if (method == Lazy) && any ((Terminal ==) . category) successfulchanges
                 then return (tcCalls, successfulchanges)
                 else second (successfulchanges ++) <$> findValidChanges tcCalls (concatMap followups successfulchanges)
 
 -- | Calls typechecker on Change.
--- Will return the change with the typecheck status.
+-- Will return the change with the number of calls to the TC and the typecheck status.
 -- The `exec` field will only contain one element
-evaluateChange :: ParsedModule -> Bool -> Change HsModule -> Ghc (Change HsModule, TypeChecker.TypeCheckStatus)
+evaluateChange :: ParsedModule -> Bool -> Change HsModule -> Ghc (Change HsModule, Int, TypeChecker.TypeCheckStatus)
 evaluateChange pm traceCall change = case exec change of
-    [] -> return (change, TypeChecker.Error $ TypeCheckError "{From Change Group}" )
+    [] -> return (change, 0, TypeChecker.Error $ TypeCheckError "{From Change Group}" )
     (a:b) -> do
         statusA <- if traceCall then traceTcCall a else callTypecheckerOnExec a
-        statusB <- evaluateChange pm traceCall (change { exec = b })
-        return $ if statusA == TypeChecker.Success
-            then (change { exec = [a] }, statusA)
-            else statusB 
+        case statusA of
+            TypeChecker.Success -> return (change { exec = [a] }, 1, statusA)
+            _ -> (\(m, count, s) -> (m, count + 1, s)) <$> evaluateChange pm traceCall (change { exec = b })
     where
         traceTcCall e = do
             _ <- liftIO $ when traceCall $ do

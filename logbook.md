@@ -158,6 +158,7 @@
 ### June 25
 
 - Trace calls to typechecker
+- Changes in group are evaluated lazily  
 
 ## Difficulties encountered
 
