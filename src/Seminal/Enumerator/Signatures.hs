@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Signatures (enumerateChangeInSignature) where
-import GHC (Sig (TypeSig), GhcPs, HsWildCardBndrs (HsWC), GenLocated (L), HsSigType (HsSig), HsType (HsWildCardTy, HsTyVar), NoExtField (NoExtField), SrcSpanAnn' (locA), RdrName)
+import GHC (Sig (TypeSig), GhcPs, HsWildCardBndrs (HsWC), GenLocated (L), HsSigType (HsSig), HsType (HsWildCardTy, HsTyVar, HsTupleTy), NoExtField (NoExtField), SrcSpanAnn' (locA), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change), (<&&>))
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc)
@@ -19,10 +19,14 @@ enumerateChangeInType typ loc = [
 
 enumerateChangeInType' :: Enumerator (HsType GhcPs)
 enumerateChangeInType' typ loc = case typ of
-    (HsTyVar xvar pflag (L l oldtype)) -> (filter (oldtype /=)) atomicTypes <&> (\newType ->
-        Change (node typ) [node $ HsTyVar xvar pflag $ L l newType] loc []
-        (printf "Expected Type `%s`, got `%s`." (showPprUnsafe newType) (showPprUnsafe oldtype)) Terminal
-        )
+    (HsTyVar xvar pflag (L l oldtype)) -> let
+        filteredAtomicTypes = filter (oldtype /=) atomicTypes
+        raisedAtomicTypes = (HsTyVar xvar pflag . L l) <$> filteredAtomicTypes
+        substitutions = unitType:raisedAtomicTypes
+        in substitutions <&> (\newType ->
+            Change (node typ) [node newType] loc []
+            (printf "Expected Type `%s`, got `%s`." (showPprUnsafe newType) (showPprUnsafe oldtype)) Terminal
+            )
     _  -> []
 
 atomicTypes :: [RdrName]
@@ -35,3 +39,6 @@ atomicTypes = (mkRdrUnqual . mkTcOcc) <$> [
     "Float",
     "Double"
     ]
+
+unitType :: HsType GhcPs
+unitType = HsTupleTy EpAnnNotUsed  HsBoxedOrConstraintTuple []

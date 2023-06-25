@@ -161,5 +161,9 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["signatures/expect-int"]
         "Signature: Replace Integer with Int" 
-        "Integer" "Int"
+        "Integer" "Int",
+    testSeminal
+        ["signatures/expect-unit"]
+        "Signature: Replace String with `()`" 
+        "String" "()"
     ]
