@@ -151,6 +151,14 @@
 
 - Changes: Write an error message for each one
 
+### June 24
+
+- Count calls to typechecker
+
+### June 25
+
+- Trace calls to typechecker
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
