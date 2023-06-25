@@ -1,8 +1,10 @@
 module Seminal.Options (Options(..), SearchMethod(..)) where
 
-newtype Options = Options {
+data Options = Options {
     -- | Tells when to stop searching
-    search :: SearchMethod
+    search :: SearchMethod,
+    -- | If True, for each call to the typechecker, will print infor about it
+    traceTcCalls :: Bool
 }
 
 data SearchMethod =

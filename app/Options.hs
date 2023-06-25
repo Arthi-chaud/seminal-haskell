@@ -17,7 +17,9 @@ data Options = Options {
     -- | The minimal level of suggestions to display
     minLevel :: ChangeType,
     -- | Specify if we want to know/print the number of calls to the Typechecker
-    count :: Bool
+    count :: Bool,
+    -- | Specify if we want to have a trace for each call to the typechecker.
+    trace :: Bool
 }
 
 -- | Base parser for program options
@@ -58,6 +60,11 @@ optionParser = info (parser <**> helper) description
                 ( long "count"
                     <> short 'c'
                     <> help "Count the number of calls to the typechecker while finding changes."
+                ) <*>
+            switch
+                ( long "trace"
+                    <> short 't'
+                    <> help "Trace calls to the typechecker."
                 )
         changeTypeParser = eitherReader (\i -> case readMaybe i of
             Nothing -> Left $ "Invalid Value.\nExpected one of: " ++ formattedChangeTypes

@@ -4,15 +4,16 @@ import Seminal (runSeminal, Status(..))
 import Seminal.Options
 import qualified Options as Program
 import Options.Applicative (execParser)
-import Seminal.Change (Change(..), show)
+import Seminal.Change (Change(..), showWithMessage)
 import Control.Monad (unless, when)
 import Text.Printf(printf)
 
 main :: IO ()
 main = do
-    (Program.Options filePaths n isLazy quiet minLevel countCalls) <- execParser Program.optionParser
+    (Program.Options filePaths n isLazy quiet minLevel countCalls traceCalls) <- execParser Program.optionParser
     let options = Options {
-        search = if isLazy then Lazy else Eager
+        search = if isLazy then Lazy else Eager,
+        traceTcCalls = traceCalls
     }
     res <- runSeminal options filePaths
     case res of
@@ -36,7 +37,7 @@ main = do
                     -- Filters the changes by level
                     filteredList = filter ((minLevel <=) . category) list
                 mapM_ formatChange windowedList
-            formatChange c = putStrLn (Seminal.Change.show
+            formatChange c = putStrLn (Seminal.Change.showWithMessage
                 (src c)
                 (head $ exec c)
                 (location c)

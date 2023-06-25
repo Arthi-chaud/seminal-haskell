@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, ChangeType(..), changeTypes) where
+module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes) where
 
 import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
@@ -49,18 +49,19 @@ instance Functor Change where
         }
 
 (<$$>) :: (a -> b) -> [Change a]  -> [Change b]
-f <$$> list = fmap f <$> list 
+f <$$> list = fmap f <$> list
 
 (<&&>) :: [Change a] -> (a -> b) -> [Change b]
 (<&&>) = flip (<$$>)
 
-show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
-show src_ exec_ loc message_  = replacement ++ '\n' : message_
-    where
-        replacement = printf "%s: Replace `%s` with `%s`"
-            (showSDocUnsafe $ ppr loc)
-            (showSDocUnsafe $ pretty src_)
-            (showSDocUnsafe $ pretty exec_)
+show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String
+show src_ exec_ loc  = printf "%s: Replace `%s` with `%s`"
+    (showSDocUnsafe $ ppr loc)
+    (showSDocUnsafe $ pretty src_)
+    (showSDocUnsafe $ pretty exec_)
+
+showWithMessage :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
+showWithMessage src_ exec_ loc message_  = Seminal.Change.show src_ exec_ loc ++ '\n' : message_
 
 -- | Categories of changes, that allow ordering them
 data ChangeType =
