@@ -36,7 +36,8 @@ getNode :: ChangeNode n -> n
 data ChangeNode nodeType
 (<$$>) :: (a -> b) -> [Change a] -> [Change b]
 (<&&>) :: [Change a] -> (a -> b) -> [Change b]
-show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
+show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String
+showWithMessage :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
 
 -- | Categories of changes, that allow ordering them
 data ChangeType
@@ -104,11 +105,14 @@ instance GHC.Classes.Eq Seminal.Compiler.TypeChecker.ErrorType
 instance GHC.Show.Show Seminal.Compiler.TypeChecker.ErrorType
 
 module Seminal.Options
-newtype Options
-Options :: SearchMethod -> Options
+data Options
+Options :: SearchMethod -> Bool -> Options
 
 -- | Tells when to stop searching
 [search] :: Options -> SearchMethod
+
+-- | If True, for each call to the typechecker, will print infor about it
+[traceTcCalls] :: Options -> Bool
 data SearchMethod
 
 -- | Stop when the bottom of the AST is reached
