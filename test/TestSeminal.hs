@@ -21,7 +21,7 @@ testSeminal ::
     -> String
     -> IO Test
 testSeminal files name expectedSrc expectedExec = do
-    res <- runSeminal (Options Eager) (buildAssetPath <$> files)
+    res <- runSeminal (Options Eager False) (buildAssetPath <$> files)
     return $ testCase name $ case res of
         Result (_, [(_, _, bestChange:_)]) -> do
             (show $ pretty $ src bestChange) @?= expectedSrc

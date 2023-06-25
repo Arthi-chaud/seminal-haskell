@@ -4,7 +4,7 @@ import Seminal (runSeminal, Status(..))
 import Seminal.Options
 import qualified Options as Program
 import Options.Applicative (execParser)
-import Seminal.Change (Change(..), show)
+import Seminal.Change (Change(..), showWithMessage)
 import Control.Monad (unless, when)
 import Text.Printf(printf)
 
@@ -37,7 +37,7 @@ main = do
                     -- Filters the changes by level
                     filteredList = filter ((minLevel <=) . category) list
                 mapM_ formatChange windowedList
-            formatChange c = putStrLn (Seminal.Change.show
+            formatChange c = putStrLn (Seminal.Change.showWithMessage
                 (src c)
                 (head $ exec c)
                 (location c)

@@ -5,19 +5,20 @@ module Seminal (
     Status(..),
 ) where
 import Seminal.Options (Options(Options), SearchMethod(Lazy))
-import Seminal.Change (Change (..), ChangeType(..), getNode)
+import Seminal.Change (Change (..), ChangeType(..), getNode, show)
 import qualified Seminal.Compiler.TypeChecker as TypeChecker
 import Seminal.Compiler.Runner (runCompiler)
 import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc)
 import Data.Functor ((<&>))
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Compiler.TypeChecker (ErrorType(..), isScopeError, getTypeCheckError)
-import Data.List (find)
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (mapMaybe)
 import Prelude hiding (mod)
 import Data.Tuple.HT (thd3)
 import Seminal.Ranker (sortChanges)
 import Data.Bifunctor (second)
+import GHC.Plugins (liftIO)
+import Control.Monad (when)
 
 type ErrorMessage = String
 
@@ -41,7 +42,7 @@ data Status =
 -- If it returns Nothing, the file typechecks,
 -- otherwise, provides an ordered list of change suggestions 
 runSeminal :: Options -> [FilePath] -> IO Status
-runSeminal (Options searchMethod _) filePaths = either Error id <$> ghcAction
+runSeminal (Options searchMethod traceCalls) filePaths = either Error id <$> ghcAction
     where
         ghcAction = runCompiler filePaths $ \filesAndModules -> do
             res <- mapM (\(f, m) -> (f,m,) <$> typecheckPm m) filesAndModules
@@ -52,36 +53,21 @@ runSeminal (Options searchMethod _) filePaths = either Error id <$> ghcAction
                     [] -> do
                         foundChanges <- mapM (\(f, m, err) -> (\(n, c) -> (n, (f, sortChanges c, err))) <$> changes m) errs
                         let totalCall = sum $ fst <$> foundChanges
-                            formattedChanges = (\(f, m, err) -> (f, show err, m)) . snd <$> foundChanges
+                            formattedChanges = (\(f, m, err) -> (f, Prelude.show err, m)) . snd <$> foundChanges
                         return $ Result (totalCall, formattedChanges)
-                        -- (\r -> Result (0,r)) <$> mapM (\(n, (f, m, err)) -> (n, (f, show err, )) . sortChanges <$> changes m) errs
-                    scopeErrors -> return $ Error $ concatMap (\(f, _, err) -> f ++ " - " ++ show err) scopeErrors
-        changes pm = findChanges searchMethod (typecheckPm . wrapHsModule pm) (hsModule pm)
+                    scopeErrors -> return $ Error $ concatMap (\(f, _, err) -> f ++ " - " ++ Prelude.show err) scopeErrors
+        changes pm = findChanges searchMethod (evaluateChange pm traceCalls) (hsModule pm)
         hsModule = unLoc . pm_parsed_source
         typecheckPm = TypeChecker.typecheckModule
-        wrapHsModule :: ParsedModule -> HsModule -> ParsedModule
-        wrapHsModule pm m = let
-            (ParsedModule _ modsrc _) = pm
-            srcLoc = getLoc modsrc
-            in pm { pm_parsed_source = L srcLoc m }
 
 -- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
 -- | Returns the number of calls to the typechecker along with the found changes
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
-findChanges :: SearchMethod -> (HsModule -> Ghc TypeChecker.TypeCheckStatus) -> HsModule -> Ghc (Int, [Change HsModule])
+findChanges :: SearchMethod -> (Change HsModule -> Ghc (Change HsModule, TypeChecker.TypeCheckStatus)) -> HsModule -> Ghc (Int, [Change HsModule])
 findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
-        evaluateAll = mapM evaluate
-        -- | Checks if change typechecks, and make tuple out of result 
-        evaluate change = case exec change  of
-            [exe] -> test (getNode exe) <&> (change,)
-            execs -> do
-                tests <- mapM (\c -> test (getNode c) >>= (\a -> return (c, a))) execs
-                let
-                    fallbackChange = (head execs, TypeChecker.Error (TypeCheckError "{From Change Group}"))
-                    (topChange, status) = fromMaybe fallbackChange (find ((TypeChecker.Success ==) . snd) tests)
-                return (change { exec = [topChange] }, status)
+        evaluateAll = mapM test
         -- | If list of changes to evaluate is empty, return
         findValidChanges n [] = return (n, [])
         -- | Takes a list of change, and 
@@ -95,3 +81,35 @@ findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
             if (method == Lazy) && any ((Terminal ==) . category) successfulchanges
                 then return (tcCalls, successfulchanges)
                 else second (successfulchanges ++) <$> findValidChanges tcCalls (concatMap followups successfulchanges)
+
+-- | Calls typechecker on Change.
+-- Will return the change with the typecheck status.
+-- The `exec` field will only contain one element
+evaluateChange :: ParsedModule -> Bool -> Change HsModule -> Ghc (Change HsModule, TypeChecker.TypeCheckStatus)
+evaluateChange pm traceCall change = case exec change of
+    [] -> return (change, TypeChecker.Error $ TypeCheckError "{From Change Group}" )
+    (a:b) -> do
+        statusA <- if traceCall then traceTcCall a else callTypecheckerOnExec a
+        statusB <- evaluateChange pm traceCall (change { exec = b })
+        return $ if statusA == TypeChecker.Success
+            then (change { exec = [a] }, statusA)
+            else statusB 
+    where
+        traceTcCall e = do
+            _ <- liftIO $ when traceCall $ do
+                putStrLn (Seminal.Change.show (src change) e (location change))
+                putStr "Status: "
+            status <- callTypecheckerOnExec e
+            _ <- liftIO $ putStrLn $ case status of
+                TypeChecker.Success -> "Success\n"
+                _ -> "Fail\n"
+            return status
+        callTypecheckerOnExec s = TypeChecker.typecheckModule (wrapHsModule pm (getNode s))
+
+
+-- | Util function to apply a changed HsModule onto a ParsedModule
+wrapHsModule :: ParsedModule -> HsModule -> ParsedModule
+wrapHsModule pm m = let
+    (ParsedModule _ modsrc _) = pm
+    srcLoc = getLoc modsrc
+    in pm { pm_parsed_source = L srcLoc m }
