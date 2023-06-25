@@ -19,7 +19,7 @@ enumerateChangeInType typ loc = [
 
 enumerateChangeInType' :: Enumerator (HsType GhcPs)
 enumerateChangeInType' typ loc = case typ of
-    (HsTyVar xvar pflag (L l oldtype)) -> atomicTypes <&> (\newType ->
+    (HsTyVar xvar pflag (L l oldtype)) -> (filter (oldtype /=)) atomicTypes <&> (\newType ->
         Change (node typ) [node $ HsTyVar xvar pflag $ L l newType] loc []
         (printf "Expected Type `%s`, got `%s`." (showPprUnsafe newType) (showPprUnsafe oldtype)) Terminal
         )
