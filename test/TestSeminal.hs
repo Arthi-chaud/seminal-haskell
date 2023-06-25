@@ -153,5 +153,13 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["do/final-expect-unit"]
         "Do expression: Wrong type after 'return'" 
-        "1" "()"
+        "1" "()",
+    testSeminal
+        ["signatures/expect-bool"]
+        "Signature: Replace Int with Bool" 
+        "Int" "Bool",
+    testSeminal
+        ["signatures/expect-int"]
+        "Signature: Replace Integer with Int" 
+        "Integer" "Int"
     ]
