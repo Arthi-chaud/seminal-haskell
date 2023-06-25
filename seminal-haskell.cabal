@@ -40,6 +40,7 @@ library
       Seminal.Enumerator.Modules
       Seminal.Enumerator.Patterns
       Seminal.Enumerator.Signatures
+      Seminal.Enumerator.Types
       Seminal.Ranker
       Paths_seminal_haskell
   hs-source-dirs:
