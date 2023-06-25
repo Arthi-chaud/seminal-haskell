@@ -79,7 +79,7 @@ data ChangeType =
     deriving (Eq, Show, Read, Data)
 
 changeTypes :: [String]
-changeTypes = showConstr <$> dataTypeConstrs  (dataTypeOf Terminal)
+changeTypes = showConstr <$> dataTypeConstrs (dataTypeOf Terminal)
 
 instance Ord ChangeType where
     -- | Ordering Change types by giving each type a number

@@ -3,6 +3,7 @@ import Seminal.Enumerator.Enumerator (Enumerator)
 import GHC (HsDecl(..), GhcPs)
 import Seminal.Enumerator.Bindings (enumerateChangesInBinding)
 import Seminal.Change ((<&&>))
+import Seminal.Enumerator.Signatures (enumerateChangeInSignature)
 
 -- | Enumerate changes for a declaration.
 -- A declaration could be of a type, function, instalce, class etc.
@@ -12,5 +13,5 @@ enumerateChangesInDeclaration (TyClD _ _) _ = []
 enumerateChangesInDeclaration (InstD _ _) _ = []
 enumerateChangesInDeclaration (DerivD _ _) _ = []
 enumerateChangesInDeclaration (ValD i e) loc = enumerateChangesInBinding e loc <&&> (ValD i)
-enumerateChangesInDeclaration (SigD _ _) _ = []
+enumerateChangesInDeclaration (SigD x sig) loc = enumerateChangeInSignature sig loc <&&> (SigD x)
 enumerateChangesInDeclaration _ _ = []
