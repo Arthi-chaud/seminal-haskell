@@ -41,7 +41,7 @@ data Status =
 -- If it returns Nothing, the file typechecks,
 -- otherwise, provides an ordered list of change suggestions 
 runSeminal :: Options -> [FilePath] -> IO Status
-runSeminal (Options searchMethod) filePaths = either Error id <$> ghcAction
+runSeminal (Options searchMethod _) filePaths = either Error id <$> ghcAction
     where
         ghcAction = runCompiler filePaths $ \filesAndModules -> do
             res <- mapM (\(f, m) -> (f,m,) <$> typecheckPm m) filesAndModules

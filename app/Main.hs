@@ -10,9 +10,10 @@ import Text.Printf(printf)
 
 main :: IO ()
 main = do
-    (Program.Options filePaths n isLazy quiet minLevel countCalls) <- execParser Program.optionParser
+    (Program.Options filePaths n isLazy quiet minLevel countCalls traceCalls) <- execParser Program.optionParser
     let options = Options {
-        search = if isLazy then Lazy else Eager
+        search = if isLazy then Lazy else Eager,
+        traceTcCalls = traceCalls
     }
     res <- runSeminal options filePaths
     case res of
