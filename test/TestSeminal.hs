@@ -214,6 +214,10 @@ testSignatures = [
         "Signature: Replace `Maybe Int` with `Int`" 
         "a :: Maybe Int" "a :: Int",
     testSeminal
+        ["signatures/expect-bool-list"]
+        "Signature: Replace `[Int]` with `[Bool]`" 
+        "a :: [Int]" "a :: [Bool]",
+    testSeminal
         ["signatures/expect-bool"]
         "Signature: Replace Int with Bool" 
         "a :: Int" "a :: Bool",

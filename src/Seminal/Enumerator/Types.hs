@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA)
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
@@ -44,11 +44,14 @@ enumerateChangeInType' typ loc = case typ of
         Change (node typ) [node newType] loc []
         (formatMessage newType typ) Terminal
         )
-    (HsListTy _ (L _ child)) -> [
-        Change (node typ) [node child] loc []
-        ((formatMessage child typ) ++ " Maybe you forgot to remove the brackets.")
-        Wrapping
-        ]
+    (HsListTy xlist (L lchild child)) -> bracketsRemoval : childEnumeration
+        where
+        bracketsRemoval = Change (node typ) [node child] loc []
+            ((formatMessage child typ) ++ " Maybe you forgot to remove the brackets.")
+            Wrapping
+        childEnumeration = enumerateChangeInType child (locA lchild)
+            <&&> (HsListTy xlist . L lchild)
+            <&> forceRewrite
     _  -> []
 
 atomicTypes :: [RdrName]
