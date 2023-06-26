@@ -10,7 +10,7 @@ import Text.Printf(printf)
 
 main :: IO ()
 main = do
-    (Program.Options filePaths n isLazy quiet minLevel countCalls traceCalls) <- execParser Program.optionParser
+    (Program.Options filePaths n isLazy quiet minLevel countCalls traceCalls time) <- execParser Program.optionParser
     let options = Options {
         search = if isLazy then Lazy else Eager,
         traceTcCalls = traceCalls

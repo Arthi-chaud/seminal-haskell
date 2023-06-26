@@ -72,6 +72,7 @@ executable seminal-haskell
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , criterion
     , optparse-applicative
     , seminal-haskell
   default-language: Haskell2010
