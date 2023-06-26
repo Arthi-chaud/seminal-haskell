@@ -19,7 +19,7 @@ enumerateChangeInType' typ loc = case typ of
         substitutions = unitType:raisedAtomicTypes
         in substitutions <&> (\newType ->
             Change (node typ) [node newType] loc []
-            (printf "Expected Type `%s`, got `%s`." (showPprUnsafe newType) (showPprUnsafe oldtype)) Terminal
+            (formatMessage newType oldtype) Terminal
             )
     -- e.g. Maybe a
     (HsAppTy x parent child) -> monadSubstitutions ++ [removeParent] ++ childEnumeration
@@ -29,7 +29,7 @@ enumerateChangeInType' typ loc = case typ of
             filteredMonads = filter ((ppr tparent /=) . ppr) topMonads
             monadSubstitutions = buildType <$> filteredMonads <&> (\newM -> Change
                 (node typ) [node $ HsAppTy x (L lparent newM) child] loc []
-                (printf "Expected `%s`, got `%s`." (showPprUnsafe newM) (showPprUnsafe tparent))
+                (formatMessage newM tparent)
                 Terminal
                 )
             childEnumeration = enumerateChangeInType tchild loc
@@ -37,7 +37,7 @@ enumerateChangeInType' typ loc = case typ of
                 <&> forceRewrite
             removeParent = Change
                 (node typ) [node tchild] loc []
-                (printf "Expected Type `%s`, got `%s`. Maybe you forgot to use `return`?" (showPprUnsafe tchild) (showPprUnsafe typ))
+               ((formatMessage tchild typ) ++ " Maybe you forgot to use `return`?")
                 Terminal
     _  -> []
 
@@ -63,3 +63,8 @@ unitType = HsTupleTy EpAnnNotUsed  HsBoxedOrConstraintTuple []
 
 buildType :: RdrName -> HsType GhcPs
 buildType = HsTyVar EpAnnNotUsed NotPromoted . noLocA
+
+formatMessage :: Outputable a => Outputable b => a -> b -> String
+formatMessage expected got = printf
+    "Expected Type `%s`, got `%s`."
+    (showPprUnsafe expected) (showPprUnsafe got)
