@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA))
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
@@ -52,7 +52,26 @@ enumerateChangeInType' typ loc = case typ of
         childEnumeration = enumerateChangeInType child (locA lchild)
             <&&> (HsListTy xlist . L lchild)
             <&> forceRewrite
-    _  -> []
+    (HsParTy x (L l child)) -> enumerateChangeInType child (locA l)
+        <&&> (HsParTy x . L l)
+        <&> forceRewrite
+    -- e.g. a -> b -> c
+    (HsFunTy x arrow lleft lright) -> (removals ++ enumSecondType ++ enumFirstType) <&> forceRewrite
+        where
+            (L ll left) = lleft
+            (L lr right) = lright
+            enumFirstType = enumerateChangeInType left (locA ll)
+                <&&> (\newLeft -> HsFunTy x arrow (L ll newLeft) lright)
+            enumSecondType = enumerateChangeInType right (locA lr)
+                <&&> (HsFunTy x arrow lleft . L lr)
+            removals = [left, right] <&> (\c -> Change
+                (node typ)
+                [node c]
+                loc
+                []
+                "The removed Type is superfluous. Please, remove it."
+                Terminal)
+    _ -> []
 
 atomicTypes :: [RdrName]
 atomicTypes = (mkRdrUnqual . mkTcOcc) <$> [
