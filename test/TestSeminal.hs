@@ -29,7 +29,23 @@ testSeminal files name expectedSrc expectedExec = do
         _ -> assertFailure "Seminal Failed"
 
 testSuite :: Test
-testSuite = testGroup "Seminal" $ buildTest <$> [
+testSuite = testGroup "Seminal" $ buildTest <$> testGroups
+    where
+        testGroups = concat [
+            testRoot,
+            testLet,
+            testDo,
+            testApplication,
+            testWhere,
+            testIf,
+            testModules,
+            testOperation,
+            testSignatures,
+            testCases
+            ]
+
+testRoot :: [IO Test]
+testRoot = [
     testSeminal
         ["expect-char-from-string-list"]
         "Got a singleton of string, expected a char" 
@@ -77,15 +93,27 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["expect-unit"]
         "Got an Int, expected a '()'" 
-        "1"  "()",
+        "1"  "()"
+    ]
+
+testLet :: [IO Test]
+testLet = [
     testSeminal
         ["let/expect-char"]
         "Let: Got a String, expected a char" 
-        "\"a\""  "'a'",
+        "\"a\""  "'a'"
+    ]
+
+testWhere :: [IO Test]
+testWhere = [
     testSeminal
         ["where/expect-char"]
         "Where: Got a String, expected a char" 
-        "\"a\""  "'a'",
+        "\"a\""  "'a'"
+    ]
+
+testIf :: [IO Test]
+testIf = [
     testSeminal
         ["if/then-expect-int"]
         "If-Then: Got a List, expected an Int" 
@@ -97,7 +125,11 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["if/else-expect-string"]
         "If-Else: Got a Char, expected a string" 
-        "'.'" "\".\"",
+        "'.'" "\".\""
+    ]
+
+testCases :: [IO Test]
+testCases = [
     testSeminal
         ["case/match-expect-char"]
         "Case-Match: Got a List, expected a Char" 
@@ -113,11 +145,18 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["case/value-expect-int"]
         "Case-Value: Got a List, expected an Int" 
-        "[2]" "2",
-    testSeminal
-        ["modules/A", "modules/B", "modules/Main"]
+        "[2]" "2"
+    ]
+
+testModules :: [IO Test]
+testModules = [
+    testSeminal ["modules/A", "modules/B", "modules/Main"]
         "Modules: Got a Char, expected a String" 
-        "a" "[a]",
+        "a" "[a]"
+    ]
+
+testOperation :: [IO Test]
+testOperation = [
     testSeminal
         ["operations/plus-expect-int"]
         "Operations (+): Got a List, expected an Int" 
@@ -125,7 +164,11 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["operations/neg-expect-int"]
         "Operations (-): Got a List, expected an Int" 
-        "[1]" "1",
+        "[1]" "1"
+    ]
+
+testApplication :: [IO Test]
+testApplication = [
     testSeminal
         ["application/remove-first-param"]
         "Application: Remove First Param" 
@@ -145,7 +188,11 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["application/swap-first-two"]
         "Application: Swap First and Second Param" 
-        "b 'a' 1 [3]" "b 1 'a' [3]",
+        "b 'a' 1 [3]" "b 1 'a' [3]"
+    ]
+
+testDo :: [IO Test]
+testDo = [
     testSeminal
         ["do/final-expect-return"]
         "Do expression: Missing 'return' in final statement" 
@@ -153,29 +200,33 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["do/final-expect-unit"]
         "Do expression: Wrong type after 'return'" 
-        "1" "()",
+        "1" "()"
+    ]
+
+testSignatures :: [IO Test]
+testSignatures = [
     testSeminal
         ["signatures/expect-atomic"]
         "Signature: Replace `Maybe Int` with `Int`" 
-        "Maybe Int" "Int",
+        "a :: Maybe Int" "a :: Int",
     testSeminal
         ["signatures/expect-bool"]
         "Signature: Replace Int with Bool" 
-        "Int" "Bool",
+        "a :: Int" "a :: Bool",
     testSeminal
         ["signatures/expect-int"]
         "Signature: Replace Integer with Int" 
-        "Integer" "Int",
+        "a :: Integer" "a :: Int",
     testSeminal
         ["signatures/expect-unit"]
         "Signature: Replace String with `()`" 
-        "String" "()",
+        "a :: String" "a :: ()",
     testSeminal
         ["signatures/wrong-monad-child"]
         "Signature: Replace Int with ()" 
-        "Maybe Int" "Maybe ()",
+        "a :: Maybe Int" "a :: Maybe ()",
     testSeminal
         ["signatures/wrong-monad"]
         "Signature: Replace Maybe with IO" 
-        "Maybe ()" "IO ()"
+        "main :: Maybe ()" "main :: IO ()"
     ]
