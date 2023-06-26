@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple))
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change))
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc)
@@ -21,6 +21,11 @@ enumerateChangeInType' typ loc = case typ of
             Change (node typ) [node newType] loc []
             (printf "Expected Type `%s`, got `%s`." (showPprUnsafe newType) (showPprUnsafe oldtype)) Terminal
             )
+    -- e.g. Maybe a
+    (HsAppTy _ tparent (L _ tchild)) -> [
+        Change (node typ) [node tchild] loc []
+        (printf "Expected Type `%s`, got `%s`. Maybe you forgot to use `return`?" (showPprUnsafe tparent) (showPprUnsafe tchild)) Terminal
+        ]
     _  -> []
 
 atomicTypes :: [RdrName]
