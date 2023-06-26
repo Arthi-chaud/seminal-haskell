@@ -65,6 +65,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - seminal-haskell
+    - timeit
     - optparse-applicative
 
 tests:

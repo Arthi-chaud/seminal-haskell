@@ -19,7 +19,9 @@ data Options = Options {
     -- | Specify if we want to know/print the number of calls to the Typechecker
     count :: Bool,
     -- | Specify if we want to have a trace for each call to the typechecker.
-    trace :: Bool
+    trace :: Bool,
+    -- | If True, will print the time it took to run Seminal
+    time :: Bool
 }
 
 -- | Base parser for program options
@@ -63,8 +65,12 @@ optionParser = info (parser <**> helper) description
                 ) <*>
             switch
                 ( long "trace"
-                    <> short 't'
                     <> help "Trace calls to the typechecker."
+                ) <*>
+            switch
+                ( long "time"
+                    <> short 't'
+                    <> help "Measure Time it took for Seminal to run."
                 )
         changeTypeParser = eitherReader (\i -> case readMaybe i of
             Nothing -> Left $ "Invalid Value.\nExpected one of: " ++ formattedChangeTypes
