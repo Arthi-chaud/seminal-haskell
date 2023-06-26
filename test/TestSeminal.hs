@@ -155,6 +155,10 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         "Do expression: Wrong type after 'return'" 
         "1" "()",
     testSeminal
+        ["signatures/expect-atomic"]
+        "Signature: Replace `Maybe Int` with `Int`" 
+        "Maybe Int" "Int",
+    testSeminal
         ["signatures/expect-bool"]
         "Signature: Replace Int with Bool" 
         "Int" "Bool",
