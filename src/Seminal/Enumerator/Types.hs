@@ -10,7 +10,8 @@ import Data.List (permutations)
 
 enumerateChangeInType :: Enumerator (HsType GhcPs)
 enumerateChangeInType typ loc = [
-    Change (node typ) [node $ HsWildCardTy NoExtField] loc (enumerateChangeInType' typ loc) "The type is incorrect." Wildcard
+    Change (node typ) [node $ HsWildCardTy NoExtField] loc (enumerateChangeInType' typ loc) "The type is incorrect." Wildcard,
+    Change (node typ) [node (HsAppTy NoExtField (noLocA $ buildType $ mkRdrUnqual $ mkTcOcc "IO") (noLocA typ))] loc [] "The type was not wrapped with IO." Terminal
     ]
 
 enumerateChangeInType' :: Enumerator (HsType GhcPs)
@@ -70,6 +71,8 @@ enumerateChangeInType' typ loc = case typ of
         <&&> (HsParTy x . L l)
         <&> forceRewrite
     -- e.g. a -> b -> c
+    -- Left will be `a`
+    -- Right will be b -> c
     (HsFunTy x arrow lleft lright) -> (removals ++ enumSecondType ++ enumFirstType) <&> forceRewrite
         where
             (L ll left) = lleft
