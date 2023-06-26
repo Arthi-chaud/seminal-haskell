@@ -169,5 +169,9 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
     testSeminal
         ["signatures/expect-unit"]
         "Signature: Replace String with `()`" 
-        "String" "()"
+        "String" "()",
+    testSeminal
+        ["signatures/wrong-monad"]
+        "Signature: Replace Maybe with IO" 
+        "Maybe ()" "IO ()"
     ]
