@@ -16,7 +16,8 @@ This implementation of Seminal for Haskell is a Master's Degree Project for the 
 
 ```
 Usage: seminal-haskell files... [-n|--lines N] [--lazy] [-q|--quiet]
-                                [-l|--minLevel LEVEL] [-c|--count] [-t|--trace]
+                       [-l|--minLevel LEVEL] [-c|--count] [--trace]
+                       [-t|--time]
 
 Available options:
   files...                 The paths to the Haskell source files
@@ -26,7 +27,9 @@ Available options:
   -l,--minLevel LEVEL      The minimal level of suggestions to display.
                            Possible values: Wildcard, Removal, Wrapping, Terminal
                            (default: Wrapping)
-  -c,--count               Count the number of calls to the typechecker while finding changes.
-  -t,--trace               Trace calls to the typechecker.
+  -c,--count               Count the number of calls to the typechecker
+                           while finding changes.
+  --trace                  Trace calls to the typechecker.
+  -t,--time                Measure Time it took for Seminal to run.
   -h,--help                Show this help text
 ```
