@@ -206,6 +206,10 @@ testDo = [
 testSignatures :: [IO Test]
 testSignatures = [
     testSeminal
+        ["signatures/expect-atomic-not-list"]
+        "Signature: Replace `[Char]` with `Char`" 
+        "a :: [Char]" "a :: Char",
+    testSeminal
         ["signatures/expect-atomic"]
         "Signature: Replace `Maybe Int` with `Int`" 
         "a :: Maybe Int" "a :: Int",

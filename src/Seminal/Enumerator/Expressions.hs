@@ -139,7 +139,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     [node (exprListToHsApp (h ++ t))]
                     loc
                     []
-                    "The removed parameter is superfluous. Please, remove it."
+                    "The removed expression is superfluous. Please, remove it."
                     Terminal
                 )
             -- Swap Parameter
