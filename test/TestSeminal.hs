@@ -226,6 +226,10 @@ testSignatures = [
         "Signature: Replace Int with ()" 
         "a :: Maybe Int" "a :: Maybe ()",
     testSeminal
+        ["signatures/wrong-monad-unit-child"]
+        "Signature: Replace () with Int" 
+        "a :: Maybe ()" "a :: Maybe Int",
+    testSeminal
         ["signatures/wrong-monad"]
         "Signature: Replace Maybe with IO" 
         "main :: Maybe ()" "main :: IO ()"
