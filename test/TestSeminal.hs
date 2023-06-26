@@ -226,9 +226,25 @@ testSignatures = [
         "Signature: Replace Integer with Int" 
         "a :: Integer" "a :: Int",
     testSeminal
+        ["signatures/expect-return-bool"]
+        "Signature: Change Return Type" 
+        "a :: Int -> Int" "a :: Int -> Bool",
+    testSeminal
         ["signatures/expect-unit"]
         "Signature: Replace String with `()`" 
         "a :: String" "a :: ()",
+    testSeminal
+        ["signatures/superfluous-leading"]
+        "Signature: Replace `Int -> True` with `True`" 
+        "a :: Int -> Bool" "a :: Bool",
+    testSeminal
+        ["signatures/superfluous-middle"]
+        "Signature: Remove Type in the middle" 
+        "a :: [Char] -> Int -> Char" "a :: [Char] -> Char",
+    testSeminal
+        ["signatures/superfluous-trailing"]
+        "Signature: Replace `[Bool] -> ()` with `[Bool]`" 
+        "a :: [Bool] -> ()" "a :: [Bool]",
     testSeminal
         ["signatures/wrong-monad-child"]
         "Signature: Replace Int with ()" 
