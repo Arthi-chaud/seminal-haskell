@@ -245,6 +245,10 @@ testSignatures = [
         "Signature: Replace String with `()`" 
         "a :: String" "a :: ()" 0,
     testSeminal
+        ["signatures/missing-io"]
+        "Signature: Add Missing `IO`" 
+        "a :: ()" "a :: IO ()" 1,
+    testSeminal
         ["signatures/superfluous-leading"]
         "Signature: Replace `Int -> True` with `True`" 
         "a :: Int -> Bool" "a :: Bool" 0,
