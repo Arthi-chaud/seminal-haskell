@@ -39,17 +39,21 @@ enumerateChangeInType' typ loc = case typ of
                 (node typ) [node tchild] loc []
                ((formatMessage tchild typ) ++ " Maybe you forgot to use `return`?")
                 Terminal
+    (HsTupleTy _ _ []) -> buildType <$> atomicTypes <&> (\newType ->
+        Change (node typ) [node newType] loc []
+        (formatMessage newType typ) Terminal
+        )
     _  -> []
 
 atomicTypes :: [RdrName]
 atomicTypes = (mkRdrUnqual . mkTcOcc) <$> [
-    "Int",
+    "Double",
+    "Float",
     "Integer",
+    "Int",
     "Char",
     "String",
-    "Bool",
-    "Float",
-    "Double"
+    "Bool"
     ]
 
 topMonads :: [RdrName]
