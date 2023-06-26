@@ -1,7 +1,7 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
 import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA)
 import Seminal.Enumerator.Enumerator (Enumerator)
-import Seminal.Change (ChangeType(..), node, Change (Change))
+import Seminal.Change (ChangeType(..), node, Change (Change), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
 import Data.Functor ((<&>))
 import Text.Printf (printf)
@@ -22,15 +22,19 @@ enumerateChangeInType' typ loc = case typ of
             (printf "Expected Type `%s`, got `%s`." (showPprUnsafe newType) (showPprUnsafe oldtype)) Terminal
             )
     -- e.g. Maybe a
-    (HsAppTy x (L lparent tparent) child) -> monadSubstitutions ++ [removeParent]
+    (HsAppTy x parent child) -> monadSubstitutions ++ [removeParent] ++ childEnumeration
         where
-            L _ tchild = child
+            L lparent tparent = parent
+            L lchild tchild = child
             filteredMonads = filter ((ppr tparent /=) . ppr) topMonads
             monadSubstitutions = buildType <$> filteredMonads <&> (\newM -> Change
                 (node typ) [node $ HsAppTy x (L lparent newM) child] loc []
                 (printf "Expected `%s`, got `%s`." (showPprUnsafe newM) (showPprUnsafe tparent))
                 Terminal
                 )
+            childEnumeration = enumerateChangeInType tchild loc
+                <&&> (HsAppTy x parent . L lchild)
+                <&> forceRewrite
             removeParent = Change
                 (node typ) [node tchild] loc []
                 (printf "Expected Type `%s`, got `%s`. Maybe you forgot to use `return`?" (showPprUnsafe tchild) (showPprUnsafe typ))

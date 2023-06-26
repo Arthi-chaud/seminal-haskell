@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes) where
+module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes, forceRewrite) where
 
 import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
@@ -41,12 +41,18 @@ data Change node = Change {
 }
 
 instance Functor Change where
-    fmap f c = case c of
-        Change {} -> c {
-            src = f <$> src c,
-            exec = fmap f <$> exec c,
-            followups = fmap f <$> followups c
-        }
+    fmap f c = c {
+        src = f <$> src c,
+        exec = fmap f <$> exec c,
+        followups = fmap f <$> followups c
+    }
+
+forceRewrite :: Outputable node => Change node -> Change node
+forceRewrite change = change { 
+    src = node . getNode $ src change,
+    exec = node . getNode <$> exec change,
+    followups = forceRewrite <$> followups change
+} 
 
 (<$$>) :: (a -> b) -> [Change a]  -> [Change b]
 f <$$> list = fmap f <$> list

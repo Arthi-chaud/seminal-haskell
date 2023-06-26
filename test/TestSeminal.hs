@@ -171,6 +171,10 @@ testSuite = testGroup "Seminal" $ buildTest <$> [
         "Signature: Replace String with `()`" 
         "String" "()",
     testSeminal
+        ["signatures/wrong-monad-child"]
+        "Signature: Replace Int with ()" 
+        "Maybe Int" "Maybe ()",
+    testSeminal
         ["signatures/wrong-monad"]
         "Signature: Replace Maybe with IO" 
         "Maybe ()" "IO ()"
