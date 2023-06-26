@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA)
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA)
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
@@ -39,10 +39,16 @@ enumerateChangeInType' typ loc = case typ of
                 (node typ) [node tchild] loc []
                ((formatMessage tchild typ) ++ " Maybe you forgot to use `return`?")
                 Terminal
+    -- ()
     (HsTupleTy _ _ []) -> buildType <$> atomicTypes <&> (\newType ->
         Change (node typ) [node newType] loc []
         (formatMessage newType typ) Terminal
         )
+    (HsListTy _ (L _ child)) -> [
+        Change (node typ) [node child] loc []
+        ((formatMessage child typ) ++ " Maybe you forgot to remove the brackets.")
+        Wrapping
+        ]
     _  -> []
 
 atomicTypes :: [RdrName]
