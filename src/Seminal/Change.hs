@@ -61,13 +61,13 @@ f <$$> list = fmap f <$> list
 (<&&>) = flip (<$$>)
 
 show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String
-show src_ exec_ loc  = printf "%s: Replace `%s` with `%s`"
+show src_ exec_ loc  = printf "%s:\nReplace\t`%s`\nwith\t`%s`"
     (showSDocUnsafe $ ppr loc)
     (showSDocUnsafe $ pretty src_)
     (showSDocUnsafe $ pretty exec_)
 
 showWithMessage :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
-showWithMessage src_ exec_ loc message_  = Seminal.Change.show src_ exec_ loc ++ '\n' : message_
+showWithMessage src_ exec_ loc message_  = Seminal.Change.show src_ exec_ loc ++ "\nReason: " ++ message_
 
 -- | Categories of changes, that allow ordering them
 data ChangeType =
