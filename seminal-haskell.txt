@@ -56,6 +56,7 @@ Wrapping :: ChangeType
 --   to the user as if
 Terminal :: ChangeType
 changeTypes :: [String]
+forceRewrite :: Outputable node => Change node -> Change node
 instance Data.Data.Data Seminal.Change.ChangeType
 instance GHC.Read.Read Seminal.Change.ChangeType
 instance GHC.Show.Show Seminal.Change.ChangeType
