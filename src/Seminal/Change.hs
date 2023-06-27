@@ -1,5 +1,5 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes) where
+module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes, forceRewrite) where
 
 import GHC (SrcSpan)
 import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
@@ -41,12 +41,18 @@ data Change node = Change {
 }
 
 instance Functor Change where
-    fmap f c = case c of
-        Change {} -> c {
-            src = f <$> src c,
-            exec = fmap f <$> exec c,
-            followups = fmap f <$> followups c
-        }
+    fmap f c = c {
+        src = f <$> src c,
+        exec = fmap f <$> exec c,
+        followups = fmap f <$> followups c
+    }
+
+forceRewrite :: Outputable node => Change node -> Change node
+forceRewrite change = change { 
+    src = node . getNode $ src change,
+    exec = node . getNode <$> exec change,
+    followups = forceRewrite <$> followups change
+} 
 
 (<$$>) :: (a -> b) -> [Change a]  -> [Change b]
 f <$$> list = fmap f <$> list
@@ -55,13 +61,13 @@ f <$$> list = fmap f <$> list
 (<&&>) = flip (<$$>)
 
 show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String
-show src_ exec_ loc  = printf "%s: Replace `%s` with `%s`"
+show src_ exec_ loc  = printf "%s:\nReplace\t`%s`\nwith\t`%s`"
     (showSDocUnsafe $ ppr loc)
     (showSDocUnsafe $ pretty src_)
     (showSDocUnsafe $ pretty exec_)
 
 showWithMessage :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
-showWithMessage src_ exec_ loc message_  = Seminal.Change.show src_ exec_ loc ++ '\n' : message_
+showWithMessage src_ exec_ loc message_  = Seminal.Change.show src_ exec_ loc ++ "\nReason: " ++ message_
 
 -- | Categories of changes, that allow ordering them
 data ChangeType =
@@ -79,7 +85,7 @@ data ChangeType =
     deriving (Eq, Show, Read, Data)
 
 changeTypes :: [String]
-changeTypes = showConstr <$> dataTypeConstrs  (dataTypeOf Terminal)
+changeTypes = showConstr <$> dataTypeConstrs (dataTypeOf Terminal)
 
 instance Ord ChangeType where
     -- | Ordering Change types by giving each type a number

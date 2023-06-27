@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Seminal.Compiler.Runner (runCompiler) where
-import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors))
+import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors, extensionFlags))
 import GHC.Paths (libdir)
 import GHC.Driver.Session
     ( DynFlags(ghcLink, mainFunIs, mainModuleNameIs, backend),
@@ -9,6 +9,8 @@ import GHC.Plugins (msHsFilePath, throwGhcException)
 import Data.List (find)
 import Text.Printf (printf)
 import Control.Exception (try, SomeException)
+import GHC.LanguageExtensions (Extension(PartialTypeSignatures))
+import GHC.Data.EnumSet (insert)
 
 type ErrorMessage = String
 
@@ -32,7 +34,8 @@ runCompiler filePaths action = do
                 mainModuleNameIs = mkModuleName "Prelude",
                 backend = NoBackend,
                 ghcLink = NoLink,
-                maxErrors = Just 0
+                maxErrors = Just 0,
+                extensionFlags = insert PartialTypeSignatures (extensionFlags flags)
                 })
             _ <- load LoadAllTargets
             modGraph <- depanal [] True
