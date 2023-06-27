@@ -158,7 +158,12 @@
 ### June 25
 
 - Trace calls to typechecker
-- Changes in group are evaluated lazily  
+- Changes in group are evaluated lazily
+
+### June 26
+
+- Add option to get computation time
+- Enumerate changes in function types
 
 ## Difficulties encountered
 
