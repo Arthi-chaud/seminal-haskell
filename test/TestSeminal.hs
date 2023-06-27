@@ -187,11 +187,11 @@ testApplication = [
     testSeminal
         ["application/swap-first-and-last"]
         "Application: Swap First and Last Param" 
-        "b 'a' 1 [3]" "b [3] 1 'a'" 0,
+        "b 'a' 1 [3]" "b [3] 1 'a'" 1,
     testSeminal
         ["application/swap-first-two"]
         "Application: Swap First and Second Param" 
-        "b 'a' 1 [3]" "b 1 'a' [3]" 0
+        "b 'a' 1 [3]" "b 1 'a' [3]" 1
     ]
 
 testDo :: [IO Test]
@@ -211,7 +211,7 @@ testSignatures = [
     testSeminal
         ["signatures/either-wrong-order"]
         "`Either` Signature: Swap type arguments" 
-        "a :: Either Bool Int" "a :: Either Int Bool" 1,
+        "a :: Either Bool Int" "a :: Either Int Bool" 0,
     testSeminal
         ["signatures/either-wrong-right"]
         "`Either` Signature: Change second argument" 
@@ -249,6 +249,18 @@ testSignatures = [
         "Signature: Add Missing `IO`" 
         "a :: ()" "a :: IO ()" 1,
     testSeminal
+        ["signatures/missing-leading-arg"]
+        "Signature: Add Missing Parameter Type (Leading)" 
+        "a :: Int" "a :: String -> String" 0,
+    testSeminal
+        ["signatures/missing-middle-arg"]
+        "Signature: Add Missing Parameter Type (Middle)" 
+        "a :: Int -> Int" "a :: Int -> Int -> Int" 0,
+    testSeminal
+        ["signatures/missing-trailing-arg"]
+        "Signature: Add Missing Parameter Type (Trailing)" 
+        "a :: String" "a :: String -> Int" 0,
+    testSeminal
         ["signatures/superfluous-leading"]
         "Signature: Replace `Int -> True` with `True`" 
         "a :: Int -> Bool" "a :: Bool" 0,
@@ -260,6 +272,10 @@ testSignatures = [
         ["signatures/superfluous-trailing"]
         "Signature: Replace `[Bool] -> ()` with `[Bool]`" 
         "a :: [Bool] -> ()" "a :: [Bool]" 0,
+    testSeminal
+        ["signatures/swap"]
+        "Signature: Swap type parameters" 
+        "a :: Int -> String" "a :: String -> Int" 0,
     testSeminal
         ["signatures/wrong-monad-child"]
         "Signature: Replace Int with ()" 

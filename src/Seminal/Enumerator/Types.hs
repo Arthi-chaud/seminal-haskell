@@ -1,21 +1,16 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA)
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow), IsUnicodeSyntax (UnicodeSyntax))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
 import Data.Functor ((<&>))
 import Text.Printf (printf)
+import Data.List.Key(nub)
 import Data.List.HT (splitEverywhere)
 import Data.List (permutations)
 
 enumerateChangeInType :: Enumerator (HsType GhcPs)
-enumerateChangeInType typ loc = [
-    Change (node typ) [node $ HsWildCardTy NoExtField] loc (enumerateChangeInType' typ loc) "The type is incorrect." Wildcard,
-    Change (node typ) [node (HsAppTy NoExtField (noLocA $ buildType $ mkRdrUnqual $ mkTcOcc "IO") (noLocA typ))] loc [] "The type was not wrapped with IO." Terminal
-    ]
-
-enumerateChangeInType' :: Enumerator (HsType GhcPs)
-enumerateChangeInType' typ loc = case typ of
+enumerateChangeInType typ loc = ioWrapping : case typ of
     (HsTyVar xvar pflag (L l oldtype)) -> let
         filteredAtomicTypes = filter (oldtype /=) atomicTypes
         raisedAtomicTypes = (HsTyVar xvar pflag . L l) <$> filteredAtomicTypes
@@ -38,7 +33,7 @@ enumerateChangeInType' typ loc = case typ of
             childEnumeration = concat $ splitEverywhere childrenTypes
                 <&> (\(h, childType, t) -> enumerateChangeInType childType loc
                     <&&> (\newChild -> (monad:h ++ newChild:t))
-                    <&&> exprListToHsAppTy
+                    <&&> typeListToHsAppTy
                     )
             -- Remove parent only of there is only one child. E.g. yes for IO, no for Either
             removeParent = [
@@ -47,7 +42,7 @@ enumerateChangeInType' typ loc = case typ of
             swapChildren = if length childrenTypes > 1
                 then (monad:) <$> permutations childrenTypes <&> (\permutation -> Change
                     (node typ)
-                    [node $ exprListToHsAppTy permutation] loc []
+                    [node $ typeListToHsAppTy permutation] loc []
                     "Wrong order of Type Argument." Terminal
                 )
                 else []
@@ -73,22 +68,39 @@ enumerateChangeInType' typ loc = case typ of
     -- e.g. a -> b -> c
     -- Left will be `a`
     -- Right will be b -> c
-    (HsFunTy x arrow lleft lright) -> (removals ++ enumSecondType ++ enumFirstType) <&> forceRewrite
+    (HsFunTy {}) -> removals ++ insertions ++ swaps ++ childEnumerations
         where
-            (L ll left) = lleft
-            (L lr right) = lright
-            enumFirstType = enumerateChangeInType left (locA ll)
-                <&&> (\newLeft -> HsFunTy x arrow (L ll newLeft) lright)
-            enumSecondType = enumerateChangeInType right (locA lr)
-                <&&> (HsFunTy x arrow lleft . L lr)
-            removals = [left, right] <&> (\c -> Change
+            insertions = splitEverywhere typeList
+                <&> (\(h, child, t) -> Change
+                    (node typ)
+                    [node $ typeListToHsFunTy (h ++ [child, wildcardType] ++ t)] loc []
+                    "A Type is missing." Terminal
+                )
+            childEnumerations = concat $ splitEverywhere typeList
+                <&> (\(h, child, t) -> enumerateChangeInType child loc
+                    <&&> (\newChild -> typeListToHsFunTy $ h ++ [newChild] ++ t))
+            -- We have to remove duplicates. There is no need to run swpas on `a -> a`
+            swaps = let filteredSwaps = (nub ppr (permutations typeList)) in
+                if length filteredSwaps > 1
+                    then filteredSwaps <&> (\newType -> Change
+                        (node typ)
+                        [node $ typeListToHsFunTy newType] loc []
+                        "The order of the types is wrong" Terminal
+                        )
+                    else []
+            removals = splitEverywhere typeList <&> (\(h, _, t) -> Change
                 (node typ)
-                [node c]
-                loc
-                []
-                "The removed Type is superfluous. Please, remove it."
-                Terminal)
+                [node $ typeListToHsFunTy (h ++ t)] loc []
+                "The removed Type is superfluous. Please, remove it." Terminal
+                )
+            typeList = hsFunTyToList typ
     _ -> []
+    where
+        ioWrapping = Change
+            (node typ)
+            [node (HsAppTy NoExtField (noLocA $ buildType $ mkRdrUnqual $ mkTcOcc "IO") (noLocA typ))]
+            loc []
+            "The type was not wrapped with IO." Terminal
 
 atomicTypes :: [RdrName]
 atomicTypes = (mkRdrUnqual . mkTcOcc) <$> [
@@ -124,10 +136,28 @@ hsAppTyToList :: (HsType GhcPs) -> [HsType GhcPs]
 hsAppTyToList (HsAppTy _ (L _ func) (L _ param)) = hsAppTyToList func ++ [param]
 hsAppTyToList e = [e]
 
--- | Turns a list of expressions into a function application.
+-- | Turns a list of types into a type application.
 -- [Either, a, b] -> `cons 1 2`
-exprListToHsAppTy :: [HsType GhcPs] -> (HsType GhcPs)
-exprListToHsAppTy [] = undefined
-exprListToHsAppTy [e] = e
-exprListToHsAppTy [f, p] = HsAppTy NoExtField (reLocA $ noLoc f) (reLocA $ noLoc p)
-exprListToHsAppTy list = HsAppTy NoExtField (reLocA $ noLoc $ exprListToHsAppTy (init list)) (reLocA $ noLoc $ last list)
+typeListToHsAppTy :: [HsType GhcPs] -> (HsType GhcPs)
+typeListToHsAppTy [] = undefined
+typeListToHsAppTy [e] = e
+typeListToHsAppTy [f, p] = HsAppTy NoExtField (reLocA $ noLoc f) (reLocA $ noLoc p)
+typeListToHsAppTy list = HsAppTy NoExtField (reLocA $ noLoc $ typeListToHsAppTy (init list)) (reLocA $ noLoc $ last list)
+
+-- | Turns an HsFunTyp into a list of HsType.
+-- `a -> b -> c` -> [a, b, c]
+hsFunTyToList :: (HsType GhcPs) -> [HsType GhcPs]
+hsFunTyToList (HsFunTy _ _ (L _ left) (L _ right)) = left:hsFunTyToList right
+hsFunTyToList e = [e]
+
+wildcardType :: HsType GhcPs
+wildcardType = HsWildCardTy NoExtField
+
+-- | Turns a list of types into a type.
+-- [a, b, c] -> `a -> b -> c`
+typeListToHsFunTy :: [HsType GhcPs] -> (HsType GhcPs)
+typeListToHsFunTy [] = undefined
+typeListToHsFunTy [e] = e
+typeListToHsFunTy (left:right) = HsFunTy EpAnnNotUsed
+    (HsUnrestrictedArrow UnicodeSyntax)
+    (noLocA left) (noLocA (typeListToHsFunTy right))

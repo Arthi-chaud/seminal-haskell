@@ -1,0 +1,2 @@
+a :: Int
+a = length
