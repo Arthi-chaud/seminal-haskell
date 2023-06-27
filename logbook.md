@@ -165,6 +165,10 @@
 - Add option to get computation time
 - Enumerate changes in function types
 
+### June 27
+
+- Type Enumeration: Try to add parameter
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined

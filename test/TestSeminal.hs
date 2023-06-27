@@ -187,11 +187,11 @@ testApplication = [
     testSeminal
         ["application/swap-first-and-last"]
         "Application: Swap First and Last Param" 
-        "b 'a' 1 [3]" "b [3] 1 'a'" 1,
+        "b 'a' 1 [3]" "b [3] 1 'a'" 2,
     testSeminal
         ["application/swap-first-two"]
         "Application: Swap First and Second Param" 
-        "b 'a' 1 [3]" "b 1 'a' [3]" 1
+        "b 'a' 1 [3]" "b 1 'a' [3]" 2
     ]
 
 testDo :: [IO Test]
@@ -251,7 +251,7 @@ testSignatures = [
     testSeminal
         ["signatures/missing-leading-arg"]
         "Signature: Add Missing Parameter Type (Leading)" 
-        "a :: Int" "a :: String -> String" 0,
+        "a :: Int" "a :: String -> Int" 0,
     testSeminal
         ["signatures/missing-middle-arg"]
         "Signature: Add Missing Parameter Type (Middle)" 
