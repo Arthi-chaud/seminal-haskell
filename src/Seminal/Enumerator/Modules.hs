@@ -1,7 +1,7 @@
 module Seminal.Enumerator.Modules(enumerateChangesInModule) where
-import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
+import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD, TyClD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
 import Seminal.Change (Change(Change), ChangeType (Removal), (<&&>), node)
-import Seminal.Enumerator.Declarations (enumerateChangesInDeclaration)
+import Seminal.Enumerator.Declarations (enumerateChangesInDeclaration, enumerateChangesInTypeDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
 import Seminal.Enumerator.Bindings (enumerateChangesInFuncBinding)
@@ -24,5 +24,8 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> \(h, L l r
         -- And standalone type declaration are not allowed
         (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
             <&&> (L l . ValD v)
+            <&&> (\change -> h ++ [change] ++ t)
+        (TyClD x typeDecl) -> enumerateChangesInTypeDeclaration typeDecl removedLoc
+            <&&> (L l . TyClD x)
             <&&> (\change -> h ++ [change] ++ t)
         _ -> [Change (node list) [node $ h ++ t] removedLoc followups "The removed expression does not type-check." Removal]

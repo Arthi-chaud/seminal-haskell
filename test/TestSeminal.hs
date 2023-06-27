@@ -44,7 +44,8 @@ testSuite = testGroup "Seminal" $ buildTest <$> testGroups
             testModules,
             testOperation,
             testSignatures,
-            testCases
+            testCases,
+            testTypeDeclaration
             ]
 
 testRoot :: [IO Test]
@@ -288,4 +289,15 @@ testSignatures = [
         ["signatures/wrong-monad"]
         "Signature: Replace Maybe with IO" 
         "main :: Maybe ()" "main :: IO ()" 0
+    ]
+
+-- Most type test are done in the previous section.
+-- This one is just of declarations
+testTypeDeclaration :: [IO Test]
+testTypeDeclaration = [
+    testSeminal
+        ["type/swap"]
+        "Type Declaration: Swap Subtype arguments" 
+        "type Enumerator a = a -> SrcSpan -> [Change a]"
+        "type Enumerator a = SrcSpan -> a -> [Change a]" 0
     ]

@@ -168,6 +168,7 @@
 ### June 27
 
 - Type Enumeration: Try to add parameter
+- Declaration Enumeration: Go Through type declaration
 
 ## Difficulties encountered
 
