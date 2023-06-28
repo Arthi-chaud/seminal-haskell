@@ -81,7 +81,10 @@ data ChangeType =
     Wrapping |
     -- | The Change is good enough to terminate the search and/or
     -- be presented to the user as if
-    Terminal
+    Terminal |
+    -- We add *something* in the AST to make things work.
+    -- This addition is usually a wildcard, making the change not very usefull
+    Addition
     deriving (Eq, Show, Read, Data)
 
 changeTypes :: [String]
@@ -95,6 +98,7 @@ instance Ord ChangeType where
             n :: ChangeType -> Int
             n t = case t of
                 Wildcard -> 1
-                Removal -> 2
-                Wrapping -> 3
-                Terminal -> 4
+                Addition -> 2
+                Removal -> 3
+                Wrapping -> 4
+                Terminal -> 5
