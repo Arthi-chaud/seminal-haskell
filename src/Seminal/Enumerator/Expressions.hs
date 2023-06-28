@@ -22,7 +22,7 @@ import GHC
       noSrcSpan, noLoc, reLocA, StmtLR (..))
 import Seminal.Change
     ( Change(..), node,
-      ChangeType(Removal),
+      ChangeType(Removal, Addition),
       ChangeType(Terminal, Wildcard, Wrapping, Removal),
       (<&&>)
     )
@@ -161,7 +161,7 @@ enumerateChangesInExpression' expr loc = case expr of
                     loc
                     []
                     "An argument is missing in the function application. Check the number of expected arguments."
-                    Terminal
+                    Addition
                 )
             paramList = hsAppToList expr
     -- `let _ = xx in ...` expressions
