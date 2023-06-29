@@ -42,145 +42,145 @@
 </span><span id="line-42"></span><span class="hs-comment">-- otherwise, provides an ordered list of change suggestions </span><span>
 </span><span id="line-43"></span><span class="annot"><a href="Seminal.html#runSeminal"><span class="hs-identifier hs-type">runSeminal</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Options.html#Options"><span class="hs-identifier hs-type">Options</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="annot"><a href="Seminal.html#Status"><span class="hs-identifier hs-type">Status</span></a></span><span>
 </span><span id="line-44"></span><span id="runSeminal"><span class="annot"><span class="annottext">runSeminal :: Options -&gt; [FilePath] -&gt; IO Status
-</span><a href="Seminal.html#runSeminal"><span class="hs-identifier hs-var hs-var">runSeminal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Options.html#Options"><span class="hs-identifier hs-type">Options</span></a></span><span> </span><span id="local-6989586621679119751"><span class="annot"><span class="annottext">SearchMethod
-</span><a href="#local-6989586621679119751"><span class="hs-identifier hs-var">searchMethod</span></a></span></span><span> </span><span id="local-6989586621679119750"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679119750"><span class="hs-identifier hs-var">traceCalls</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679119749"><span class="annot"><span class="annottext">[FilePath]
-</span><a href="#local-6989586621679119749"><span class="hs-identifier hs-var">filePaths</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
+</span><a href="Seminal.html#runSeminal"><span class="hs-identifier hs-var hs-var">runSeminal</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Options.html#Options"><span class="hs-identifier hs-type">Options</span></a></span><span> </span><span id="local-6989586621679121072"><span class="annot"><span class="annottext">SearchMethod
+</span><a href="#local-6989586621679121072"><span class="hs-identifier hs-var">searchMethod</span></a></span></span><span> </span><span id="local-6989586621679121071"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679121071"><span class="hs-identifier hs-var">traceCalls</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679121070"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679121070"><span class="hs-identifier hs-var">filePaths</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a c b. (a -&gt; c) -&gt; (b -&gt; c) -&gt; Either a b -&gt; c
 </span><span class="hs-identifier hs-var">either</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Status
 </span><a href="Seminal.html#Error"><span class="hs-identifier hs-var">Error</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. a -&gt; a
 </span><span class="hs-identifier hs-var">id</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">IO (Either FilePath Status)
-</span><a href="#local-6989586621679119745"><span class="hs-identifier hs-var">ghcAction</span></a></span><span>
+</span><a href="#local-6989586621679121066"><span class="hs-identifier hs-var">ghcAction</span></a></span><span>
 </span><span id="line-45"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-46"></span><span>        </span><span id="local-6989586621679119745"><span class="annot"><span class="annottext">ghcAction :: IO (Either FilePath Status)
-</span><a href="#local-6989586621679119745"><span class="hs-identifier hs-var hs-var">ghcAction</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a.
+</span><span id="line-46"></span><span>        </span><span id="local-6989586621679121066"><span class="annot"><span class="annottext">ghcAction :: IO (Either FilePath Status)
+</span><a href="#local-6989586621679121066"><span class="hs-identifier hs-var hs-var">ghcAction</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a.
 [FilePath]
 -&gt; ([(FilePath, ParsedModule)] -&gt; Ghc a) -&gt; IO (Either FilePath a)
 </span><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-var">runCompiler</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
-</span><a href="#local-6989586621679119749"><span class="hs-identifier hs-var">filePaths</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679119726"><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
-</span><a href="#local-6989586621679119726"><span class="hs-identifier hs-var">filesAndModules</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-47"></span><span>            </span><span id="local-6989586621679119725"><span class="annot"><span class="annottext">[(FilePath, ParsedModule, TypeCheckStatus)]
-</span><a href="#local-6989586621679119725"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+</span><a href="#local-6989586621679121070"><span class="hs-identifier hs-var">filePaths</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-glyph">\</span><span id="local-6989586621679121047"><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
+</span><a href="#local-6989586621679121047"><span class="hs-identifier hs-var">filesAndModules</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-47"></span><span>            </span><span id="local-6989586621679121046"><span class="annot"><span class="annottext">[(FilePath, ParsedModule, TypeCheckStatus)]
+</span><a href="#local-6989586621679121046"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Traversable t, Monad m) =&gt;
 (a -&gt; m b) -&gt; t a -&gt; m (t b)
-</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119723"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119723"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119722"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119722"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119723"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119722"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679121044"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121044"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121043"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121043"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121044"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121043"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119721"><span class="hs-identifier hs-var">typecheckPm</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119722"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
-</span><a href="#local-6989586621679119726"><span class="hs-identifier hs-var">filesAndModules</span></a></span><span>
+</span><a href="#local-6989586621679121042"><span class="hs-identifier hs-var">typecheckPm</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121043"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
+</span><a href="#local-6989586621679121047"><span class="hs-identifier hs-var">filesAndModules</span></a></span><span>
 </span><span id="line-48"></span><span>            </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
-</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119720"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119720"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119719"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119719"><span class="hs-identifier hs-var">mod</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119718"><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119718"><span class="hs-identifier hs-var">status</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119720"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119719"><span class="hs-identifier hs-var">mod</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679121041"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121041"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121040"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121040"><span class="hs-identifier hs-var">mod</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121039"><span class="annot"><span class="annottext">TypeCheckStatus
+</span><a href="#local-6989586621679121039"><span class="hs-identifier hs-var">status</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121041"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121040"><span class="hs-identifier hs-var">mod</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus -&gt; Maybe ErrorType
 </span><a href="Seminal.Compiler.TypeChecker.html#getTypeCheckError"><span class="hs-identifier hs-var">getTypeCheckError</span></a></span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119718"><span class="hs-identifier hs-var">status</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, TypeCheckStatus)]
-</span><a href="#local-6989586621679119725"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679121039"><span class="hs-identifier hs-var">status</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, TypeCheckStatus)]
+</span><a href="#local-6989586621679121046"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-49"></span><span>                </span><span class="hs-comment">-- If nothing is unsuccessful &lt;-&gt; If all typechecks</span><span>
 </span><span id="line-50"></span><span>                </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Status
 </span><a href="Seminal.html#Success"><span class="hs-identifier hs-var">Success</span></a></span><span>
-</span><span id="line-51"></span><span>                </span><span id="local-6989586621679119717"><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
-</span><a href="#local-6989586621679119717"><span class="hs-identifier hs-var">errs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
+</span><span id="line-51"></span><span>                </span><span id="local-6989586621679121038"><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
+</span><a href="#local-6989586621679121038"><span class="hs-identifier hs-var">errs</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ErrorType -&gt; Bool
 </span><a href="Seminal.Compiler.TypeChecker.html#isScopeError"><span class="hs-identifier hs-var">isScopeError</span></a></span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall a b c. (a, b, c) -&gt; c
 </span><span class="hs-identifier hs-var">thd3</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
-</span><a href="#local-6989586621679119717"><span class="hs-identifier hs-var">errs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679121038"><span class="hs-identifier hs-var">errs</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-52"></span><span>                    </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-53"></span><span>                        </span><span id="local-6989586621679119715"><span class="annot"><span class="annottext">[(Int, (FilePath, [Change HsModule], ErrorType))]
-</span><a href="#local-6989586621679119715"><span class="hs-identifier hs-var">foundChanges</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+</span><span id="line-53"></span><span>                        </span><span id="local-6989586621679121036"><span class="annot"><span class="annottext">[(Int, (FilePath, [Change HsModule], ErrorType))]
+</span><a href="#local-6989586621679121036"><span class="hs-identifier hs-var">foundChanges</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Traversable t, Monad m) =&gt;
 (a -&gt; m b) -&gt; t a -&gt; m (t b)
-</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119714"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119714"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119713"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119713"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119712"><span class="annot"><span class="annottext">ErrorType
-</span><a href="#local-6989586621679119712"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119711"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119711"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119710"><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119710"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119711"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119714"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">forall a. [Change a] -&gt; [Change a]
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679121035"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121035"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121034"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121034"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121033"><span class="annot"><span class="annottext">ErrorType
+</span><a href="#local-6989586621679121033"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679121032"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679121032"><span class="hs-identifier hs-var">n</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121031"><span class="annot"><span class="annottext">[Change HsModule]
+</span><a href="#local-6989586621679121031"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679121032"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121035"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">forall a. [Change a] -&gt; [Change a]
 </span><a href="Seminal.Ranker.html#sortChanges"><span class="hs-identifier hs-var">sortChanges</span></a></span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119710"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ErrorType
-</span><a href="#local-6989586621679119712"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="#local-6989586621679121031"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ErrorType
+</span><a href="#local-6989586621679121033"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; Ghc (Int, [Change HsModule])
-</span><a href="#local-6989586621679119709"><span class="hs-identifier hs-var">changes</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119713"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
-</span><a href="#local-6989586621679119717"><span class="hs-identifier hs-var">errs</span></a></span><span>
-</span><span id="line-54"></span><span>                        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679119704"><span class="annot"><span class="annottext">totalCall :: Int
-</span><a href="#local-6989586621679119704"><span class="hs-identifier hs-var hs-var">totalCall</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
+</span><a href="#local-6989586621679121030"><span class="hs-identifier hs-var">changes</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121034"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
+</span><a href="#local-6989586621679121038"><span class="hs-identifier hs-var">errs</span></a></span><span>
+</span><span id="line-54"></span><span>                        </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679121025"><span class="annot"><span class="annottext">totalCall :: Int
+</span><a href="#local-6989586621679121025"><span class="hs-identifier hs-var hs-var">totalCall</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">sum</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[(Int, (FilePath, [Change HsModule], ErrorType))]
-</span><a href="#local-6989586621679119715"><span class="hs-identifier hs-var">foundChanges</span></a></span><span>
-</span><span id="line-55"></span><span>                            </span><span id="local-6989586621679119700"><span class="annot"><span class="annottext">formattedChanges :: [(FilePath, FilePath, [Change HsModule])]
-</span><a href="#local-6989586621679119700"><span class="hs-identifier hs-var hs-var">formattedChanges</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119699"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119699"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119698"><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119698"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119697"><span class="annot"><span class="annottext">ErrorType
-</span><a href="#local-6989586621679119697"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119699"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">forall a. Show a =&gt; a -&gt; FilePath
+</span><a href="#local-6989586621679121036"><span class="hs-identifier hs-var">foundChanges</span></a></span><span>
+</span><span id="line-55"></span><span>                            </span><span id="local-6989586621679121021"><span class="annot"><span class="annottext">formattedChanges :: [(FilePath, FilePath, [Change HsModule])]
+</span><a href="#local-6989586621679121021"><span class="hs-identifier hs-var hs-var">formattedChanges</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679121020"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121020"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121019"><span class="annot"><span class="annottext">[Change HsModule]
+</span><a href="#local-6989586621679121019"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121018"><span class="annot"><span class="annottext">ErrorType
+</span><a href="#local-6989586621679121018"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121020"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">forall a. Show a =&gt; a -&gt; FilePath
 </span><span class="hs-identifier hs-var">Prelude.show</span></span><span> </span><span class="annot"><span class="annottext">ErrorType
-</span><a href="#local-6989586621679119697"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119698"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="#local-6989586621679121018"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
+</span><a href="#local-6989586621679121019"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[(Int, (FilePath, [Change HsModule], ErrorType))]
-</span><a href="#local-6989586621679119715"><span class="hs-identifier hs-var">foundChanges</span></a></span><span>
+</span><a href="#local-6989586621679121036"><span class="hs-identifier hs-var">foundChanges</span></a></span><span>
 </span><span id="line-56"></span><span>                        </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">(Int, [(FilePath, FilePath, [Change HsModule])]) -&gt; Status
 </span><a href="Seminal.html#Result"><span class="hs-identifier hs-var">Result</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119704"><span class="hs-identifier hs-var">totalCall</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[(FilePath, FilePath, [Change HsModule])]
-</span><a href="#local-6989586621679119700"><span class="hs-identifier hs-var">formattedChanges</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-57"></span><span>                    </span><span id="local-6989586621679119695"><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
-</span><a href="#local-6989586621679119695"><span class="hs-identifier hs-var">scopeErrors</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><a href="#local-6989586621679121025"><span class="hs-identifier hs-var">totalCall</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[(FilePath, FilePath, [Change HsModule])]
+</span><a href="#local-6989586621679121021"><span class="hs-identifier hs-var">formattedChanges</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>                    </span><span id="local-6989586621679121016"><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
+</span><a href="#local-6989586621679121016"><span class="hs-identifier hs-var">scopeErrors</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Status
 </span><a href="Seminal.html#Error"><span class="hs-identifier hs-var">Error</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
-</span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119693"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119693"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119692"><span class="annot"><span class="annottext">ErrorType
-</span><a href="#local-6989586621679119692"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679119693"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679121014"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121014"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ParsedModule
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679121013"><span class="annot"><span class="annottext">ErrorType
+</span><a href="#local-6989586621679121013"><span class="hs-identifier hs-var">err</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679121014"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot; - &quot;</span></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">forall a. Show a =&gt; a -&gt; FilePath
 </span><span class="hs-identifier hs-var">Prelude.show</span></span><span> </span><span class="annot"><span class="annottext">ErrorType
-</span><a href="#local-6989586621679119692"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
-</span><a href="#local-6989586621679119695"><span class="hs-identifier hs-var">scopeErrors</span></a></span><span>
-</span><span id="line-58"></span><span>        </span><span id="local-6989586621679119709"><span class="annot"><span class="annottext">changes :: ParsedModule -&gt; Ghc (Int, [Change HsModule])
-</span><a href="#local-6989586621679119709"><span class="hs-identifier hs-var hs-var">changes</span></a></span></span><span> </span><span id="local-6989586621679119691"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119691"><span class="hs-identifier hs-var">pm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SearchMethod
+</span><a href="#local-6989586621679121013"><span class="hs-identifier hs-var">err</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule, ErrorType)]
+</span><a href="#local-6989586621679121016"><span class="hs-identifier hs-var">scopeErrors</span></a></span><span>
+</span><span id="line-58"></span><span>        </span><span id="local-6989586621679121030"><span class="annot"><span class="annottext">changes :: ParsedModule -&gt; Ghc (Int, [Change HsModule])
+</span><a href="#local-6989586621679121030"><span class="hs-identifier hs-var hs-var">changes</span></a></span></span><span> </span><span id="local-6989586621679121012"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121012"><span class="hs-identifier hs-var">pm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SearchMethod
 -&gt; (Change HsModule -&gt; Ghc (Change HsModule, Int, TypeCheckStatus))
 -&gt; HsModule
 -&gt; Ghc (Int, [Change HsModule])
 </span><a href="Seminal.html#findChanges"><span class="hs-identifier hs-var">findChanges</span></a></span><span> </span><span class="annot"><span class="annottext">SearchMethod
-</span><a href="#local-6989586621679119751"><span class="hs-identifier hs-var">searchMethod</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121072"><span class="hs-identifier hs-var">searchMethod</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsedModule
 -&gt; Bool
 -&gt; Change HsModule
 -&gt; Ghc (Change HsModule, Int, TypeCheckStatus)
 </span><a href="Seminal.html#evaluateChange"><span class="hs-identifier hs-var">evaluateChange</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119691"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679119750"><span class="hs-identifier hs-var">traceCalls</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsedModule -&gt; HsModule
-</span><a href="#local-6989586621679119688"><span class="hs-identifier hs-var">hsModule</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119691"><span class="hs-identifier hs-var">pm</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-59"></span><span>        </span><span id="local-6989586621679119688"><span class="annot"><span class="annottext">hsModule :: ParsedModule -&gt; HsModule
-</span><a href="#local-6989586621679119688"><span class="hs-identifier hs-var hs-var">hsModule</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall l e. GenLocated l e -&gt; e
+</span><a href="#local-6989586621679121012"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679121071"><span class="hs-identifier hs-var">traceCalls</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsedModule -&gt; HsModule
+</span><a href="#local-6989586621679121009"><span class="hs-identifier hs-var">hsModule</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679121012"><span class="hs-identifier hs-var">pm</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-59"></span><span>        </span><span id="local-6989586621679121009"><span class="annot"><span class="annottext">hsModule :: ParsedModule -&gt; HsModule
+</span><a href="#local-6989586621679121009"><span class="hs-identifier hs-var hs-var">hsModule</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall l e. GenLocated l e -&gt; e
 </span><span class="hs-identifier hs-var">unLoc</span></span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; ParsedSource
 </span><span class="hs-identifier hs-var">pm_parsed_source</span></span><span>
-</span><span id="line-60"></span><span>        </span><span id="local-6989586621679119721"><span class="annot"><span class="annottext">typecheckPm :: ParsedModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119721"><span class="hs-identifier hs-var hs-var">typecheckPm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; Ghc TypeCheckStatus
+</span><span id="line-60"></span><span>        </span><span id="local-6989586621679121042"><span class="annot"><span class="annottext">typecheckPm :: ParsedModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679121042"><span class="hs-identifier hs-var hs-var">typecheckPm</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; Ghc TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-var">TypeChecker.typecheckModule</span></a></span><span>
 </span><span id="line-61"></span><span>
 </span><span id="line-62"></span><span class="hs-comment">-- | Finds the possible changes to apply to a module Seminal.to make it typecheck.</span><span>
@@ -191,63 +191,63 @@
 -&gt; (Change HsModule -&gt; Ghc (Change HsModule, Int, TypeCheckStatus))
 -&gt; HsModule
 -&gt; Ghc (Int, [Change HsModule])
-</span><a href="Seminal.html#findChanges"><span class="hs-identifier hs-var hs-var">findChanges</span></a></span></span><span> </span><span id="local-6989586621679119687"><span class="annot"><span class="annottext">SearchMethod
-</span><a href="#local-6989586621679119687"><span class="hs-identifier hs-var">method</span></a></span></span><span> </span><span id="local-6989586621679119686"><span class="annot"><span class="annottext">Change HsModule -&gt; Ghc (Change HsModule, Int, TypeCheckStatus)
-</span><a href="#local-6989586621679119686"><span class="hs-identifier hs-var">test</span></a></span></span><span> </span><span id="local-6989586621679119685"><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679119685"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Change HsModule] -&gt; Ghc (Int, [Change HsModule])
-</span><a href="#local-6989586621679119684"><span class="hs-identifier hs-var">findValidChanges</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="Seminal.html#findChanges"><span class="hs-identifier hs-var hs-var">findChanges</span></a></span></span><span> </span><span id="local-6989586621679121008"><span class="annot"><span class="annottext">SearchMethod
+</span><a href="#local-6989586621679121008"><span class="hs-identifier hs-var">method</span></a></span></span><span> </span><span id="local-6989586621679121007"><span class="annot"><span class="annottext">Change HsModule -&gt; Ghc (Change HsModule, Int, TypeCheckStatus)
+</span><a href="#local-6989586621679121007"><span class="hs-identifier hs-var">test</span></a></span></span><span> </span><span id="local-6989586621679121006"><span class="annot"><span class="annottext">HsModule
+</span><a href="#local-6989586621679121006"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Change HsModule] -&gt; Ghc (Int, [Change HsModule])
+</span><a href="#local-6989586621679121005"><span class="hs-identifier hs-var">findValidChanges</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsModule -&gt; [Change HsModule]
 </span><a href="Seminal.Enumerator.Modules.html#enumerateChangesInModule"><span class="hs-identifier hs-var">enumerateChangesInModule</span></a></span><span> </span><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679119685"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679121006"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-67"></span><span>    </span><span class="hs-keyword">where</span><span>
 </span><span id="line-68"></span><span>        </span><span class="hs-comment">-- | runs `evaluate` on all changes</span><span>
-</span><span id="line-69"></span><span>        </span><span id="local-6989586621679119681"><span class="annot"><span class="annottext">evaluateAll :: [Change HsModule] -&gt; Ghc [(Change HsModule, Int, TypeCheckStatus)]
-</span><a href="#local-6989586621679119681"><span class="hs-identifier hs-var hs-var">evaluateAll</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
+</span><span id="line-69"></span><span>        </span><span id="local-6989586621679121002"><span class="annot"><span class="annottext">evaluateAll :: [Change HsModule] -&gt; Ghc [(Change HsModule, Int, TypeCheckStatus)]
+</span><a href="#local-6989586621679121002"><span class="hs-identifier hs-var hs-var">evaluateAll</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Traversable t, Monad m) =&gt;
 (a -&gt; m b) -&gt; t a -&gt; m (t b)
 </span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="annot"><span class="annottext">Change HsModule -&gt; Ghc (Change HsModule, Int, TypeCheckStatus)
-</span><a href="#local-6989586621679119686"><span class="hs-identifier hs-var">test</span></a></span><span>
+</span><a href="#local-6989586621679121007"><span class="hs-identifier hs-var">test</span></a></span><span>
 </span><span id="line-70"></span><span>        </span><span class="hs-comment">-- | If list of changes to evaluate is empty, return</span><span>
-</span><span id="line-71"></span><span>        </span><span id="local-6989586621679119684"><span class="annot"><span class="annottext">findValidChanges :: Int -&gt; [Change HsModule] -&gt; Ghc (Int, [Change HsModule])
-</span><a href="#local-6989586621679119684"><span class="hs-identifier hs-var hs-var">findValidChanges</span></a></span></span><span> </span><span id="local-6989586621679119668"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119668"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span id="line-71"></span><span>        </span><span id="local-6989586621679121005"><span class="annot"><span class="annottext">findValidChanges :: Int -&gt; [Change HsModule] -&gt; Ghc (Int, [Change HsModule])
+</span><a href="#local-6989586621679121005"><span class="hs-identifier hs-var hs-var">findValidChanges</span></a></span></span><span> </span><span id="local-6989586621679120989"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120989"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119668"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120989"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span>
 </span><span id="line-72"></span><span>        </span><span class="hs-comment">-- | Takes a list of change, and </span><span>
-</span><span id="line-73"></span><span>        </span><span class="annot"><a href="#local-6989586621679119684"><span class="hs-identifier hs-var">findValidChanges</span></a></span><span> </span><span id="local-6989586621679119667"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119667"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679119666"><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119666"><span class="hs-identifier hs-var">clist</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-74"></span><span>            </span><span id="local-6989586621679119665"><span class="annot"><span class="annottext">[(Change HsModule, Int, TypeCheckStatus)]
-</span><a href="#local-6989586621679119665"><span class="hs-identifier hs-var">changesWithTcCalls</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Change HsModule] -&gt; Ghc [(Change HsModule, Int, TypeCheckStatus)]
-</span><a href="#local-6989586621679119681"><span class="hs-identifier hs-var">evaluateAll</span></a></span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119666"><span class="hs-identifier hs-var">clist</span></a></span><span>
+</span><span id="line-73"></span><span>        </span><span class="annot"><a href="#local-6989586621679121005"><span class="hs-identifier hs-var">findValidChanges</span></a></span><span> </span><span id="local-6989586621679120988"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120988"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span id="local-6989586621679120987"><span class="annot"><span class="annottext">[Change HsModule]
+</span><a href="#local-6989586621679120987"><span class="hs-identifier hs-var">clist</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-74"></span><span>            </span><span id="local-6989586621679120986"><span class="annot"><span class="annottext">[(Change HsModule, Int, TypeCheckStatus)]
+</span><a href="#local-6989586621679120986"><span class="hs-identifier hs-var">changesWithTcCalls</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[Change HsModule] -&gt; Ghc [(Change HsModule, Int, TypeCheckStatus)]
+</span><a href="#local-6989586621679121002"><span class="hs-identifier hs-var">evaluateAll</span></a></span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
+</span><a href="#local-6989586621679120987"><span class="hs-identifier hs-var">clist</span></a></span><span>
 </span><span id="line-75"></span><span>            </span><span class="hs-comment">-- | Compute the number of changes to test using the 'exec' lists length</span><span>
-</span><span id="line-76"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679119661"><span class="annot"><span class="annottext">execsCounts :: Int
-</span><a href="#local-6989586621679119661"><span class="hs-identifier hs-var hs-var">execsCounts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
+</span><span id="line-76"></span><span>            </span><span class="hs-keyword">let</span><span> </span><span id="local-6989586621679120982"><span class="annot"><span class="annottext">execsCounts :: Int
+</span><a href="#local-6989586621679120982"><span class="hs-identifier hs-var hs-var">execsCounts</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. (Foldable t, Num a) =&gt; t a -&gt; a
 </span><span class="hs-identifier hs-var">sum</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
-</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119660"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119660"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
+</span><span class="hs-identifier">_</span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679120981"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120981"><span class="hs-identifier hs-var">c</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119660"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="#local-6989586621679120981"><span class="hs-identifier hs-var">c</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[(Change HsModule, Int, TypeCheckStatus)]
-</span><a href="#local-6989586621679119665"><span class="hs-identifier hs-var">changesWithTcCalls</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120986"><span class="hs-identifier hs-var">changesWithTcCalls</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-77"></span><span>            </span><span class="hs-comment">-- | Predict the number of calls to the typechecker</span><span>
-</span><span id="line-78"></span><span>                </span><span id="local-6989586621679119658"><span class="annot"><span class="annottext">tcCalls :: Int
-</span><a href="#local-6989586621679119658"><span class="hs-identifier hs-var hs-var">tcCalls</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119667"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span id="line-78"></span><span>                </span><span id="local-6989586621679120979"><span class="annot"><span class="annottext">tcCalls :: Int
+</span><a href="#local-6989586621679120979"><span class="hs-identifier hs-var hs-var">tcCalls</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120988"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119661"><span class="hs-identifier hs-var">execsCounts</span></a></span><span>
-</span><span id="line-79"></span><span>                </span><span id="local-6989586621679119655"><span class="annot"><span class="annottext">changes :: [(Change HsModule, TypeCheckStatus)]
-</span><a href="#local-6989586621679119655"><span class="hs-identifier hs-var hs-var">changes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119654"><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119654"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119653"><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119653"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119654"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119653"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="#local-6989586621679120982"><span class="hs-identifier hs-var">execsCounts</span></a></span><span>
+</span><span id="line-79"></span><span>                </span><span id="local-6989586621679120976"><span class="annot"><span class="annottext">changes :: [(Change HsModule, TypeCheckStatus)]
+</span><a href="#local-6989586621679120976"><span class="hs-identifier hs-var hs-var">changes</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679120975"><span class="annot"><span class="annottext">Change HsModule
+</span><a href="#local-6989586621679120975"><span class="hs-identifier hs-var">a</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-special">,</span><span> </span><span id="local-6989586621679120974"><span class="annot"><span class="annottext">TypeCheckStatus
+</span><a href="#local-6989586621679120974"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
+</span><a href="#local-6989586621679120975"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
+</span><a href="#local-6989586621679120974"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">[(Change HsModule, Int, TypeCheckStatus)]
-</span><a href="#local-6989586621679119665"><span class="hs-identifier hs-var">changesWithTcCalls</span></a></span><span>
-</span><span id="line-80"></span><span>                </span><span id="local-6989586621679119649"><span class="annot"><span class="annottext">successfulchanges :: [Change HsModule]
-</span><a href="#local-6989586621679119649"><span class="hs-identifier hs-var hs-var">successfulchanges</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a b. (a, b) -&gt; a
+</span><a href="#local-6989586621679120986"><span class="hs-identifier hs-var">changesWithTcCalls</span></a></span><span>
+</span><span id="line-80"></span><span>                </span><span id="local-6989586621679120970"><span class="annot"><span class="annottext">successfulchanges :: [Change HsModule]
+</span><a href="#local-6989586621679120970"><span class="hs-identifier hs-var hs-var">successfulchanges</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall a b. (a, b) -&gt; a
 </span><span class="hs-identifier hs-var">fst</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">forall a. (a -&gt; Bool) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">filter</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">TypeCheckStatus
@@ -255,10 +255,10 @@
 </span><span class="hs-operator hs-var">==</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[(Change HsModule, TypeCheckStatus)]
-</span><a href="#local-6989586621679119655"><span class="hs-identifier hs-var">changes</span></a></span><span>
+</span><a href="#local-6989586621679120976"><span class="hs-identifier hs-var">changes</span></a></span><span>
 </span><span id="line-81"></span><span>            </span><span class="hs-comment">-- | Stop searching if `method` is lazy and a terminal change is found</span><span>
 </span><span id="line-82"></span><span>            </span><span class="hs-keyword">if</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SearchMethod
-</span><a href="#local-6989586621679119687"><span class="hs-identifier hs-var">method</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><a href="#local-6989586621679121008"><span class="hs-identifier hs-var">method</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">SearchMethod
 </span><a href="Seminal.Options.html#Lazy"><span class="hs-identifier hs-var">Lazy</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
 </span><span class="hs-operator hs-var">&amp;&amp;</span></span><span> </span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Bool
@@ -267,23 +267,23 @@
 </span><span class="hs-operator hs-var">==</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">forall node. Change node -&gt; ChangeType
 </span><a href="Seminal.Change.html#category"><span class="hs-identifier hs-var">category</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119649"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span>
+</span><a href="#local-6989586621679120970"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span>
 </span><span id="line-83"></span><span>                </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119658"><span class="hs-identifier hs-var">tcCalls</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119649"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120979"><span class="hs-identifier hs-var">tcCalls</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
+</span><a href="#local-6989586621679120970"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-84"></span><span>                </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">forall (p :: * -&gt; * -&gt; *) b c a.
 Bifunctor p =&gt;
 (b -&gt; c) -&gt; p a b -&gt; p a c
 </span><span class="hs-identifier hs-var">second</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119649"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
+</span><a href="#local-6989586621679120970"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Int -&gt; [Change HsModule] -&gt; Ghc (Int, [Change HsModule])
-</span><a href="#local-6989586621679119684"><span class="hs-identifier hs-var">findValidChanges</span></a></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119658"><span class="hs-identifier hs-var">tcCalls</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
+</span><a href="#local-6989586621679121005"><span class="hs-identifier hs-var">findValidChanges</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120979"><span class="hs-identifier hs-var">tcCalls</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (t :: * -&gt; *) a b. Foldable t =&gt; (a -&gt; [b]) -&gt; t a -&gt; [b]
 </span><span class="hs-identifier hs-var">concatMap</span></span><span> </span><span class="annot"><span class="annottext">forall node. Change node -&gt; [Change node]
 </span><a href="Seminal.Change.html#followups"><span class="hs-identifier hs-var">followups</span></a></span><span> </span><span class="annot"><span class="annottext">[Change HsModule]
-</span><a href="#local-6989586621679119649"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120970"><span class="hs-identifier hs-var">successfulchanges</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-85"></span><span>
 </span><span id="line-86"></span><span class="hs-comment">-- | Calls typechecker on Change.</span><span>
 </span><span id="line-87"></span><span class="hs-comment">-- Will return the change with the number of calls to the TC and the typecheck status.</span><span>
@@ -293,94 +293,94 @@ Bifunctor p =&gt;
 -&gt; Bool
 -&gt; Change HsModule
 -&gt; Ghc (Change HsModule, Int, TypeCheckStatus)
-</span><a href="Seminal.html#evaluateChange"><span class="hs-identifier hs-var hs-var">evaluateChange</span></a></span></span><span> </span><span id="local-6989586621679119642"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119642"><span class="hs-identifier hs-var">pm</span></a></span></span><span> </span><span id="local-6989586621679119641"><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679119641"><span class="hs-identifier hs-var">traceCall</span></a></span></span><span> </span><span id="local-6989586621679119640"><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">forall node. Change node -&gt; [ChangeNode node]
+</span><a href="Seminal.html#evaluateChange"><span class="hs-identifier hs-var hs-var">evaluateChange</span></a></span></span><span> </span><span id="local-6989586621679120963"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679120963"><span class="hs-identifier hs-var">pm</span></a></span></span><span> </span><span id="local-6989586621679120962"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679120962"><span class="hs-identifier hs-var">traceCall</span></a></span></span><span> </span><span id="local-6989586621679120961"><span class="annot"><span class="annottext">Change HsModule
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">forall node. Change node -&gt; [ChangeNode node]
 </span><a href="Seminal.Change.html#exec"><span class="hs-identifier hs-var">exec</span></a></span><span> </span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-91"></span><span>    </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">ErrorType -&gt; TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#Error"><span class="hs-identifier hs-var">TypeChecker.Error</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ErrorType
 </span><a href="Seminal.Compiler.TypeChecker.html#TypeCheckError"><span class="hs-identifier hs-var">TypeCheckError</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;{From Change Group}&quot;</span></span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-92"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679119636"><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119636"><span class="hs-identifier hs-var">a</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679119635"><span class="annot"><span class="annottext">[ChangeNode HsModule]
-</span><a href="#local-6989586621679119635"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-93"></span><span>        </span><span id="local-6989586621679119634"><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119634"><span class="hs-identifier hs-var">statusA</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679119641"><span class="hs-identifier hs-var">traceCall</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119633"><span class="hs-identifier hs-var">traceTcCall</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119636"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119632"><span class="hs-identifier hs-var">callTypecheckerOnExec</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119636"><span class="hs-identifier hs-var">a</span></a></span><span>
+</span><span id="line-92"></span><span>    </span><span class="hs-special">(</span><span id="local-6989586621679120957"><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120957"><span class="hs-identifier hs-var">a</span></a></span></span><span class="annot"><span class="hs-glyph hs-type">:</span></span><span id="local-6989586621679120956"><span class="annot"><span class="annottext">[ChangeNode HsModule]
+</span><a href="#local-6989586621679120956"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-93"></span><span>        </span><span id="local-6989586621679120955"><span class="annot"><span class="annottext">TypeCheckStatus
+</span><a href="#local-6989586621679120955"><span class="hs-identifier hs-var">statusA</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679120962"><span class="hs-identifier hs-var">traceCall</span></a></span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679120954"><span class="hs-identifier hs-var">traceTcCall</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120957"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679120953"><span class="hs-identifier hs-var">callTypecheckerOnExec</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120957"><span class="hs-identifier hs-var">a</span></a></span><span>
 </span><span id="line-94"></span><span>        </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119634"><span class="hs-identifier hs-var">statusA</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679120955"><span class="hs-identifier hs-var">statusA</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-95"></span><span>            </span><span class="annot"><span class="annottext">TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#Success"><span class="hs-identifier hs-var">TypeChecker.Success</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">exec :: [ChangeNode HsModule]
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">exec :: [ChangeNode HsModule]
 </span><a href="Seminal.Change.html#exec"><span class="hs-identifier hs-var">exec</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119636"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">}</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120957"><span class="hs-identifier hs-var">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-special">}</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119634"><span class="hs-identifier hs-var">statusA</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120955"><span class="hs-identifier hs-var">statusA</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-96"></span><span>            </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679119631"><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119631"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119630"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119630"><span class="hs-identifier hs-var">count</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679119629"><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119629"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119631"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621679119630"><span class="hs-identifier hs-var">count</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679120952"><span class="annot"><span class="annottext">Change HsModule
+</span><a href="#local-6989586621679120952"><span class="hs-identifier hs-var">m</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679120951"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120951"><span class="hs-identifier hs-var">count</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679120950"><span class="annot"><span class="annottext">TypeCheckStatus
+</span><a href="#local-6989586621679120950"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
+</span><a href="#local-6989586621679120952"><span class="hs-identifier hs-var">m</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679120951"><span class="hs-identifier hs-var">count</span></a></span><span> </span><span class="annot"><span class="annottext">forall a. Num a =&gt; a -&gt; a -&gt; a
 </span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119629"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="#local-6989586621679120950"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ParsedModule
 -&gt; Bool
 -&gt; Change HsModule
 -&gt; Ghc (Change HsModule, Int, TypeCheckStatus)
 </span><a href="Seminal.html#evaluateChange"><span class="hs-identifier hs-var">evaluateChange</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119642"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679119641"><span class="hs-identifier hs-var">traceCall</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">exec :: [ChangeNode HsModule]
+</span><a href="#local-6989586621679120963"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679120962"><span class="hs-identifier hs-var">traceCall</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Change HsModule
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">exec :: [ChangeNode HsModule]
 </span><a href="Seminal.Change.html#exec"><span class="hs-identifier hs-var">exec</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[ChangeNode HsModule]
-</span><a href="#local-6989586621679119635"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120956"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
 </span><span id="line-97"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-98"></span><span>        </span><span id="local-6989586621679119633"><span class="annot"><span class="annottext">traceTcCall :: ChangeNode HsModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119633"><span class="hs-identifier hs-var hs-var">traceTcCall</span></a></span></span><span> </span><span id="local-6989586621679119617"><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119617"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-98"></span><span>        </span><span id="local-6989586621679120954"><span class="annot"><span class="annottext">traceTcCall :: ChangeNode HsModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679120954"><span class="hs-identifier hs-var hs-var">traceTcCall</span></a></span></span><span> </span><span id="local-6989586621679120938"><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120938"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-99"></span><span>            </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">forall (f :: * -&gt; *). Applicative f =&gt; Bool -&gt; f () -&gt; f ()
 </span><span class="hs-identifier hs-var">when</span></span><span> </span><span class="annot"><span class="annottext">Bool
-</span><a href="#local-6989586621679119641"><span class="hs-identifier hs-var">traceCall</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="#local-6989586621679120962"><span class="hs-identifier hs-var">traceCall</span></a></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
 </span><span id="line-100"></span><span>                </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
 </span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall node.
 ChangeNode node -&gt; ChangeNode node -&gt; ChangeLocation -&gt; FilePath
 </span><a href="Seminal.Change.html#show"><span class="hs-identifier hs-var">Seminal.Change.show</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall node. Change node -&gt; ChangeNode node
 </span><a href="Seminal.Change.html#src"><span class="hs-identifier hs-var">src</span></a></span><span> </span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119617"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall node. Change node -&gt; ChangeLocation
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120938"><span class="hs-identifier hs-var">e</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall node. Change node -&gt; ChangeLocation
 </span><a href="Seminal.Change.html#location"><span class="hs-identifier hs-var">location</span></a></span><span> </span><span class="annot"><span class="annottext">Change HsModule
-</span><a href="#local-6989586621679119640"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120961"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-101"></span><span>                </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
 </span><span class="hs-identifier hs-var">putStr</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;Status: &quot;</span></span><span>
-</span><span id="line-102"></span><span>            </span><span id="local-6989586621679119612"><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119612"><span class="hs-identifier hs-var">status</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119632"><span class="hs-identifier hs-var">callTypecheckerOnExec</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119617"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-102"></span><span>            </span><span id="local-6989586621679120933"><span class="annot"><span class="annottext">TypeCheckStatus
+</span><a href="#local-6989586621679120933"><span class="hs-identifier hs-var">status</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679120953"><span class="hs-identifier hs-var">callTypecheckerOnExec</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120938"><span class="hs-identifier hs-var">e</span></a></span><span>
 </span><span id="line-103"></span><span>            </span><span class="annot"><span class="annottext">()
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. MonadIO m =&gt; IO a -&gt; m a
 </span><span class="hs-identifier hs-var">liftIO</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; IO ()
 </span><span class="hs-identifier hs-var">putStrLn</span></span><span> </span><span class="annot"><span class="annottext">forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119612"><span class="hs-identifier hs-var">status</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679120933"><span class="hs-identifier hs-var">status</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-104"></span><span>                </span><span class="annot"><span class="annottext">TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#Success"><span class="hs-identifier hs-var">TypeChecker.Success</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;Success\n&quot;</span></span><span>
@@ -389,35 +389,35 @@ ChangeNode node -&gt; ChangeNode node -&gt; ChangeLocation -&gt; FilePath
 </span><span class="hs-string">&quot;Fail\n&quot;</span></span><span>
 </span><span id="line-106"></span><span>            </span><span class="annot"><span class="annottext">forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">TypeCheckStatus
-</span><a href="#local-6989586621679119612"><span class="hs-identifier hs-var">status</span></a></span><span>
-</span><span id="line-107"></span><span>        </span><span id="local-6989586621679119632"><span class="annot"><span class="annottext">callTypecheckerOnExec :: ChangeNode HsModule -&gt; Ghc TypeCheckStatus
-</span><a href="#local-6989586621679119632"><span class="hs-identifier hs-var hs-var">callTypecheckerOnExec</span></a></span></span><span> </span><span id="local-6989586621679119611"><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119611"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679120933"><span class="hs-identifier hs-var">status</span></a></span><span>
+</span><span id="line-107"></span><span>        </span><span id="local-6989586621679120953"><span class="annot"><span class="annottext">callTypecheckerOnExec :: ChangeNode HsModule -&gt; Ghc TypeCheckStatus
+</span><a href="#local-6989586621679120953"><span class="hs-identifier hs-var hs-var">callTypecheckerOnExec</span></a></span></span><span> </span><span id="local-6989586621679120932"><span class="annot"><span class="annottext">ChangeNode HsModule
+</span><a href="#local-6989586621679120932"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsedModule -&gt; Ghc TypeCheckStatus
 </span><a href="Seminal.Compiler.TypeChecker.html#typecheckModule"><span class="hs-identifier hs-var">TypeChecker.typecheckModule</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ParsedModule -&gt; HsModule -&gt; ParsedModule
 </span><a href="Seminal.html#wrapHsModule"><span class="hs-identifier hs-var">wrapHsModule</span></a></span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119642"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall n. ChangeNode n -&gt; n
+</span><a href="#local-6989586621679120963"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall n. ChangeNode n -&gt; n
 </span><a href="Seminal.Change.html#getNode"><span class="hs-identifier hs-var">getNode</span></a></span><span> </span><span class="annot"><span class="annottext">ChangeNode HsModule
-</span><a href="#local-6989586621679119611"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679120932"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
 </span><span id="line-108"></span><span>
 </span><span id="line-109"></span><span>
 </span><span id="line-110"></span><span class="hs-comment">-- | Util function to apply a changed HsModule onto a ParsedModule</span><span>
 </span><span id="line-111"></span><span class="annot"><a href="Seminal.html#wrapHsModule"><span class="hs-identifier hs-type">wrapHsModule</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">HsModule</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span>
 </span><span id="line-112"></span><span id="wrapHsModule"><span class="annot"><span class="annottext">wrapHsModule :: ParsedModule -&gt; HsModule -&gt; ParsedModule
-</span><a href="Seminal.html#wrapHsModule"><span class="hs-identifier hs-var hs-var">wrapHsModule</span></a></span></span><span> </span><span id="local-6989586621679119609"><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119609"><span class="hs-identifier hs-var">pm</span></a></span></span><span> </span><span id="local-6989586621679119608"><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679119608"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span>
+</span><a href="Seminal.html#wrapHsModule"><span class="hs-identifier hs-var hs-var">wrapHsModule</span></a></span></span><span> </span><span id="local-6989586621679120930"><span class="annot"><span class="annottext">ParsedModule
+</span><a href="#local-6989586621679120930"><span class="hs-identifier hs-var">pm</span></a></span></span><span> </span><span id="local-6989586621679120929"><span class="annot"><span class="annottext">HsModule
+</span><a href="#local-6989586621679120929"><span class="hs-identifier hs-var">m</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">let</span><span>
 </span><span id="line-113"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span> </span><span class="annot"><span class="annottext">ModSummary
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679119607"><span class="annot"><span class="annottext">ParsedSource
-</span><a href="#local-6989586621679119607"><span class="hs-identifier hs-var">modsrc</span></a></span></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679120928"><span class="annot"><span class="annottext">ParsedSource
+</span><a href="#local-6989586621679120928"><span class="hs-identifier hs-var">modsrc</span></a></span></span><span> </span><span class="annot"><span class="annottext">[FilePath]
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119609"><span class="hs-identifier hs-var">pm</span></a></span><span>
-</span><span id="line-114"></span><span>    </span><span id="local-6989586621679119606"><span class="annot"><span class="annottext">srcLoc :: ChangeLocation
-</span><a href="#local-6989586621679119606"><span class="hs-identifier hs-var hs-var">srcLoc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall l e. GenLocated l e -&gt; l
+</span><a href="#local-6989586621679120930"><span class="hs-identifier hs-var">pm</span></a></span><span>
+</span><span id="line-114"></span><span>    </span><span id="local-6989586621679120927"><span class="annot"><span class="annottext">srcLoc :: ChangeLocation
+</span><a href="#local-6989586621679120927"><span class="hs-identifier hs-var hs-var">srcLoc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall l e. GenLocated l e -&gt; l
 </span><span class="hs-identifier hs-var">getLoc</span></span><span> </span><span class="annot"><span class="annottext">ParsedSource
-</span><a href="#local-6989586621679119607"><span class="hs-identifier hs-var">modsrc</span></a></span><span>
+</span><a href="#local-6989586621679120928"><span class="hs-identifier hs-var">modsrc</span></a></span><span>
 </span><span id="line-115"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="annot"><span class="annottext">ParsedModule
-</span><a href="#local-6989586621679119609"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pm_parsed_source :: ParsedSource
+</span><a href="#local-6989586621679120930"><span class="hs-identifier hs-var">pm</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">pm_parsed_source :: ParsedSource
 </span><span class="hs-identifier hs-var">pm_parsed_source</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">forall l e. l -&gt; e -&gt; GenLocated l e
 </span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">ChangeLocation
-</span><a href="#local-6989586621679119606"><span class="hs-identifier hs-var">srcLoc</span></a></span><span> </span><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679119608"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">}</span></pre></body></html>
+</span><a href="#local-6989586621679120927"><span class="hs-identifier hs-var">srcLoc</span></a></span><span> </span><span class="annot"><span class="annottext">HsModule
+</span><a href="#local-6989586621679120929"><span class="hs-identifier hs-var">m</span></a></span><span> </span><span class="hs-special">}</span></pre></body></html>
