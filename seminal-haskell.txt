@@ -55,6 +55,7 @@ Wrapping :: ChangeType
 -- | The Change is good enough to terminate the search and/or be presented
 --   to the user as if
 Terminal :: ChangeType
+Addition :: ChangeType
 changeTypes :: [String]
 forceRewrite :: Outputable node => Change node -> Change node
 instance Data.Data.Data Seminal.Change.ChangeType
