@@ -45,7 +45,8 @@ testSuite = testGroup "Seminal" $ buildTest <$> testGroups
             testOperation,
             testSignatures,
             testCases,
-            testTypeDeclaration
+            testTypeDeclaration,
+            testStringToNum
             ]
 
 testRoot :: [IO Test]
@@ -300,4 +301,33 @@ testTypeDeclaration = [
         "Type Declaration: Swap Subtype arguments" 
         "type Enumerator a = a -> SrcSpan -> [Change a]"
         "type Enumerator a = SrcSpan -> a -> [Change a]" 0
+    ]
+
+testStringToNum :: [IO Test]
+testStringToNum = [
+    testSeminal
+        ["string-to-num/expect-digit"]
+        "Mono String to Int" 
+        "\"9\""
+        "9" 0,
+    testSeminal
+        ["string-to-num/expect-float"]
+        "String to Float" 
+        "\"-4.2\""
+        "-4.2" 0,
+    testSeminal
+        ["string-to-num/expect-int"]
+        "String to Int" 
+        "\"42\""
+        "42" 0,
+    testSeminal
+        ["string-to-num/expect-integer"]
+        "String to Integer" 
+        "\"42\""
+        "42" 0,
+    testSeminal
+        ["string-to-num/expect-int-from-char"]
+        "Char to Int" 
+        "'4'"
+        "4" 0
     ]

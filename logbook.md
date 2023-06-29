@@ -170,6 +170,10 @@
 - Type Enumeration: Try to add parameter
 - Declaration Enumeration: Go Through type declaration
 
+### June 28
+
+- Try to turn strings into numbers
+
 ## Difficulties encountered
 
 - Removing declaration might lead to standalone type signature, which is not allowed in Haskell. The solution was to, along with removing the said declaration, set its value to undefined
