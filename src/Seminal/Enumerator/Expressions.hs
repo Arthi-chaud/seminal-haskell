@@ -29,7 +29,7 @@ import Seminal.Change
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
 import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkDataOcc)
-import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
+import Seminal.Enumerator.Literals (enumerateChangeInLiteral, enumerateRaiseInLiterals)
 import Data.Maybe (mapMaybe)
 import Seminal.Enumerator.LocalBindings (enumerateChangesInLocalBinds)
 import {-# SOURCE #-} Seminal.Enumerator.Matches (enumerateChangesInMatch)
@@ -123,7 +123,7 @@ enumerateChangesInExpression' expr loc = case expr of
             getTupleArg _ = Nothing
     -- Attempts tweaks with litterals
     (HsLit ext literal) -> enumerateChangeInLiteral literal loc
-        <&&> (HsLit ext)
+        <&&> (HsLit ext) ++ enumerateRaiseInLiterals expr loc
     -- In function application: try changes on functions and parameters
     (HsApp a func param) -> paramInsert ++ paramRemovals ++ enumF ++ enumParam ++ paramSwap
         where
