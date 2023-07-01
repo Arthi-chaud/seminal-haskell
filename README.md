@@ -12,7 +12,46 @@ The goal of Seminal is to overcome this weakness. To do so, Delta-debugging is l
 
 This implementation of Seminal for Haskell is a Master's Degree Project for the [University of Kent](https://www.kent.ac.uk/).
 
----
+## Example
+
+With the following file,
+
+```haskell
+main :: IO ()
+main = do
+    putStrLn "Hello World"
+    return 1
+```
+
+`seminal-haskell` would output this:
+
+```
+Suggestions:
+
+faulty-code.hs:4:12:
+Replace `1`
+with    `()`
+Reason: The expected type of the expression is `()`.
+
+faulty-code.hs:1:9-13:
+Replace `main :: IO ()`
+with    `main :: IO Int`
+Reason: Expected Type `Int`, got `()`.
+```
+
+## How-to
+
+### Installation
+
+To install `seminal-haskell`, you need to install [Stack](https://docs.haskellstack.org/en/stable/#how-to-install-stack). Then, run the following commands:
+
+```
+git clone https://github.com/Arthi-chaud/seminal-haskell.git
+cd seminal-haskell
+stack install
+```
+
+### Usage
 
 ```
 Usage: seminal-haskell files... [-n|--lines N] [--lazy] [-q|--quiet]
