@@ -6,11 +6,11 @@ module Seminal.Compiler.TypeChecker (
     Seminal.Compiler.TypeChecker.typecheckModule
 ) where
 
-import GHC (typecheckModule, ParsedModule, Ghc)
+import "ghc" GHC (typecheckModule, ParsedModule, Ghc)
 import Data.Monoid ()
-import GHC.Types.SourceError (handleSourceError)
+import "ghc-lib" GHC.Types.SourceError (handleSourceError)
 import Text.Printf (printf)
-import GHC.SysTools (isContainedIn)
+import "ghc" GHC.SysTools (isContainedIn)
 import Data.Functor ((<&>))
 import Data.Text (pack, strip, unpack)
 

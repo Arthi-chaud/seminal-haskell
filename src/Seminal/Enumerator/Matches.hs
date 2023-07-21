@@ -2,20 +2,7 @@ module Seminal.Enumerator.Matches (
     enumerateChangesInMatch
 ) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC
-    ( GhcPs,
-      GenLocated(..),
-      noSrcSpan,
-      SrcSpanAnn'(locA),
-      LHsExpr,
-      GhcPs,
-      SrcSpanAnn'(SrcSpanAnn, locA),
-      GenLocated(L),
-      Match(..),
-      LHsExpr,
-      GRHSs(GRHSs),
-      GRHS(GRHS),
-      noSrcSpan )
+import Seminal.Compiler.API
 import Seminal.Change ((<&&>))
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))

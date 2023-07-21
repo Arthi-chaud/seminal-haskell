@@ -1,6 +1,6 @@
 module Seminal.Enumerator.Declarations(enumerateChangesInDeclaration, enumerateChangesInTypeDeclaration) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (HsDecl(..), GhcPs, TyClDecl (SynDecl), GenLocated (L), SrcSpanAnn' (locA))
+import Seminal.Compiler.API
 import Seminal.Enumerator.Bindings (enumerateChangesInBinding)
 import Seminal.Change ((<&&>), forceRewrite)
 import Seminal.Enumerator.Signatures (enumerateChangeInSignature)

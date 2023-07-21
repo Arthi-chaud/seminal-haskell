@@ -2,18 +2,7 @@ module Seminal.Enumerator.LocalBindings (
     enumerateChangesInLocalBinds
 ) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC
-    ( GhcPs,
-      GenLocated(..),
-      SrcSpanAnn'(locA),
-      GhcPs,
-      SrcSpanAnn'(locA),
-      GenLocated(L),
-      HsLocalBinds,
-      HsLocalBindsLR(HsValBinds, HsIPBinds),
-      HsValBindsLR(XValBindsLR, ValBinds),
-      HsIPBinds(IPBinds),
-      IPBind(IPBind) )
+import Seminal.Compiler.API
 import Seminal.Change
     ( node,
       ChangeType(Removal),
@@ -22,7 +11,6 @@ import Seminal.Change
     )
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
-import GHC.Data.Bag (bagToList, listToBag)
 import Seminal.Enumerator.Signatures (enumerateChangeInSignature)
 import {-# SOURCE #-} Seminal.Enumerator.Expressions (enumerateChangesInExpression)
 import Seminal.Enumerator.Bindings (enumerateChangesInBinding)

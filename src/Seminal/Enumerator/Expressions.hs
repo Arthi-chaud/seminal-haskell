@@ -2,24 +2,7 @@ module Seminal.Enumerator.Expressions (
     enumerateChangesInExpression
 ) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC
-    ( HsExpr(..),
-      GhcPs,
-      GenLocated(..),
-      noExtField,
-      noSrcSpan,
-      noAnnSrcSpan,
-      EpAnn(EpAnnNotUsed),
-      HsTupArg(Present),
-      noSrcSpanA,
-      SrcSpanAnn'(locA),
-      LHsExpr,
-      GhcPs,
-      SrcSpanAnn'(locA),
-      MatchGroup(MG),
-      GenLocated(L),
-      LHsExpr,
-      noSrcSpan, noLoc, reLocA, StmtLR (..), HsToken (HsTok), TokenLocation (NoTokenLoc))
+import Seminal.Compiler.API
 import Seminal.Change
     ( Change(..), node,
       ChangeType(Removal, Addition),
@@ -28,7 +11,6 @@ import Seminal.Change
     )
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
-import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkDataOcc)
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral, enumerateRaiseInLiterals)
 import Data.Maybe (mapMaybe)
 import Seminal.Enumerator.LocalBindings (enumerateChangesInLocalBinds)

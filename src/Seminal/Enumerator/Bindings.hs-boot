@@ -5,8 +5,7 @@ module Seminal.Enumerator.Bindings (
 ) where
 
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (HsBind, GhcPs)
-import GHC.Hs (HsLocalBinds)
+import Seminal.Compiler.API
 
 enumerateChangesInBinding :: Enumerator (HsBind GhcPs)
 enumerateChangesInFuncBinding :: Enumerator (HsBind GhcPs)

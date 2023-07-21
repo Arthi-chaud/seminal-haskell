@@ -3,16 +3,7 @@ module Seminal.Enumerator.Bindings (
     enumerateChangesInFuncBinding
 ) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC
-    ( GhcPs,
-      GenLocated(..),
-      SrcSpanAnn'(locA),
-      GhcPs,
-      HsBindLR(..),
-      SrcSpanAnn'(SrcSpanAnn, locA),
-      MatchGroup(MG),
-      HsBind,
-      GenLocated(L) )
+import Seminal.Compiler.API
 import Seminal.Change ((<&&>))
 import Seminal.Enumerator.Patterns (enumerateChangesInPattern)
 import Data.Functor ((<&>))

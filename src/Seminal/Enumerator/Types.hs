@@ -1,8 +1,7 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow), HsUniToken (HsUnicodeTok), TokenLocation (NoTokenLoc))
+import Seminal.Compiler.API
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change, src, message), (<&&>), forceRewrite)
-import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
 import Data.Functor ((<&>))
 import Text.Printf (printf)
 import Data.List.HT (splitEverywhere)

@@ -1,6 +1,6 @@
 module Seminal.Enumerator.Patterns (enumerateChangesInPattern) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (Pat(..), GhcPs, GenLocated (L), SrcSpanAnn' (locA), noExtField)
+import Seminal.Compiler.API
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral)
 import Seminal.Change (Change(..), ChangeType (Wildcard), (<&&>), node)
 

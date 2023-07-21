@@ -3,6 +3,6 @@ module Seminal.Enumerator.LocalBindings (
 ) where
 
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (HsLocalBinds, GhcPs)
+import Seminal.Compiler.API
 
 enumerateChangesInLocalBinds :: Enumerator (HsLocalBinds GhcPs)

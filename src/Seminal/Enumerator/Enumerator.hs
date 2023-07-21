@@ -1,6 +1,6 @@
 module Seminal.Enumerator.Enumerator(Enumerator) where
 import Seminal.Change (Change)
-import GHC (SrcSpan)
+import Seminal.Compiler.API
     
 -- | Inspired from Seminal (2006, p. 5)
 -- The list of changes if sorted by relevancy: the right-most is the most relevant/specific change

@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Signatures (enumerateChangeInSignature) where
-import GHC (Sig (TypeSig), GhcPs, HsWildCardBndrs (HsWC), GenLocated (L), HsSigType (HsSig), SrcSpanAnn' (locA))
+import Seminal.Compiler.API
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Enumerator.Types(enumerateChangeInType)
 import Seminal.Change ((<&&>), forceRewrite)

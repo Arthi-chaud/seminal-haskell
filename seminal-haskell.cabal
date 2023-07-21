@@ -30,6 +30,7 @@ library
       Seminal.Compiler.Runner
       Seminal.Compiler.TypeChecker
   other-modules:
+      Seminal.Compiler.API
       Seminal.Enumerator.Bindings
       Seminal.Enumerator.Declarations
       Seminal.Enumerator.Enumerator
@@ -47,12 +48,15 @@ library
       src
   default-extensions:
       TupleSections
+      PackageImports
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
     , bytestring
     , directory
     , exceptions
+    , ghc
+    , ghc-boot
     , ghc-lib
     , ghc-paths
     , text
@@ -69,6 +73,7 @@ executable seminal-haskell
       app
   default-extensions:
       TupleSections
+      PackageImports
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -89,6 +94,7 @@ test-suite seminal-haskell-test
       test
   default-extensions:
       TupleSections
+      PackageImports
   ghc-options: -Wall -Werror -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       HUnit

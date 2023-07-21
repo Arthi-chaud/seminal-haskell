@@ -1,8 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes, forceRewrite) where
 
-import GHC (SrcSpan)
-import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
+import Seminal.Compiler.API
 import Text.Printf (printf)
 import Data.Data (dataTypeConstrs, Data (dataTypeOf), showConstr)
 type ChangeLocation = SrcSpan
