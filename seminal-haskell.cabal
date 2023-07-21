@@ -54,7 +54,6 @@ library
     , directory
     , exceptions
     , ghc-lib
-    , ghc-lib-parser
     , ghc-paths
     , text
     , time

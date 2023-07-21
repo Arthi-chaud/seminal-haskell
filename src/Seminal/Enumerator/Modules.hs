@@ -1,12 +1,12 @@
 module Seminal.Enumerator.Modules(enumerateChangesInModule) where
-import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD, TyClD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
+import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD, TyClD), GenLocated (L), HsModule (HsModule, hsmodDecls))
 import Seminal.Change (Change(Change), ChangeType (Removal), (<&&>), node)
 import Seminal.Enumerator.Declarations (enumerateChangesInDeclaration, enumerateChangesInTypeDeclaration)
 import Data.List.HT (splitEverywhere)
 import Data.Functor ((<&>))
 import Seminal.Enumerator.Bindings (enumerateChangesInFuncBinding)
 
-enumerateChangesInModule :: HsModule -> [Change HsModule]
+enumerateChangesInModule :: HsModule GhcPs  -> [Change (HsModule GhcPs)]
 enumerateChangesInModule hsmod = case hsmod of
     HsModule {} -> enumerateChangesAtModuleRoot (hsmodDecls hsmod)
         <&&> (\decls -> hsmod { hsmodDecls = decls })
@@ -22,7 +22,7 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> \(h, L l r
     in case removed of
         -- | In the case of a variable, we do not try to remove it, as it may be accompanied by a type declaration,
         -- And standalone type declaration are not allowed
-        (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
+        (ValD v funBind) -> enumerateChangesInFuncBinding funBind removedLoc
             <&&> (L l . ValD v)
             <&&> (\change -> h ++ [change] ++ t)
         (TyClD x typeDecl) -> enumerateChangesInTypeDeclaration typeDecl removedLoc

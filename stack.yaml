@@ -41,6 +41,8 @@ packages:
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
 # extra-deps: []
+extra-deps:
+- ghc-lib-parser-9.6.2.20230523
 
 
 # Override default flag values for local packages and extra-deps
@@ -50,7 +52,7 @@ packages:
 # extra-package-dbs: []
 
 # Control whether we use the GHC we find on the path
-system-ghc: true
+system-ghc: false
 #
 # Require a specific version of Stack, using version ranges
 # require-stack-version: -any # Default

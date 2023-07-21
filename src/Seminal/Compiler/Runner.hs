@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Seminal.Compiler.Runner (runCompiler) where
-import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors, extensionFlags))
+import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors, extensionFlags), noBackend)
 import GHC.Paths (libdir)
 import GHC.Driver.Session
     ( DynFlags(ghcLink, mainFunIs, mainModuleNameIs, backend),
@@ -32,7 +32,7 @@ runCompiler filePaths action = do
             setSessionDynFlags (flags {
                 mainFunIs = Just "undefined",
                 mainModuleNameIs = mkModuleName "Prelude",
-                backend = NoBackend,
+                backend = noBackend,
                 ghcLink = NoLink,
                 maxErrors = Just 0,
                 extensionFlags = insert PartialTypeSignatures (extensionFlags flags)
@@ -41,7 +41,7 @@ runCompiler filePaths action = do
             modGraph <- depanal [] True
             parseResults <- mapM (\f -> (f,) <$> getModule modGraph f) filePaths
             action parseResults
-        guessTargets = mapM (`guessTarget` Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
+        guessTargets = mapM (\t -> guessTarget t Nothing Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
         -- Retrieves the module of a file using its paths and the modgraph
         getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
             -- Do not worry, this should never happen.

@@ -19,7 +19,7 @@ import GHC
       MatchGroup(MG),
       GenLocated(L),
       LHsExpr,
-      noSrcSpan, noLoc, reLocA, StmtLR (..))
+      noSrcSpan, noLoc, reLocA, StmtLR (..), HsToken (HsTok), TokenLocation (NoTokenLoc))
 import Seminal.Change
     ( Change(..), node,
       ChangeType(Removal, Addition),
@@ -69,7 +69,7 @@ enumerateChangesInExpression expr loc = [change]
         locMe = L noSrcSpanA
 
 enumerateChangesInExpression' :: Enumerator (HsExpr GhcPs)
-enumerateChangesInExpression' (HsPar _ (L lexpr expr)) _ = enumerateChangesInExpression' expr (locA lexpr)
+enumerateChangesInExpression' (HsPar _ _ (L lexpr expr) _) _ = enumerateChangesInExpression' expr (locA lexpr)
 enumerateChangesInExpression' expr loc = case expr of
     (ExplicitList ext elems) -> reverse -- Reverse because we started here w/ most specific
         (if length elems == 1
@@ -165,13 +165,13 @@ enumerateChangesInExpression' expr loc = case expr of
                 )
             paramList = hsAppToList expr
     -- `let _ = xx in ...` expressions
-    (HsLet x bind e) -> enumExpr ++ enumBind
+    (HsLet x letToken bind inToken e) -> enumExpr ++ enumBind
         where
             enumBind = enumerateChangesInLocalBinds bind loc
-                <&&> (\newbind -> HsLet x newbind e)
+                <&&> (\newbind -> HsLet x letToken newbind inToken e)
             enumExpr = let (L lexpr letExpr) = e in enumerateChangesInExpression letExpr (locA lexpr)
                 <&&> (L lexpr)
-                <&&> (HsLet x bind)
+                <&&> (HsLet x letToken bind inToken)
     (HsIf ext lifExpr lthenExpr lelseExpr) -> enumIf ++ enumElse ++ enumThen
         where
             enumIf = let (L lif ifExpr) = lifExpr in enumerateChangesInExpression ifExpr (locA lif)
@@ -188,12 +188,12 @@ enumerateChangesInExpression' expr loc = case expr of
             enumRoot = let (L lroot root) = lrootExpr in enumerateChangesInExpression root (locA lroot)
                 <&&> (L lroot)
                 <&&> (\newRoot -> HsCase xcase newRoot lmatchExpr)
-            enumMatches = let (MG xmatch (L lmatches matches) origin) = lmatchExpr in concat (splitEverywhere matches
+            enumMatches = let (MG xmatch (L lmatches matches)) = lmatchExpr in concat (splitEverywhere matches
                 <&> (\(h, L lmatch match, t) -> enumerateChangesInMatch match (locA lmatch)
                         <&&> (L lmatch)
                         <&&> (\newMatch -> h ++ [newMatch] ++ t)
                         <&&> (L lmatches)
-                        <&&> (\newMatches -> MG xmatch newMatches origin)
+                        <&&> (MG xmatch)
                         <&&> (HsCase xcase lrootExpr)
                 ))
     (OpApp xapp lleftExpr lopExpr lrightExpr) -> enumLeft ++ enumOp ++ enumRight
@@ -243,7 +243,7 @@ buildFunctionName funcName = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRd
 -- | Wraps an expression in parenthesis (AST-wise).
 -- Mainly used for pretty printing
 wrapExprInPar :: LHsExpr GhcPs -> HsExpr GhcPs
-wrapExprInPar = HsPar EpAnnNotUsed
+wrapExprInPar x = HsPar EpAnnNotUsed (L NoTokenLoc HsTok) x (L NoTokenLoc HsTok)
 
 -- | Turns an HsApp into a list of expression.
 -- `const 1 2` -> [cons, 1, 2]

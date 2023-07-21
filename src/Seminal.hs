@@ -8,7 +8,7 @@ import Seminal.Options (Options(Options), SearchMethod(Lazy))
 import Seminal.Change (Change (..), ChangeType(..), getNode, show)
 import qualified Seminal.Compiler.TypeChecker as TypeChecker(typecheckModule, TypeCheckStatus(..))
 import Seminal.Compiler.Runner (runCompiler)
-import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc)
+import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc, GhcPs)
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Compiler.TypeChecker (ErrorType(..), isScopeError, getTypeCheckError)
 import Data.Maybe (mapMaybe)
@@ -33,7 +33,7 @@ data Status =
         -- | The number of calls to the typechecker
         Int,
         -- | The valid changes found
-        [(FilePath, ErrorMessage, [Change HsModule])]
+        [(FilePath, ErrorMessage, [Change (HsModule GhcPs)])]
     )
 
 
@@ -62,7 +62,7 @@ runSeminal (Options searchMethod traceCalls) filePaths = either Error id <$> ghc
 -- | Finds the possible changes to apply to a module Seminal.to make it typecheck.
 -- | Returns the number of calls to the typechecker along with the found changes
 -- This is the closest thing to the *Searcher* from Seminal (2006, 2007)
-findChanges :: SearchMethod -> (Change HsModule -> Ghc (Change HsModule, Int, TypeChecker.TypeCheckStatus)) -> HsModule -> Ghc (Int, [Change HsModule])
+findChanges :: SearchMethod -> (Change (HsModule GhcPs) -> Ghc (Change (HsModule GhcPs), Int, TypeChecker.TypeCheckStatus)) -> HsModule GhcPs -> Ghc (Int, [Change (HsModule GhcPs)])
 findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
     where
         -- | runs `evaluate` on all changes
@@ -86,7 +86,7 @@ findChanges method test m = findValidChanges 0 (enumerateChangesInModule m)
 -- | Calls typechecker on Change.
 -- Will return the change with the number of calls to the TC and the typecheck status.
 -- The `exec` field will only contain one element
-evaluateChange :: ParsedModule -> Bool -> Change HsModule -> Ghc (Change HsModule, Int, TypeChecker.TypeCheckStatus)
+evaluateChange :: ParsedModule -> Bool -> Change (HsModule GhcPs) -> Ghc (Change (HsModule GhcPs), Int, TypeChecker.TypeCheckStatus)
 evaluateChange pm traceCall change = case exec change of
     [] -> return (change, 0, TypeChecker.Error $ TypeCheckError "{From Change Group}" )
     (a:b) -> do
@@ -108,7 +108,7 @@ evaluateChange pm traceCall change = case exec change of
 
 
 -- | Util function to apply a changed HsModule onto a ParsedModule
-wrapHsModule :: ParsedModule -> HsModule -> ParsedModule
+wrapHsModule :: ParsedModule -> HsModule GhcPs -> ParsedModule
 wrapHsModule pm m = let
     (ParsedModule _ modsrc _) = pm
     srcLoc = getLoc modsrc

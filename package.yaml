@@ -39,7 +39,6 @@ library:
   source-dirs: src
   dependencies:
   - directory
-  - ghc-lib
   - ghc-lib-parser
   - exceptions
   - time

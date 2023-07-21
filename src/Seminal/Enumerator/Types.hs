@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow), IsUnicodeSyntax (UnicodeSyntax))
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow), HsUniToken (HsUnicodeTok), TokenLocation (NoTokenLoc))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change, src, message), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
@@ -25,7 +25,7 @@ enumerateChangeInType typ loc = (case typ of
 enumerateChangeInType' :: Enumerator (HsType GhcPs)
 enumerateChangeInType' typ loc = ioWrapping : case typ of
     (HsTyVar _ _  (L _ oldtype)) -> let
-        filteredAtomicTypes = filter (((ppr oldtype) /=) . ppr) atomicTypes
+        filteredAtomicTypes = filter (((showPprUnsafe $ ppr oldtype) /=) . showPprUnsafe .  ppr) atomicTypes
         in (filteredAtomicTypes <&> (\newType ->
             Change (node typ) [node newType] loc []
             (formatMessage newType oldtype) Terminal
@@ -35,7 +35,7 @@ enumerateChangeInType' typ loc = ioWrapping : case typ of
         where
             (L lp parent) = lparent
             (L _ child) = lchild
-            filteredMonads = filter ((ppr monad /=) . ppr) topMonads
+            filteredMonads = filter (((showPprUnsafe $ ppr monad) /=) . showPprUnsafe .  ppr) topMonads
             monadSubstitutions = buildType <$> filteredMonads <&> (\newM -> Change
                 (node typ) [node $ HsAppTy x (L lp newM) lchild] loc []
                 (formatMessage newM parent)
@@ -96,7 +96,7 @@ enumerateChangeInType' typ loc = ioWrapping : case typ of
                 <&> (\(h, child, t) -> enumerateChangeInType' child loc
                     <&&> (\newChild -> typeListToHsFunTy $ h ++ [newChild] ++ t))
             -- We have to remove duplicates. There is no need to run swpas on `a -> a`
-            swaps = let filteredSwaps = filter ((ppr typeList /=) . ppr) (permutations typeList) in
+            swaps = let filteredSwaps = filter (((showPprUnsafe $ ppr typeList) /=) . showPprUnsafe .  ppr) (permutations typeList) in
                 filteredSwaps <&> (\newType -> Change
                     (node typ)
                     [node $ typeListToHsFunTy newType] loc []
@@ -180,5 +180,5 @@ typeListToHsFunTy :: [HsType GhcPs] -> (HsType GhcPs)
 typeListToHsFunTy [] = undefined
 typeListToHsFunTy [e] = e
 typeListToHsFunTy (left:right) = HsFunTy EpAnnNotUsed
-    (HsUnrestrictedArrow UnicodeSyntax)
+    (HsUnrestrictedArrow $ L NoTokenLoc HsUnicodeTok)
     (noLocA left) (noLocA (typeListToHsFunTy right))
