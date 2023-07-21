@@ -53,8 +53,8 @@ library
     , bytestring
     , directory
     , exceptions
-    , ghc-lib
-    , ghc-lib-parser
+    , ghc
+    , ghc-boot
     , ghc-paths
     , text
     , time
@@ -96,7 +96,7 @@ test-suite seminal-haskell-test
     , base >=4.7 && <5
     , directory
     , filepath
-    , ghc-lib
+    , ghc
     , seminal-haskell
     , test-framework
     , test-framework-hunit

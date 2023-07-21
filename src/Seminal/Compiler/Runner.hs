@@ -41,7 +41,7 @@ runCompiler filePaths action = do
             modGraph <- depanal [] True
             parseResults <- mapM (\f -> (f,) <$> getModule modGraph f) filePaths
             action parseResults
-        guessTargets = mapM (`guessTarget` Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
+        guessTargets = mapM (\t -> guessTarget t Nothing Nothing)
         -- Retrieves the module of a file using its paths and the modgraph
         getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
             -- Do not worry, this should never happen.
