@@ -25,7 +25,7 @@ enumerateChangeInType typ loc = (case typ of
 enumerateChangeInType' :: Enumerator (HsType GhcPs)
 enumerateChangeInType' typ loc = ioWrapping : case typ of
     (HsTyVar _ _  (L _ oldtype)) -> let
-        filteredAtomicTypes = filter (((ppr oldtype) /=) . ppr) atomicTypes
+        filteredAtomicTypes = filter ((not . eqSDoc (ppr oldtype)) . ppr) atomicTypes
         in (filteredAtomicTypes <&> (\newType ->
             Change (node typ) [node newType] loc []
             (formatMessage newType oldtype) Terminal
@@ -35,7 +35,7 @@ enumerateChangeInType' typ loc = ioWrapping : case typ of
         where
             (L lp parent) = lparent
             (L _ child) = lchild
-            filteredMonads = filter ((ppr monad /=) . ppr) topMonads
+            filteredMonads = filter ((not . eqSDoc (ppr monad)) . ppr) topMonads
             monadSubstitutions = buildType <$> filteredMonads <&> (\newM -> Change
                 (node typ) [node $ HsAppTy x (L lp newM) lchild] loc []
                 (formatMessage newM parent)
@@ -96,7 +96,7 @@ enumerateChangeInType' typ loc = ioWrapping : case typ of
                 <&> (\(h, child, t) -> enumerateChangeInType' child loc
                     <&&> (\newChild -> typeListToHsFunTy $ h ++ [newChild] ++ t))
             -- We have to remove duplicates. There is no need to run swpas on `a -> a`
-            swaps = let filteredSwaps = filter ((ppr typeList /=) . ppr) (permutations typeList) in
+            swaps = let filteredSwaps = filter ((not . eqSDoc (ppr typeList)) . ppr) (permutations typeList) in
                 filteredSwaps <&> (\newType -> Change
                     (node typ)
                     [node $ typeListToHsFunTy newType] loc []

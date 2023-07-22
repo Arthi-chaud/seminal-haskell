@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use fewer imports" #-}
+{-# LANGUAGE PatternSynonyms #-}
 -- | We want to split imports as muc has possible to use CPP preprocessors more easily
 
 -- | Import and reexport GHC's API. This is done to make transitions between GHC's version easier
@@ -8,7 +9,8 @@ module Seminal.Compiler.API (
     GenLocated(..),
     unLoc,
     getLoc,
-    HsModule(..),
+    HsModule,
+    pattern GHCHsModule.HsModule,
     ParsedModule(..),
     Ghc,
     liftIO,
@@ -30,7 +32,6 @@ module Seminal.Compiler.API (
     depanal,
     load,
     LoadHowMuch(..),
-    Backend(..),
     DynFlags(..),
     mgModSummaries,
     GhcException(..),
@@ -99,7 +100,12 @@ module Seminal.Compiler.API (
     Extension(..),
     insert,
     throwGhcException,
-    msHsFilePath
+    msHsFilePath,
+    noBackend,
+    hsmodDecls,
+#if MIN_VERSION_ghc(9,6,1)
+    eqSDoc,
+#endif
 ) where
 
 -- | Location
@@ -130,7 +136,8 @@ import GHC.Types.SourceText (mkIntegralLit)
 import GHC.Types.SourceText (mkTHFractionalLit)
 
 -- | AST
-import GHC.Hs(HsModule(..))
+import qualified GHC.Hs as GHCHsModule(HsModule(..))
+import GHC.Hs(hsmodDecls)
 import GHC.Hs.Decls(LHsDecl)
 import GHC.Hs.Decls(HsDecl(..))
 import GHC.Hs.Decls(TyClDecl(..))
@@ -153,7 +160,9 @@ import Language.Haskell.Syntax.Lit(OverLitVal(..))
 import Language.Haskell.Syntax.Type(HsType(..))
 import Language.Haskell.Syntax.Type(HsArrow(..))
 import Language.Haskell.Syntax.Type (HsTupleSort(..))
-#if MIN_VERSION_ghc(9,4,1)
+#if MIN_VERSION_ghc(9,6,1)
+import Language.Haskell.Syntax.Concrete (HsUniToken(HsUnicodeTok))
+#elif MIN_VERSION_ghc(9,4,1)
 import Language.Haskell.Syntax.Extension (HsUniToken(HsUnicodeTok))
 #else
 import GHC.Parser.Annotation (IsUnicodeSyntax(..))
@@ -183,7 +192,13 @@ import GHC(parseModule)
 import GHC.Driver.Make(depanal)
 import GHC.Driver.Make(load)
 import GHC.Driver.Make(LoadHowMuch(..))
-import GHC.Driver.Backend(Backend(..))
+#if MIN_VERSION_ghc(9,6,1)
+import GHC.Driver.Backend(noBackend)
+#else
+import GHC.Driver.Backend(Backend(NoBackend))
+noBackend :: Backend
+noBackend = NoBackend
+#endif
 import GHC.Driver.Session(DynFlags(..))
 import GHC.Unit.Module.Graph(mgModSummaries)
 import GHC(typecheckModule)
@@ -213,13 +228,28 @@ import GHC.Types.Name.Occurrence(mkTcOcc)
 import GHC.Types.Name.Occurrence(mkVarOcc)
 import GHC.Types.Name.Occurrence(mkDataOcc)
 
+-- | Misc
+import GHC.Plugins (PromotionFlag (NotPromoted))
+import GHC.Plugins (Boxity (Boxed))
+import GHC.LanguageExtensions (Extension(PartialTypeSignatures))
+
 -- | Pretty Print
 import GHC.Utils.Outputable(showPprUnsafe)
 import GHC.Utils.Outputable(ppr)
 import GHC.Utils.Outputable(Outputable)
 import GHC.Utils.Outputable(SDoc)
+#if MIN_VERSION_ghc(9,6,1)
+import GHC.Base(eqString)
+import GHC.Utils.Outputable(showSDocUnsafe)
+eqSDoc :: SDoc -> SDoc -> Bool
+eqSDoc a b = eqString (showSDocUnsafe a) (showSDocUnsafe b)
+#else
+eqSDoc :: SDoc -> SDoc -> Bool
+eqSDoc a b = ppr a == ppr b
+#endif
 
--- | Misc
-import GHC.Plugins (PromotionFlag (NotPromoted))
-import GHC.Plugins (Boxity (Boxed))
-import GHC.LanguageExtensions (Extension(PartialTypeSignatures))
+#if MIN_VERSION_ghc(9,6,1)
+type HsModule = GHCHsModule.HsModule GhcPs
+#else
+type HsModule = GHCHsModule.HsModule
+#endif

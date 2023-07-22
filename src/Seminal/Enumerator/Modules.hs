@@ -22,9 +22,11 @@ enumerateChangesAtModuleRoot list = concat $ splitEverywhere list <&> \(h, L l r
     in case removed of
         -- | In the case of a variable, we do not try to remove it, as it may be accompanied by a type declaration,
         -- And standalone type declaration are not allowed
-        (ValD v (FunBind a b c d)) -> enumerateChangesInFuncBinding (FunBind a b c d) removedLoc
-            <&&> (L l . ValD v)
-            <&&> (\change -> h ++ [change] ++ t)
+        (ValD v body) -> case body of
+            (FunBind {}) -> enumerateChangesInFuncBinding body removedLoc
+                <&&> (L l . ValD v)
+                <&&> (\change -> h ++ [change] ++ t)
+            _ -> []
         (TyClD x typeDecl) -> enumerateChangesInTypeDeclaration typeDecl removedLoc
             <&&> (L l . TyClD x)
             <&&> (\change -> h ++ [change] ++ t)
