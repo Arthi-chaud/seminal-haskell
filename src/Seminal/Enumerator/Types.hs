@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Seminal.Enumerator.Types (enumerateChangeInType) where
 import Seminal.Compiler.API
 import Seminal.Enumerator.Enumerator (Enumerator)
@@ -179,5 +180,9 @@ typeListToHsFunTy :: [HsType GhcPs] -> (HsType GhcPs)
 typeListToHsFunTy [] = undefined
 typeListToHsFunTy [e] = e
 typeListToHsFunTy (left:right) = HsFunTy EpAnnNotUsed
+#if MIN_VERSION_ghc(9,4,1)
     (HsUnrestrictedArrow $ L NoTokenLoc HsUnicodeTok)
+#else
+    (HsUnrestrictedArrow UnicodeSyntax)
+#endif
     (noLocA left) (noLocA (typeListToHsFunTy right))

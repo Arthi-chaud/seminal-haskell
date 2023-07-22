@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use fewer imports" #-}
 -- | We want to split imports as muc has possible to use CPP preprocessors more easily
@@ -47,7 +48,6 @@ module Seminal.Compiler.API (
     HsLit(..),
     HsOverLit(..),
     OverLitVal(..),
-    TokenLocation(..),
     HsType(..),
     HsArrow(..),
     noLoc,
@@ -55,7 +55,13 @@ module Seminal.Compiler.API (
     reLocA,
     EpAnn(..),
     HsTupleSort(..),
+#if MIN_VERSION_ghc(9,4,1)
+    HsToken(..),
     HsUniToken(..),
+    TokenLocation(..),
+#else
+    IsUnicodeSyntax(..),
+#endif 
     RdrName,
     showPprUnsafe,
     ppr,
@@ -88,7 +94,6 @@ module Seminal.Compiler.API (
     noAnnSrcSpan,
     StmtLR(..),
     HsTupArg(..),
-    HsToken(..),
     handleSourceError,
     isContainedIn,
     Extension(..),
@@ -108,7 +113,9 @@ import GHC.Types.SrcLoc(noSrcSpan)
 -- | Annotations
 import GHC.Parser.Annotation(SrcSpanAnn'(..))
 import GHC.Parser.Annotation(realSrcSpan)
+#if MIN_VERSION_ghc(9,4,1)
 import GHC.Parser.Annotation(TokenLocation(NoTokenLoc))
+#endif
 import GHC.Parser.Annotation(noLocA)
 import GHC.Parser.Annotation(reLocA)
 import GHC.Parser.Annotation(noSrcSpanA)
@@ -146,7 +153,11 @@ import Language.Haskell.Syntax.Lit(OverLitVal(..))
 import Language.Haskell.Syntax.Type(HsType(..))
 import Language.Haskell.Syntax.Type(HsArrow(..))
 import Language.Haskell.Syntax.Type (HsTupleSort(..))
+#if MIN_VERSION_ghc(9,4,1)
 import Language.Haskell.Syntax.Extension (HsUniToken(HsUnicodeTok))
+#else
+import GHC.Parser.Annotation (IsUnicodeSyntax(..))
+#endif 
 import Language.Haskell.Syntax(Sig(..))
 import Language.Haskell.Syntax.Type(HsWildCardBndrs(..))
 import Language.Haskell.Syntax.Type(HsSigType(HsSig))
@@ -158,7 +169,9 @@ import Language.Haskell.Syntax.Extension (NoExtField (NoExtField))
 
 -- | Parsing Types
 import GHC(ParsedModule(..))
+#if MIN_VERSION_ghc(9,4,1)
 import GHC(HsToken(..))
+#endif
 
 -- | Runner Utils
 import GHC(runGhc)

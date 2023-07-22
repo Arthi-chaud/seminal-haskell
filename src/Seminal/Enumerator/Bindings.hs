@@ -17,8 +17,7 @@ enumerateChangesInBinding (FunBind a b c d) l = enumerateChangesInFuncBinding (F
 enumerateChangesInBinding (PatBind a (L loc pat) c d) _ = enumerateChangesInPattern pat (locA loc)
     <&&> (L loc)
     <&&> (\b -> PatBind a b c d)
-enumerateChangesInBinding (VarBind {}) _ = []
-enumerateChangesInBinding (PatSynBind {}) _ = []
+enumerateChangesInBinding _ _ = []
 
 -- | Enumerates changes to apply on function binding, e.g. `a True = True`.
 -- One function binding groups all the matches
