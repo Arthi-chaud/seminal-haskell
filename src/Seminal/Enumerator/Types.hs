@@ -1,14 +1,11 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow))
+import Seminal.Compiler.API
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change, src, message), (<&&>), forceRewrite)
-import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
 import Data.Functor ((<&>))
 import Text.Printf (printf)
 import Data.List.HT (splitEverywhere)
 import Data.List (permutations)
-import Language.Haskell.Syntax.Extension (HsUniToken(HsUnicodeTok))
-import GHC.Parser.Annotation (TokenLocation(NoTokenLoc))
 
 enumerateChangeInType :: Enumerator (HsType GhcPs)
 enumerateChangeInType typ loc = (case typ of

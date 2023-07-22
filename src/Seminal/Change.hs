@@ -1,8 +1,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module Seminal.Change (Change(..), node, getNode, ChangeNode(pretty), (<$$>), (<&&>), Seminal.Change.show, Seminal.Change.showWithMessage, ChangeType(..), changeTypes, forceRewrite) where
 
-import GHC (SrcSpan)
-import GHC.Plugins (SDoc, Outputable, ppr, showSDocUnsafe)
+import Seminal.Compiler.API
 import Text.Printf (printf)
 import Data.Data (dataTypeConstrs, Data (dataTypeOf), showConstr)
 type ChangeLocation = SrcSpan
@@ -62,9 +61,9 @@ f <$$> list = fmap f <$> list
 
 show :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String
 show src_ exec_ loc  = printf "%s:\nReplace\t`%s`\nwith\t`%s`"
-    (showSDocUnsafe $ ppr loc)
-    (showSDocUnsafe $ pretty src_)
-    (showSDocUnsafe $ pretty exec_)
+    (showPprUnsafe loc)
+    (showPprUnsafe $ pretty src_)
+    (showPprUnsafe $ pretty exec_)
 
 showWithMessage :: ChangeNode node -> ChangeNode node -> ChangeLocation -> String -> String
 showWithMessage src_ exec_ loc message_  = Seminal.Change.show src_ exec_ loc ++ "\nReason: " ++ message_

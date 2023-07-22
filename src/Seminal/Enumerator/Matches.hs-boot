@@ -3,6 +3,6 @@ module Seminal.Enumerator.Matches (
 ) where
 
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (GhcPs, Match, LHsExpr)
+import Seminal.Compiler.API
 
 enumerateChangesInMatch :: Enumerator (Match GhcPs (LHsExpr GhcPs))

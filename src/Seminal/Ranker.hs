@@ -3,7 +3,7 @@ module Seminal.Ranker (sortChanges) where
 import Seminal.Change (Change(..))
 import Data.List (sortOn)
 import Data.Ix (Ix(range))
-import GHC (realSrcSpan)
+import Seminal.Compiler.API
 import Data.Ord (Down(Down))
 
 -- | Takes the list of successful changes from the searcher.

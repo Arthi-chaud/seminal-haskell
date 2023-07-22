@@ -6,11 +6,8 @@ module Seminal.Compiler.TypeChecker (
     Seminal.Compiler.TypeChecker.typecheckModule
 ) where
 
-import GHC (typecheckModule, ParsedModule, Ghc)
-import Data.Monoid ()
-import GHC.Types.SourceError (handleSourceError)
+import Seminal.Compiler.API
 import Text.Printf (printf)
-import GHC.SysTools (isContainedIn)
 import Data.Functor ((<&>))
 import Data.Text (pack, strip, unpack)
 
@@ -54,7 +51,7 @@ instance Show ErrorType where
 -- | Typecheck Module
 typecheckModule :: ParsedModule -> Ghc TypeCheckStatus
 typecheckModule parsedModule = do
-    maybeT <- handleSourceError (return . Left . show) (GHC.typecheckModule parsedModule <&> Right)
+    maybeT <- handleSourceError (return . Left . show) (Seminal.Compiler.API.typecheckModule parsedModule <&> Right)
     return $ case maybeT of
         Right _ -> Success
         Left errMsg -> Error (if any (`isContainedIn` errMsg) ["not in scope", "Not in scope"]

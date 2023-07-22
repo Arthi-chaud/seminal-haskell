@@ -2,34 +2,10 @@ module Seminal.Enumerator.Expressions (
     enumerateChangesInExpression
 ) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC
-    ( HsExpr(..),
-      GhcPs,
-      GenLocated(..),
-      noExtField,
-      noSrcSpan,
-      noAnnSrcSpan,
-      EpAnn(EpAnnNotUsed),
-      HsTupArg(Present),
-      noSrcSpanA,
-      SrcSpanAnn'(locA),
-      LHsExpr,
-      GhcPs,
-      SrcSpanAnn'(locA),
-      MatchGroup(MG),
-      GenLocated(L),
-      LHsExpr,
-      HsToken(..), TokenLocation(..),
-      noSrcSpan, noLoc, reLocA, StmtLR (..))
+import Seminal.Compiler.API
 import Seminal.Change
-    ( Change(..), node,
-      ChangeType(Removal, Addition),
-      ChangeType(Terminal, Wildcard, Wrapping, Removal),
-      (<&&>)
-    )
 import Data.Functor ((<&>))
 import Data.List.HT (splitEverywhere)
-import GHC.Plugins (mkRdrUnqual, mkVarOcc, Boxity (Boxed), mkDataOcc)
 import Seminal.Enumerator.Literals (enumerateChangeInLiteral, enumerateRaiseInLiterals)
 import Data.Maybe (mapMaybe)
 import Seminal.Enumerator.LocalBindings (enumerateChangesInLocalBinds)
@@ -58,7 +34,7 @@ enumerateChangesInExpression expr loc = [change]
         changeToString = Change (node expr) [node $ HsApp EpAnnNotUsed (locMe $ buildFunctionName "show") lexpr] loc []
             "The expected type of the expression is a String. You may have forgotten to call the `show` method on the expression" Wrapping
             <&> (wrapExprInPar . locMe)
-        changeToTrue = Change (node expr) [node $ HsVar noExtField ltrue] loc [] msg Wildcard
+        changeToTrue = Change (node expr) [node $ HsVar NoExtField ltrue] loc [] msg Wildcard
             where
                 msg = "This expression might need to evaluate to a boolean value. It is not the case here. Check the type of the value."
                 ltrue = L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkDataOcc "True"))
@@ -239,7 +215,7 @@ unitExpression = ExplicitTuple EpAnnNotUsed [] Boxed
 
 -- | Build HsExpr (HsVar) from a symbol name
 buildFunctionName :: String -> HsExpr GhcPs
-buildFunctionName funcName = HsVar noExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc funcName))
+buildFunctionName funcName = HsVar NoExtField $ L (noAnnSrcSpan noSrcSpan) (mkRdrUnqual (mkVarOcc funcName))
 
 -- | Wraps an expression in parenthesis (AST-wise).
 -- Mainly used for pretty printing

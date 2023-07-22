@@ -4,11 +4,11 @@ module Seminal (
     runSeminal,
     Status(..),
 ) where
+import Seminal.Compiler.API
 import Seminal.Options (Options(Options), SearchMethod(Lazy))
 import Seminal.Change (Change (..), ChangeType(..), getNode, show)
 import qualified Seminal.Compiler.TypeChecker as TypeChecker(typecheckModule, TypeCheckStatus(..))
 import Seminal.Compiler.Runner (runCompiler)
-import GHC (GenLocated (L), unLoc, ParsedModule (pm_parsed_source, ParsedModule), getLoc, HsModule, Ghc)
 import Seminal.Enumerator.Modules (enumerateChangesInModule)
 import Seminal.Compiler.TypeChecker (ErrorType(..), isScopeError, getTypeCheckError)
 import Data.Maybe (mapMaybe)
@@ -16,7 +16,6 @@ import Prelude hiding (mod)
 import Data.Tuple.HT (thd3)
 import Seminal.Ranker (sortChanges)
 import Data.Bifunctor (second)
-import GHC.Plugins (liftIO)
 import Control.Monad (when)
 
 type ErrorMessage = String

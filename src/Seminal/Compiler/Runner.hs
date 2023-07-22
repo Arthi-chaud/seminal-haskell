@@ -1,16 +1,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Seminal.Compiler.Runner (runCompiler) where
-import GHC (Ghc, runGhc, setSessionDynFlags, setTargets, guessTarget, load, LoadHowMuch (LoadAllTargets), Backend (NoBackend), getSessionDynFlags, mkModuleName, ParsedModule, depanal, mgModSummaries, parseModule, GhcException (Panic), DynFlags (maxErrors, extensionFlags))
-import GHC.Paths (libdir)
-import GHC.Driver.Session
-    ( DynFlags(ghcLink, mainFunIs, mainModuleNameIs, backend),
-      GhcLink(NoLink) )
-import GHC.Plugins (msHsFilePath, throwGhcException)
+import Seminal.Compiler.API
+import GHC.Paths (libdir) --  We dont import is from wrapped API because it's not provided by GHC
 import Data.List (find)
 import Text.Printf (printf)
 import Control.Exception (try, SomeException)
-import GHC.LanguageExtensions (Extension(PartialTypeSignatures))
-import GHC.Data.EnumSet (insert)
 
 type ErrorMessage = String
 

@@ -1,12 +1,9 @@
 module Seminal.Enumerator.Literals (enumerateChangeInLiteral, enumerateRaiseInLiterals) where
 import Seminal.Enumerator.Enumerator (Enumerator)
-import GHC (HsLit(..), GhcPs, NoExtField (NoExtField), HsOverLit (OverLit), HsExpr (HsLit, HsOverLit), OverLitVal (HsFractional))
+import Seminal.Compiler.API
 import Seminal.Change (Change(..), ChangeType (Terminal), node)
 import Data.ByteString (unpack)
 import Data.ByteString.Internal (w2c)
-import GHC.Data.FastString (mkFastString)
-import GHC.Types.SourceText (SourceText(NoSourceText), mkIntegralLit, mkTHFractionalLit)
-import GHC.Plugins (unpackFS, integerTy)
 import Data.Char (isDigit, digitToInt)
 import Text.Read (readMaybe)
 import Data.Maybe (mapMaybe)
