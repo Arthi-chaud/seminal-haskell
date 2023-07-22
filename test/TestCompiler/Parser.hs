@@ -7,6 +7,7 @@ import Test.Framework.Providers.HUnit (testCase)
 import GHC (moduleNameString, moduleName, ms_mod, pm_mod_summary, ParsedModule)
 import System.Directory (getPermissions, setOwnerReadable, setPermissions)
 import Data.List (isPrefixOf, isSuffixOf, isInfixOf)
+import GHC.SysTools.Tasks(isContainedIn)
 
 runParser :: [FilePath] -> IO (Either String [(FilePath, ParsedModule)])
 runParser files = runCompiler files return
@@ -26,7 +27,7 @@ testSuite = testGroup "Compiler's Parser" [
     buildTest $ do
         res <- runParser ["test/assets/invalid/syntax-error.hs"]
         return $ testCase "Invalid Parsing (Syntax Error)" $ case res of
-            Left errMsg -> assertBool "" $ "parse error" `isPrefixOf` errMsg
+            Left errMsg -> assertBool errMsg $ "parse error" `isContainedIn` errMsg
             _ -> assertFailure "Parsing should have failed",
     buildTest $ do
         res <- runParser ["idonotexist"]

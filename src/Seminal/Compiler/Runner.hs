@@ -26,8 +26,6 @@ runCompiler filePaths action = do
         Right r -> Right r
     where
         session = runGhc (Just libdir) $ do
-            targets <- guessTargets filePaths
-            setTargets targets
             flags <- getSessionDynFlags
             setSessionDynFlags (flags {
                 mainFunIs = Just "undefined",
@@ -37,6 +35,8 @@ runCompiler filePaths action = do
                 maxErrors = Just 0,
                 extensionFlags = insert PartialTypeSignatures (extensionFlags flags)
                 })
+            targets <- guessTargets filePaths
+            setTargets targets
             _ <- load LoadAllTargets
             modGraph <- depanal [] True
             parseResults <- mapM (\f -> (f,) <$> getModule modGraph f) filePaths
