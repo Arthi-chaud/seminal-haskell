@@ -30,6 +30,7 @@ library
       Seminal.Compiler.Runner
       Seminal.Compiler.TypeChecker
   other-modules:
+      Seminal.Compiler.API
       Seminal.Enumerator.Bindings
       Seminal.Enumerator.Declarations
       Seminal.Enumerator.Enumerator

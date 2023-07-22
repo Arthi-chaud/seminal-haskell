@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Modules(enumerateChangesInModule) where
-import GHC (LHsDecl, GhcPs, SrcSpanAnn' (..), HsDecl (ValD, TyClD), HsBindLR (FunBind), GenLocated (L), HsModule (HsModule, hsmodDecls))
+import Seminal.Compiler.API
 import Seminal.Change (Change(Change), ChangeType (Removal), (<&&>), node)
 import Seminal.Enumerator.Declarations (enumerateChangesInDeclaration, enumerateChangesInTypeDeclaration)
 import Data.List.HT (splitEverywhere)
