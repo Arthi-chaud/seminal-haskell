@@ -103,9 +103,7 @@ module Seminal.Compiler.API (
     msHsFilePath,
     noBackend,
     hsmodDecls,
-#if MIN_VERSION_ghc(9,6,1)
     eqSDoc,
-#endif
 ) where
 
 -- | Location
@@ -196,8 +194,6 @@ import GHC.Driver.Make(LoadHowMuch(..))
 import GHC.Driver.Backend(noBackend)
 #else
 import GHC.Driver.Backend(Backend(NoBackend))
-noBackend :: Backend
-noBackend = NoBackend
 #endif
 import GHC.Driver.Session(DynFlags(..))
 import GHC.Unit.Module.Graph(mgModSummaries)
@@ -252,4 +248,10 @@ eqSDoc a b = ppr a == ppr b
 type HsModule = GHCHsModule.HsModule GhcPs
 #else
 type HsModule = GHCHsModule.HsModule
+#endif
+
+#if MIN_VERSION_ghc(9,6,1)
+#else
+noBackend :: Backend
+noBackend = NoBackend
 #endif
