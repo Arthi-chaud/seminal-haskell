@@ -26,8 +26,6 @@ runCompiler filePaths action = do
         Right r -> Right r
     where
         session = runGhc (Just libdir) $ do
-            targets <- guessTargets filePaths
-            setTargets targets
             flags <- getSessionDynFlags
             setSessionDynFlags (flags {
                 mainFunIs = Just "undefined",
@@ -37,11 +35,13 @@ runCompiler filePaths action = do
                 maxErrors = Just 0,
                 extensionFlags = insert PartialTypeSignatures (extensionFlags flags)
                 })
+            targets <- guessTargets filePaths
+            setTargets targets
             _ <- load LoadAllTargets
             modGraph <- depanal [] True
             parseResults <- mapM (\f -> (f,) <$> getModule modGraph f) filePaths
             action parseResults
-        guessTargets = mapM (`guessTarget` Nothing) -- AKA (\filePath -> guessTarget filePath Nothing)
+        guessTargets = mapM (\t -> guessTarget t Nothing Nothing)
         -- Retrieves the module of a file using its paths and the modgraph
         getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
             -- Do not worry, this should never happen.

@@ -1,5 +1,5 @@
 module Seminal.Enumerator.Types (enumerateChangeInType) where
-import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow), IsUnicodeSyntax (UnicodeSyntax))
+import GHC (GhcPs, GenLocated (L), HsType (HsWildCardTy, HsTyVar, HsTupleTy, HsAppTy, HsListTy, HsParTy, HsFunTy), NoExtField (NoExtField), RdrName, EpAnn (EpAnnNotUsed), HsTupleSort (HsBoxedOrConstraintTuple), noLocA, SrcSpanAnn' (locA), noLoc, reLocA, HsArrow (HsUnrestrictedArrow))
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Change (ChangeType(..), node, Change (Change, src, message), (<&&>), forceRewrite)
 import GHC.Plugins (mkRdrUnqual, showPprUnsafe, mkTcOcc, Outputable (ppr), PromotionFlag (NotPromoted))
@@ -7,6 +7,8 @@ import Data.Functor ((<&>))
 import Text.Printf (printf)
 import Data.List.HT (splitEverywhere)
 import Data.List (permutations)
+import Language.Haskell.Syntax.Extension (HsUniToken(HsUnicodeTok))
+import GHC.Parser.Annotation (TokenLocation(NoTokenLoc))
 
 enumerateChangeInType :: Enumerator (HsType GhcPs)
 enumerateChangeInType typ loc = (case typ of
@@ -180,5 +182,5 @@ typeListToHsFunTy :: [HsType GhcPs] -> (HsType GhcPs)
 typeListToHsFunTy [] = undefined
 typeListToHsFunTy [e] = e
 typeListToHsFunTy (left:right) = HsFunTy EpAnnNotUsed
-    (HsUnrestrictedArrow UnicodeSyntax)
+    (HsUnrestrictedArrow $ L NoTokenLoc HsUnicodeTok)
     (noLocA left) (noLocA (typeListToHsFunTy right))

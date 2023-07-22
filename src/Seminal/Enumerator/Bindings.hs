@@ -27,7 +27,6 @@ enumerateChangesInBinding (PatBind a (L loc pat) c d) _ = enumerateChangesInPatt
     <&&> (L loc)
     <&&> (\b -> PatBind a b c d)
 enumerateChangesInBinding (VarBind {}) _ = []
-enumerateChangesInBinding (AbsBinds {}) _ = []
 enumerateChangesInBinding (PatSynBind {}) _ = []
 
 -- | Enumerates changes to apply on function binding, e.g. `a True = True`.

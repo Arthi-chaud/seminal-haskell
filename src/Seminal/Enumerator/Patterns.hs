@@ -10,9 +10,9 @@ enumerateChangesInPattern :: Enumerator (Pat GhcPs)
 enumerateChangesInPattern (WildPat _) _ = []
 enumerateChangesInPattern pat loc = wildpatChange : case pat of
     (LitPat xlit litExpr) -> enumerateChangeInLiteral litExpr loc <&&> (LitPat xlit)
-    (ParPat xpar (L lpat subpat)) -> enumerateChangesInPattern subpat (locA lpat)
+    (ParPat xpar openParTok (L lpat subpat) closeParTok) -> enumerateChangesInPattern subpat (locA lpat)
         <&&> (L lpat)
-        <&&> (ParPat xpar)
+        <&&> (\newPat -> ParPat xpar openParTok newPat closeParTok)
     _ -> []
     where
         wildpatChange = Change (node pat) [node $ WildPat noExtField] loc [] "The pattern is invalid." Wildcard

@@ -56,6 +56,6 @@ enumerateRaiseInLiterals expr loc  = case expr of
             changeForString s = overLitValToLit <$> mapMaybe (\f -> f s) [stringToDouble]
                 <&> (\newLit -> Change (node expr) [node $ HsOverLit x newLit] loc [] "Remove the quotes" Terminal)
             stringToDouble str = nbToOverLitVal <$> (readMaybe str :: Maybe Double)
-            overLitValToLit o = OverLit undefined o undefined
+            overLitValToLit = OverLit NoExtField
             nbToOverLitVal = HsFractional . mkTHFractionalLit . toRational
     _ -> []

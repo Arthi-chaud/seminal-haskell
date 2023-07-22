@@ -39,8 +39,8 @@ library:
   source-dirs: src
   dependencies:
   - directory
-  - ghc-lib
-  - ghc-lib-parser
+  - ghc
+  - ghc-boot
   - exceptions
   - time
   - ghc-paths
@@ -77,7 +77,7 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - ghc-lib
+    - ghc
     - directory
     - filepath
     - text
