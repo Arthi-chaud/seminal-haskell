@@ -178,7 +178,7 @@
 
 - Bump GHC Version
 - Wrap GHC's API in custom module
-- Backward support for GHC 9.2.7
+- Backward support for GHC 9.2.7-9.4.4
 
 ## Difficulties encountered
 
