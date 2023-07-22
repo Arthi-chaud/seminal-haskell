@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE CPP #-}
 module Seminal.Compiler.Runner (runCompiler) where
 import Seminal.Compiler.API
 import GHC.Paths (libdir) --  We dont import is from wrapped API because it's not provided by GHC
@@ -35,7 +36,11 @@ runCompiler filePaths action = do
             modGraph <- depanal [] True
             parseResults <- mapM (\f -> (f,) <$> getModule modGraph f) filePaths
             action parseResults
+#if MIN_VERSION_ghc(9,4,1)
         guessTargets = mapM (\t -> guessTarget t Nothing Nothing)
+#else
+        guessTargets = mapM (`guessTarget` Nothing)
+#endif
         -- Retrieves the module of a file using its paths and the modgraph
         getModule modGraph filePath = case find ((== filePath) . msHsFilePath) (mgModSummaries modGraph) of
             -- Do not worry, this should never happen.

@@ -6,10 +6,22 @@ on:
 
 jobs:
   Build:
+    name: Build (GHC ${{ matrix.ghc-version }})
+    strategy:
+      fail-fast: false
+      matrix:
+        ghc-version: [
+          9.4.5,
+          9.2.7
+        ]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2.3.4
       - uses: ./.github/actions/install-stack
       - uses: ./.github/actions/cache
       - name: Compile Project
-        run: stack build
+        run: stack --compiler ghc-${{ matrix.ghc-version }} build
+      # This is to check if the project has been compiled with the correct version of ghc-lib.
+      # For example, if there is a mismatch, we would get something like "Unknown Constructor: Char" 
+      - name: Check Basic Suggestion
+        run: stack --compiler ghc-${{ matrix.ghc-version }} run test/assets/invalid/expect-char.hs

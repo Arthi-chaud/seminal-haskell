@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module Seminal.Enumerator.Literals (enumerateChangeInLiteral, enumerateRaiseInLiterals) where
 import Seminal.Enumerator.Enumerator (Enumerator)
 import Seminal.Compiler.API
@@ -53,6 +54,10 @@ enumerateRaiseInLiterals expr loc  = case expr of
             changeForString s = overLitValToLit <$> mapMaybe (\f -> f s) [stringToDouble]
                 <&> (\newLit -> Change (node expr) [node $ HsOverLit x newLit] loc [] "Remove the quotes" Terminal)
             stringToDouble str = nbToOverLitVal <$> (readMaybe str :: Maybe Double)
+#if MIN_VERSION_ghc(9,4,1)
             overLitValToLit = OverLit NoExtField
+#else
+            overLitValToLit ol = OverLit NoExtField ol expr
+#endif  
             nbToOverLitVal = HsFractional . mkTHFractionalLit . toRational
     _ -> []
