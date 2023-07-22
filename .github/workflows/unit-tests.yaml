@@ -5,6 +5,7 @@ on:
       - '*'
 jobs:
   run:
+    name: Run Unit Tests
     runs-on: ubuntu-20.04
     steps:
       - name: Wait for tests to succeed
