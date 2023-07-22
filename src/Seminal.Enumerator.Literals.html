@@ -1,51 +1,48 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Seminal.Enumerator.Literals</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier">enumerateChangeInLiteral</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateRaiseInLiterals"><span class="hs-identifier">enumerateRaiseInLiterals</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-2"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html"><span class="hs-identifier">Seminal.Enumerator.Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier">Enumerator</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">HsLit</span></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">GhcPs</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">NoExtField</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NoExtField</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">HsOverLit</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">OverLit</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">HsExpr</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">HsLit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">HsOverLit</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">OverLitVal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">HsFractional</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Compiler.API.html"><span class="hs-identifier">Seminal.Compiler.API</span></a></span><span>
 </span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Change.html"><span class="hs-identifier">Seminal.Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier">Change</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#ChangeType"><span class="hs-identifier">ChangeType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Change.html#Terminal"><span class="hs-identifier">Terminal</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#node"><span class="hs-identifier">node</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">unpack</span></span><span class="hs-special">)</span><span>
 </span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteString.Internal</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">w2c</span></span><span class="hs-special">)</span><span>
-</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Data.FastString</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mkFastString</span></span><span class="hs-special">)</span><span>
-</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Types.SourceText</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">SourceText</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NoSourceText</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mkIntegralLit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mkTHFractionalLit</span></span><span class="hs-special">)</span><span>
-</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Plugins</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">unpackFS</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">integerTy</span></span><span class="hs-special">)</span><span>
-</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isDigit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">digitToInt</span></span><span class="hs-special">)</span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Read</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">readMaybe</span></span><span class="hs-special">)</span><span>
-</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mapMaybe</span></span><span class="hs-special">)</span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
-</span><span id="line-14"></span><span class="hs-comment">-- | Enumeration of changes for Literals, e.g. hard-coded chars, strings, ints etc.</span><span>
-</span><span id="line-15"></span><span class="hs-comment">-- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Lit.html#t:HsLit)</span><span>
-</span><span id="line-16"></span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier hs-type">enumerateChangeInLiteral</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-17"></span><span id="enumerateChangeInLiteral"><span class="annot"><span class="annottext">enumerateChangeInLiteral :: Enumerator (HsLit GhcPs)
-</span><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier hs-var hs-var">enumerateChangeInLiteral</span></a></span></span><span> </span><span id="local-6989586621679130746"><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span></span><span> </span><span id="local-6989586621679130747"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130747"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-18"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsChar</span></span><span> </span><span class="annot"><span class="annottext">XHsChar GhcPs
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679130749"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130749"><span class="hs-identifier hs-var">char</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Change (HsLit GhcPs)]
-</span><a href="#local-6989586621679130750"><span class="hs-identifier hs-var">changeForChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130749"><span class="hs-identifier hs-var">char</span></a></span><span>
-</span><span id="line-19"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsCharPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsCharPrim GhcPs
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679130752"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130752"><span class="hs-identifier hs-var">char</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Change (HsLit GhcPs)]
-</span><a href="#local-6989586621679130750"><span class="hs-identifier hs-var">changeForChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130752"><span class="hs-identifier hs-var">char</span></a></span><span>
-</span><span id="line-20"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsString</span></span><span> </span><span class="annot"><span class="annottext">XHsString GhcPs
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679130754"><span class="annot"><span class="annottext">FastString
-</span><a href="#local-6989586621679130754"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-21"></span><span>        </span><span class="hs-comment">-- Need to turn FastString to String, for homogeneity</span><span>
-</span><span id="line-22"></span><span>        </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsLit GhcPs)]
-</span><a href="#local-6989586621679130755"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsLit GhcPs)])
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">isDigit</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">digitToInt</span></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Read</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">readMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">mapMaybe</span></span><span class="hs-special">)</span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Functor</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-operator">(&lt;&amp;&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-comment">-- | Enumeration of changes for Literals, e.g. hard-coded chars, strings, ints etc.</span><span>
+</span><span id="line-12"></span><span class="hs-comment">-- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Lit.html#t:HsLit)</span><span>
+</span><span id="line-13"></span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier hs-type">enumerateChangeInLiteral</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-14"></span><span id="enumerateChangeInLiteral"><span class="annot"><span class="annottext">enumerateChangeInLiteral :: Enumerator (HsLit GhcPs)
+</span><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier hs-var hs-var">enumerateChangeInLiteral</span></a></span></span><span> </span><span id="local-6989586621679131564"><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span></span><span> </span><span id="local-6989586621679131565"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131565"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-15"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsChar</span></span><span> </span><span class="annot"><span class="annottext">XHsChar GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679131567"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131567"><span class="hs-identifier hs-var">char</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131568"><span class="hs-identifier hs-var">changeForChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131567"><span class="hs-identifier hs-var">char</span></a></span><span>
+</span><span id="line-16"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsCharPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsCharPrim GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679131570"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131570"><span class="hs-identifier hs-var">char</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Char -&gt; [Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131568"><span class="hs-identifier hs-var">changeForChar</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131570"><span class="hs-identifier hs-var">char</span></a></span><span>
+</span><span id="line-17"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsString</span></span><span> </span><span class="annot"><span class="annottext">XHsString GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679131572"><span class="annot"><span class="annottext">FastString
+</span><a href="#local-6989586621679131572"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-18"></span><span>        </span><span class="hs-comment">-- Need to turn FastString to String, for homogeneity</span><span>
+</span><span id="line-19"></span><span>        </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131573"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsLit GhcPs)])
 -&gt; [Char] -&gt; [Change (HsLit GhcPs)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FastString -&gt; [Char]
 </span><span class="hs-identifier hs-var">unpackFS</span></span><span> </span><span class="annot"><span class="annottext">FastString
-</span><a href="#local-6989586621679130754"><span class="hs-identifier hs-var">string</span></a></span><span>
-</span><span id="line-23"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsStringPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsStringPrim GhcPs
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679130757"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679130757"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
-</span><span id="line-24"></span><span>        </span><span class="hs-comment">-- Need to turn ByteString to String, for homogeneity</span><span>
-</span><span id="line-25"></span><span>        </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsLit GhcPs)]
-</span><a href="#local-6989586621679130755"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsLit GhcPs)])
+</span><a href="#local-6989586621679131572"><span class="hs-identifier hs-var">string</span></a></span><span>
+</span><span id="line-20"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsStringPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsStringPrim GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679131576"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679131576"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-21"></span><span>        </span><span class="hs-comment">-- Need to turn ByteString to String, for homogeneity</span><span>
+</span><span id="line-22"></span><span>        </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131573"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsLit GhcPs)])
 -&gt; [Char] -&gt; [Change (HsLit GhcPs)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Char
@@ -53,14 +50,14 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
 </span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679130757"><span class="hs-identifier hs-var">string</span></a></span><span>
-</span><span id="line-26"></span><span>    </span><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131576"><span class="hs-identifier hs-var">string</span></a></span><span>
+</span><span id="line-23"></span><span>    </span><span class="annot"><span class="annottext">HsLit GhcPs
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-27"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>        </span><span id="local-6989586621679130750"><span class="annot"><span class="annottext">changeForChar :: Char -&gt; [Change (HsLit GhcPs)]
-</span><a href="#local-6989586621679130750"><span class="hs-identifier hs-var hs-var">changeForChar</span></a></span></span><span> </span><span id="local-6989586621679130764"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130764"><span class="hs-identifier hs-var">char</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span>
-</span><span id="line-29"></span><span>            </span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
+</span><span id="line-24"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-25"></span><span>        </span><span id="local-6989586621679131568"><span class="annot"><span class="annottext">changeForChar :: Char -&gt; [Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131568"><span class="hs-identifier hs-var hs-var">changeForChar</span></a></span></span><span> </span><span id="local-6989586621679131583"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131583"><span class="hs-identifier hs-var">char</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-26"></span><span>            </span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
 -&gt; [ChangeNode (HsLit GhcPs)]
 -&gt; SrcSpan
 -&gt; [Change (HsLit GhcPs)]
@@ -78,7 +75,7 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">(HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs))
 -&gt; HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
@@ -89,12 +86,12 @@ forall x. XHsString x -&gt; FastString -&gt; HsLit x
 SourceText
 </span><span class="hs-identifier hs-var">NoSourceText</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; FastString
 </span><span class="hs-identifier hs-var">mkFastString</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130764"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130747"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-30"></span><span>            </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131583"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131565"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-27"></span><span>            </span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;The expected type of the expression is a String, not a Char. Use double quotes or brackets instead.&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Terminal"><span class="hs-identifier hs-var">Terminal</span></a></span><span> </span><span class="hs-comment">-- Turn into String</span><span>
-</span><span id="line-31"></span><span>            </span><span class="hs-special">)</span><span class="annot"><span class="annottext">Change (HsLit GhcPs)
+</span><span id="line-28"></span><span>            </span><span class="hs-special">)</span><span class="annot"><span class="annottext">Change (HsLit GhcPs)
 -&gt; [Change (HsLit GhcPs)] -&gt; [Change (HsLit GhcPs)]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
@@ -115,20 +112,20 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; HsLit GhcPs
-</span><a href="#local-6989586621679130766"><span class="hs-identifier hs-var">charToInt</span></a></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130764"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130747"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131587"><span class="hs-identifier hs-var">charToInt</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131583"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131565"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;Expected an Int, not a Char. Remove the quotes&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Terminal"><span class="hs-identifier hs-var">Terminal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isDigit</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130764"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-comment">-- Turn into Int</span><span>
-</span><span id="line-32"></span><span>        </span><span id="local-6989586621679130755"><span class="annot"><span class="annottext">changeForString :: [Char] -&gt; [Change (HsLit GhcPs)]
-</span><a href="#local-6989586621679130755"><span class="hs-identifier hs-var hs-var">changeForString</span></a></span></span><span> </span><span class="hs-special">[</span><span id="local-6989586621679130774"><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130774"><span class="hs-identifier hs-var">char</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span>
-</span><span id="line-33"></span><span>            </span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
+</span><a href="#local-6989586621679131583"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-comment">-- Turn into Int</span><span>
+</span><span id="line-29"></span><span>        </span><span id="local-6989586621679131573"><span class="annot"><span class="annottext">changeForString :: [Char] -&gt; [Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131573"><span class="hs-identifier hs-var hs-var">changeForString</span></a></span></span><span> </span><span class="hs-special">[</span><span id="local-6989586621679131595"><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131595"><span class="hs-identifier hs-var">char</span></a></span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-30"></span><span>            </span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
 -&gt; [ChangeNode (HsLit GhcPs)]
 -&gt; SrcSpan
 -&gt; [Change (HsLit GhcPs)]
@@ -146,7 +143,7 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">(HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs))
 -&gt; HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
@@ -156,12 +153,12 @@ forall x. XHsChar x -&gt; Char -&gt; HsLit x
 </span><span class="hs-identifier hs-var">HsChar</span></span><span> </span><span class="annot"><span class="annottext">XHsChar GhcPs
 SourceText
 </span><span class="hs-identifier hs-var">NoSourceText</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130774"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130747"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-34"></span><span>            </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131595"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131565"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
+</span><span id="line-31"></span><span>            </span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;The expected type of the expression is a Char, not a String. Use single quotes instead.&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Terminal"><span class="hs-identifier hs-var">Terminal</span></a></span><span> </span><span class="hs-comment">-- If Singleton, extract it to char</span><span>
-</span><span id="line-35"></span><span>            </span><span class="hs-special">)</span><span class="annot"><span class="annottext">Change (HsLit GhcPs)
+</span><span id="line-32"></span><span>            </span><span class="hs-special">)</span><span class="annot"><span class="annottext">Change (HsLit GhcPs)
 -&gt; [Change (HsLit GhcPs)] -&gt; [Change (HsLit GhcPs)]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
@@ -182,33 +179,33 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; HsLit GhcPs
-</span><a href="#local-6989586621679130766"><span class="hs-identifier hs-var">charToInt</span></a></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130774"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130747"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131587"><span class="hs-identifier hs-var">charToInt</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><a href="#local-6989586621679131595"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131565"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;Expected an Int, not a String. Remove the quotes&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Terminal"><span class="hs-identifier hs-var">Terminal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
 </span><span class="hs-identifier hs-var">isDigit</span></span><span> </span><span class="annot"><span class="annottext">Char
-</span><a href="#local-6989586621679130774"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-36"></span><span>        </span><span class="annot"><a href="#local-6989586621679130755"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span id="local-6989586621679130775"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130775"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(([Char] -&gt; Maybe (HsLit GhcPs)) -&gt; Maybe (HsLit GhcPs))
+</span><a href="#local-6989586621679131595"><span class="hs-identifier hs-var">char</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-33"></span><span>        </span><span class="annot"><a href="#local-6989586621679131573"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span id="local-6989586621679131596"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131596"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(([Char] -&gt; Maybe (HsLit GhcPs)) -&gt; Maybe (HsLit GhcPs))
 -&gt; [[Char] -&gt; Maybe (HsLit GhcPs)] -&gt; [HsLit GhcPs]
 forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
-</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130776"><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130776"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130776"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130775"><span class="hs-identifier hs-var">str</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130777"><span class="hs-identifier hs-var">stringToInteger</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130778"><span class="hs-identifier hs-var">stringToInt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130779"><span class="hs-identifier hs-var">stringToFloat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130780"><span class="hs-identifier hs-var">stringToDouble</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-37"></span><span>            </span><span class="annot"><span class="annottext">[HsLit GhcPs]
+</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131597"><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131597"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131597"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131596"><span class="hs-identifier hs-var">str</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131598"><span class="hs-identifier hs-var">stringToInteger</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131599"><span class="hs-identifier hs-var">stringToInt</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131600"><span class="hs-identifier hs-var">stringToFloat</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131601"><span class="hs-identifier hs-var">stringToDouble</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-34"></span><span>            </span><span class="annot"><span class="annottext">[HsLit GhcPs]
 -&gt; (HsLit GhcPs -&gt; Change (HsLit GhcPs)) -&gt; [Change (HsLit GhcPs)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
-</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130781"><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130781"><span class="hs-identifier hs-var">newNum</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131602"><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131602"><span class="hs-identifier hs-var">newNum</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChangeNode (HsLit GhcPs)
 -&gt; [ChangeNode (HsLit GhcPs)]
 -&gt; SrcSpan
 -&gt; [Change (HsLit GhcPs)]
@@ -226,15 +223,15 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130746"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
+</span><a href="#local-6989586621679131564"><span class="hs-identifier hs-var">literal</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsLit GhcPs -&gt; ChangeNode (HsLit GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130781"><span class="hs-identifier hs-var">newNum</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130747"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131602"><span class="hs-identifier hs-var">newNum</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131565"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;Remove the quotes.&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Terminal"><span class="hs-identifier hs-var">Terminal</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span>        </span><span id="local-6989586621679130766"><span class="annot"><span class="annottext">charToInt :: Char -&gt; HsLit GhcPs
-</span><a href="#local-6989586621679130766"><span class="hs-identifier hs-var hs-var">charToInt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">XHsInt GhcPs -&gt; IntegralLit -&gt; HsLit GhcPs
+</span><span id="line-35"></span><span>        </span><span id="local-6989586621679131587"><span class="annot"><span class="annottext">charToInt :: Char -&gt; HsLit GhcPs
+</span><a href="#local-6989586621679131587"><span class="hs-identifier hs-var hs-var">charToInt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">XHsInt GhcPs -&gt; IntegralLit -&gt; HsLit GhcPs
 forall x. XHsInt x -&gt; IntegralLit -&gt; HsLit x
 </span><span class="hs-identifier hs-var">HsInt</span></span><span> </span><span class="annot"><span class="annottext">XHsInt GhcPs
 NoExtField
@@ -247,26 +244,26 @@ forall a. Integral a =&gt; a -&gt; IntegralLit
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Int
 </span><span class="hs-identifier hs-var">digitToInt</span></span><span>
-</span><span id="line-39"></span><span>        </span><span class="annot"><a href="#local-6989586621679130777"><span class="hs-identifier hs-type">stringToInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-40"></span><span>        </span><span id="local-6989586621679130777"><span class="annot"><span class="annottext">stringToInteger :: [Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130777"><span class="hs-identifier hs-var hs-var">stringToInteger</span></a></span></span><span> </span><span id="local-6989586621679130785"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130785"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130786"><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679130786"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">XHsInteger GhcPs -&gt; Integer -&gt; Type -&gt; HsLit GhcPs
+</span><span id="line-36"></span><span>        </span><span class="annot"><a href="#local-6989586621679131598"><span class="hs-identifier hs-type">stringToInteger</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>        </span><span id="local-6989586621679131598"><span class="annot"><span class="annottext">stringToInteger :: [Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131598"><span class="hs-identifier hs-var hs-var">stringToInteger</span></a></span></span><span> </span><span id="local-6989586621679131608"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131608"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131609"><span class="annot"><span class="annottext">Integer
+</span><a href="#local-6989586621679131609"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">XHsInteger GhcPs -&gt; Integer -&gt; Type -&gt; HsLit GhcPs
 forall x. XHsInteger x -&gt; Integer -&gt; Type -&gt; HsLit x
 </span><span class="hs-identifier hs-var">HsInteger</span></span><span> </span><span class="annot"><span class="annottext">XHsInteger GhcPs
 SourceText
 </span><span class="hs-identifier hs-var">NoSourceText</span></span><span> </span><span class="annot"><span class="annottext">Integer
-</span><a href="#local-6989586621679130786"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Type
+</span><a href="#local-6989586621679131609"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">Type
 </span><span class="hs-identifier hs-var">integerTy</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Integer -&gt; HsLit GhcPs) -&gt; Maybe Integer -&gt; Maybe (HsLit GhcPs)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe Integer
 forall a. Read a =&gt; [Char] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130785"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">)</span><span>
-</span><span id="line-41"></span><span>        </span><span class="annot"><a href="#local-6989586621679130778"><span class="hs-identifier hs-type">stringToInt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-42"></span><span>        </span><span id="local-6989586621679130778"><span class="annot"><span class="annottext">stringToInt :: [Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130778"><span class="hs-identifier hs-var hs-var">stringToInt</span></a></span></span><span> </span><span id="local-6989586621679130788"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130788"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XHsInt GhcPs -&gt; IntegralLit -&gt; HsLit GhcPs
+</span><a href="#local-6989586621679131608"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Integer</span></span><span class="hs-special">)</span><span>
+</span><span id="line-38"></span><span>        </span><span class="annot"><a href="#local-6989586621679131599"><span class="hs-identifier hs-type">stringToInt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-39"></span><span>        </span><span id="local-6989586621679131599"><span class="annot"><span class="annottext">stringToInt :: [Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131599"><span class="hs-identifier hs-var hs-var">stringToInt</span></a></span></span><span> </span><span id="local-6989586621679131612"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131612"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XHsInt GhcPs -&gt; IntegralLit -&gt; HsLit GhcPs
 forall x. XHsInt x -&gt; IntegralLit -&gt; HsLit x
 </span><span class="hs-identifier hs-var">HsInt</span></span><span> </span><span class="annot"><span class="annottext">XHsInt GhcPs
 NoExtField
@@ -280,11 +277,11 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe Int
 forall a. Read a =&gt; [Char] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130788"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span>        </span><span class="annot"><a href="#local-6989586621679130780"><span class="hs-identifier hs-type">stringToDouble</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>        </span><span id="local-6989586621679130780"><span class="annot"><span class="annottext">stringToDouble :: [Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130780"><span class="hs-identifier hs-var hs-var">stringToDouble</span></a></span></span><span> </span><span id="local-6989586621679130789"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130789"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XHsDoublePrim GhcPs -&gt; FractionalLit -&gt; HsLit GhcPs
+</span><a href="#local-6989586621679131612"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>        </span><span class="annot"><a href="#local-6989586621679131601"><span class="hs-identifier hs-type">stringToDouble</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>        </span><span id="local-6989586621679131601"><span class="annot"><span class="annottext">stringToDouble :: [Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131601"><span class="hs-identifier hs-var hs-var">stringToDouble</span></a></span></span><span> </span><span id="local-6989586621679131613"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131613"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XHsDoublePrim GhcPs -&gt; FractionalLit -&gt; HsLit GhcPs
 forall x. XHsDoublePrim x -&gt; FractionalLit -&gt; HsLit x
 </span><span class="hs-identifier hs-var">HsDoublePrim</span></span><span> </span><span class="annot"><span class="annottext">XHsDoublePrim GhcPs
 NoExtField
@@ -302,11 +299,11 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe Double
 forall a. Read a =&gt; [Char] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130789"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>        </span><span class="annot"><a href="#local-6989586621679130779"><span class="hs-identifier hs-type">stringToFloat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-46"></span><span>        </span><span id="local-6989586621679130779"><span class="annot"><span class="annottext">stringToFloat :: [Char] -&gt; Maybe (HsLit GhcPs)
-</span><a href="#local-6989586621679130779"><span class="hs-identifier hs-var hs-var">stringToFloat</span></a></span></span><span> </span><span id="local-6989586621679130791"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130791"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XHsFloatPrim GhcPs -&gt; FractionalLit -&gt; HsLit GhcPs
+</span><a href="#local-6989586621679131613"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>        </span><span class="annot"><a href="#local-6989586621679131600"><span class="hs-identifier hs-type">stringToFloat</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-43"></span><span>        </span><span id="local-6989586621679131600"><span class="annot"><span class="annottext">stringToFloat :: [Char] -&gt; Maybe (HsLit GhcPs)
+</span><a href="#local-6989586621679131600"><span class="hs-identifier hs-var hs-var">stringToFloat</span></a></span></span><span> </span><span id="local-6989586621679131616"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131616"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XHsFloatPrim GhcPs -&gt; FractionalLit -&gt; HsLit GhcPs
 forall x. XHsFloatPrim x -&gt; FractionalLit -&gt; HsLit x
 </span><span class="hs-identifier hs-var">HsFloatPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsFloatPrim GhcPs
 NoExtField
@@ -324,32 +321,32 @@ forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe Float
 forall a. Read a =&gt; [Char] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130791"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">)</span><span>
-</span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | Enumerate changes that could be done, involving turning a literal into an overloaded literal</span></span><span>
-</span><span id="line-49"></span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateRaiseInLiterals"><span class="hs-identifier hs-type">enumerateRaiseInLiterals</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsExpr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-50"></span><span id="enumerateRaiseInLiterals"><span class="annot"><span class="annottext">enumerateRaiseInLiterals :: Enumerator (HsExpr GhcPs)
-</span><a href="Seminal.Enumerator.Literals.html#enumerateRaiseInLiterals"><span class="hs-identifier hs-var hs-var">enumerateRaiseInLiterals</span></a></span></span><span> </span><span id="local-6989586621679130793"><span class="annot"><span class="annottext">HsExpr GhcPs
-</span><a href="#local-6989586621679130793"><span class="hs-identifier hs-var">expr</span></a></span></span><span> </span><span id="local-6989586621679130794"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130794"><span class="hs-identifier hs-var">loc</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsExpr GhcPs
-</span><a href="#local-6989586621679130793"><span class="hs-identifier hs-var">expr</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-51"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span id="local-6989586621679130795"><span class="annot"><span class="annottext">XLitE GhcPs
-</span><a href="#local-6989586621679130795"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679130796"><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130796"><span class="hs-identifier hs-var">lit</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679130796"><span class="hs-identifier hs-var">lit</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-52"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsString</span></span><span> </span><span class="annot"><span class="annottext">XHsString GhcPs
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679130797"><span class="annot"><span class="annottext">FastString
-</span><a href="#local-6989586621679130797"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsExpr GhcPs)]
-</span><a href="#local-6989586621679130798"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsExpr GhcPs)])
+</span><a href="#local-6989586621679131616"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Float</span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="annot"><span class="hs-comment">-- | Enumerate changes that could be done, involving turning a literal into an overloaded literal</span></span><span>
+</span><span id="line-46"></span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateRaiseInLiterals"><span class="hs-identifier hs-type">enumerateRaiseInLiterals</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsExpr</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span id="enumerateRaiseInLiterals"><span class="annot"><span class="annottext">enumerateRaiseInLiterals :: Enumerator (HsExpr GhcPs)
+</span><a href="Seminal.Enumerator.Literals.html#enumerateRaiseInLiterals"><span class="hs-identifier hs-var hs-var">enumerateRaiseInLiterals</span></a></span></span><span> </span><span id="local-6989586621679131618"><span class="annot"><span class="annottext">HsExpr GhcPs
+</span><a href="#local-6989586621679131618"><span class="hs-identifier hs-var">expr</span></a></span></span><span> </span><span id="local-6989586621679131619"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131619"><span class="hs-identifier hs-var">loc</span></a></span></span><span>  </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsExpr GhcPs
+</span><a href="#local-6989586621679131618"><span class="hs-identifier hs-var">expr</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-48"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsLit</span></span><span> </span><span id="local-6989586621679131621"><span class="annot"><span class="annottext">XLitE GhcPs
+</span><a href="#local-6989586621679131621"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679131622"><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131622"><span class="hs-identifier hs-var">lit</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131622"><span class="hs-identifier hs-var">lit</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-49"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsString</span></span><span> </span><span class="annot"><span class="annottext">XHsString GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679131623"><span class="annot"><span class="annottext">FastString
+</span><a href="#local-6989586621679131623"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsExpr GhcPs)]
+</span><a href="#local-6989586621679131624"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsExpr GhcPs)])
 -&gt; [Char] -&gt; [Change (HsExpr GhcPs)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">FastString -&gt; [Char]
 </span><span class="hs-identifier hs-var">unpackFS</span></span><span> </span><span class="annot"><span class="annottext">FastString
-</span><a href="#local-6989586621679130797"><span class="hs-identifier hs-var">string</span></a></span><span>
-</span><span id="line-53"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsStringPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsStringPrim GhcPs
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679130799"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679130799"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsExpr GhcPs)]
-</span><a href="#local-6989586621679130798"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsExpr GhcPs)])
+</span><a href="#local-6989586621679131623"><span class="hs-identifier hs-var">string</span></a></span><span>
+</span><span id="line-50"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">HsStringPrim</span></span><span> </span><span class="annot"><span class="annottext">XHsStringPrim GhcPs
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679131625"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679131625"><span class="hs-identifier hs-var">string</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; [Change (HsExpr GhcPs)]
+</span><a href="#local-6989586621679131624"><span class="hs-identifier hs-var">changeForString</span></a></span><span> </span><span class="annot"><span class="annottext">([Char] -&gt; [Change (HsExpr GhcPs)])
 -&gt; [Char] -&gt; [Change (HsExpr GhcPs)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Word8 -&gt; Char
@@ -357,30 +354,30 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; [Word8]
 </span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679130799"><span class="hs-identifier hs-var">string</span></a></span><span>
-</span><span id="line-54"></span><span>        </span><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131625"><span class="hs-identifier hs-var">string</span></a></span><span>
+</span><span id="line-51"></span><span>        </span><span class="annot"><span class="annottext">HsLit GhcPs
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-55"></span><span>        </span><span class="hs-keyword">where</span><span>
-</span><span id="line-56"></span><span>            </span><span id="local-6989586621679130798"><span class="annot"><span class="annottext">changeForString :: [Char] -&gt; [Change (HsExpr GhcPs)]
-</span><a href="#local-6989586621679130798"><span class="hs-identifier hs-var hs-var">changeForString</span></a></span></span><span> </span><span id="local-6989586621679130821"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130821"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">OverLitVal -&gt; HsOverLit GhcPs
-</span><a href="#local-6989586621679130822"><span class="hs-identifier hs-var">overLitValToLit</span></a></span><span> </span><span class="annot"><span class="annottext">(OverLitVal -&gt; HsOverLit GhcPs)
+</span><span id="line-52"></span><span>        </span><span class="hs-keyword">where</span><span>
+</span><span id="line-53"></span><span>            </span><span id="local-6989586621679131624"><span class="annot"><span class="annottext">changeForString :: [Char] -&gt; [Change (HsExpr GhcPs)]
+</span><a href="#local-6989586621679131624"><span class="hs-identifier hs-var hs-var">changeForString</span></a></span></span><span> </span><span id="local-6989586621679131647"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131647"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">OverLitVal -&gt; HsOverLit GhcPs
+</span><a href="#local-6989586621679131648"><span class="hs-identifier hs-var">overLitValToLit</span></a></span><span> </span><span class="annot"><span class="annottext">(OverLitVal -&gt; HsOverLit GhcPs)
 -&gt; [OverLitVal] -&gt; [HsOverLit GhcPs]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(([Char] -&gt; Maybe OverLitVal) -&gt; Maybe OverLitVal)
 -&gt; [[Char] -&gt; Maybe OverLitVal] -&gt; [OverLitVal]
 forall a b. (a -&gt; Maybe b) -&gt; [a] -&gt; [b]
-</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130823"><span class="annot"><span class="annottext">[Char] -&gt; Maybe OverLitVal
-</span><a href="#local-6989586621679130823"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe OverLitVal
-</span><a href="#local-6989586621679130823"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130821"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe OverLitVal
-</span><a href="#local-6989586621679130824"><span class="hs-identifier hs-var">stringToDouble</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-57"></span><span>                </span><span class="annot"><span class="annottext">[HsOverLit GhcPs]
+</span><span class="hs-identifier hs-var">mapMaybe</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131649"><span class="annot"><span class="annottext">[Char] -&gt; Maybe OverLitVal
+</span><a href="#local-6989586621679131649"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; Maybe OverLitVal
+</span><a href="#local-6989586621679131649"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131647"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe OverLitVal
+</span><a href="#local-6989586621679131650"><span class="hs-identifier hs-var">stringToDouble</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-54"></span><span>                </span><span class="annot"><span class="annottext">[HsOverLit GhcPs]
 -&gt; (HsOverLit GhcPs -&gt; Change (HsExpr GhcPs))
 -&gt; [Change (HsExpr GhcPs)]
 forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
-</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130825"><span class="annot"><span class="annottext">HsOverLit GhcPs
-</span><a href="#local-6989586621679130825"><span class="hs-identifier hs-var">newLit</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChangeNode (HsExpr GhcPs)
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131651"><span class="annot"><span class="annottext">HsOverLit GhcPs
+</span><a href="#local-6989586621679131651"><span class="hs-identifier hs-var">newLit</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ChangeNode (HsExpr GhcPs)
 -&gt; [ChangeNode (HsExpr GhcPs)]
 -&gt; SrcSpan
 -&gt; [Change (HsExpr GhcPs)]
@@ -398,7 +395,7 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsExpr GhcPs -&gt; ChangeNode (HsExpr GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">HsExpr GhcPs
-</span><a href="#local-6989586621679130793"><span class="hs-identifier hs-var">expr</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsExpr GhcPs -&gt; ChangeNode (HsExpr GhcPs)
+</span><a href="#local-6989586621679131618"><span class="hs-identifier hs-var">expr</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">HsExpr GhcPs -&gt; ChangeNode (HsExpr GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">(HsExpr GhcPs -&gt; ChangeNode (HsExpr GhcPs))
 -&gt; HsExpr GhcPs -&gt; ChangeNode (HsExpr GhcPs)
@@ -407,28 +404,28 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall p. XOverLitE p -&gt; HsOverLit p -&gt; HsExpr p
 </span><span class="hs-identifier hs-var">HsOverLit</span></span><span> </span><span class="annot"><span class="annottext">XLitE GhcPs
 XOverLitE GhcPs
-</span><a href="#local-6989586621679130795"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">HsOverLit GhcPs
-</span><a href="#local-6989586621679130825"><span class="hs-identifier hs-var">newLit</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679130794"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131621"><span class="hs-identifier hs-var">x</span></a></span><span> </span><span class="annot"><span class="annottext">HsOverLit GhcPs
+</span><a href="#local-6989586621679131651"><span class="hs-identifier hs-var">newLit</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131619"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[Char]
 </span><span class="hs-string">&quot;Remove the quotes&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Terminal"><span class="hs-identifier hs-var">Terminal</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-58"></span><span>            </span><span id="local-6989586621679130824"><span class="annot"><span class="annottext">stringToDouble :: [Char] -&gt; Maybe OverLitVal
-</span><a href="#local-6989586621679130824"><span class="hs-identifier hs-var hs-var">stringToDouble</span></a></span></span><span> </span><span id="local-6989586621679130828"><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130828"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; OverLitVal
-</span><a href="#local-6989586621679130829"><span class="hs-identifier hs-var">nbToOverLitVal</span></a></span><span> </span><span class="annot"><span class="annottext">(Double -&gt; OverLitVal) -&gt; Maybe Double -&gt; Maybe OverLitVal
+</span><span id="line-55"></span><span>            </span><span id="local-6989586621679131650"><span class="annot"><span class="annottext">stringToDouble :: [Char] -&gt; Maybe OverLitVal
+</span><a href="#local-6989586621679131650"><span class="hs-identifier hs-var hs-var">stringToDouble</span></a></span></span><span> </span><span id="local-6989586621679131655"><span class="annot"><span class="annottext">[Char]
+</span><a href="#local-6989586621679131655"><span class="hs-identifier hs-var">str</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Double -&gt; OverLitVal
+</span><a href="#local-6989586621679131656"><span class="hs-identifier hs-var">nbToOverLitVal</span></a></span><span> </span><span class="annot"><span class="annottext">(Double -&gt; OverLitVal) -&gt; Maybe Double -&gt; Maybe OverLitVal
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Char] -&gt; Maybe Double
 forall a. Read a =&gt; [Char] -&gt; Maybe a
 </span><span class="hs-identifier hs-var">readMaybe</span></span><span> </span><span class="annot"><span class="annottext">[Char]
-</span><a href="#local-6989586621679130828"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span class="hs-special">)</span><span>
-</span><span id="line-59"></span><span>            </span><span id="local-6989586621679130822"><span class="annot"><span class="annottext">overLitValToLit :: OverLitVal -&gt; HsOverLit GhcPs
-</span><a href="#local-6989586621679130822"><span class="hs-identifier hs-var hs-var">overLitValToLit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">XOverLit GhcPs -&gt; OverLitVal -&gt; HsOverLit GhcPs
+</span><a href="#local-6989586621679131655"><span class="hs-identifier hs-var">str</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Maybe</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Double</span></span><span class="hs-special">)</span><span>
+</span><span id="line-56"></span><span>            </span><span id="local-6989586621679131648"><span class="annot"><span class="annottext">overLitValToLit :: OverLitVal -&gt; HsOverLit GhcPs
+</span><a href="#local-6989586621679131648"><span class="hs-identifier hs-var hs-var">overLitValToLit</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">XOverLit GhcPs -&gt; OverLitVal -&gt; HsOverLit GhcPs
 forall p. XOverLit p -&gt; OverLitVal -&gt; HsOverLit p
 </span><span class="hs-identifier hs-var">OverLit</span></span><span> </span><span class="annot"><span class="annottext">XOverLit GhcPs
 NoExtField
 </span><span class="hs-identifier hs-var">NoExtField</span></span><span>
-</span><span id="line-60"></span><span>            </span><span id="local-6989586621679130829"><span class="annot"><span class="annottext">nbToOverLitVal :: Double -&gt; OverLitVal
-</span><a href="#local-6989586621679130829"><span class="hs-identifier hs-var hs-var">nbToOverLitVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FractionalLit -&gt; OverLitVal
+</span><span id="line-57"></span><span>            </span><span id="local-6989586621679131656"><span class="annot"><span class="annottext">nbToOverLitVal :: Double -&gt; OverLitVal
+</span><a href="#local-6989586621679131656"><span class="hs-identifier hs-var hs-var">nbToOverLitVal</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FractionalLit -&gt; OverLitVal
 </span><span class="hs-identifier hs-var">HsFractional</span></span><span> </span><span class="annot"><span class="annottext">(FractionalLit -&gt; OverLitVal)
 -&gt; (Double -&gt; FractionalLit) -&gt; Double -&gt; OverLitVal
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
@@ -439,5 +436,5 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Double -&gt; Rational
 forall a. Real a =&gt; a -&gt; Rational
 </span><span class="hs-identifier hs-var">toRational</span></span><span>
-</span><span id="line-61"></span><span>    </span><span class="annot"><span class="annottext">HsExpr GhcPs
+</span><span id="line-58"></span><span>    </span><span class="annot"><span class="annottext">HsExpr GhcPs
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span></pre></body></html>

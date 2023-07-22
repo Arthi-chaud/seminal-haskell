@@ -1,60 +1,54 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE ScopedTypeVariables #-}</span><span>
 </span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Seminal.Compiler.Runner</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier">runCompiler</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Ghc</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">runGhc</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">setSessionDynFlags</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">setTargets</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">guessTarget</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">load</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">LoadHowMuch</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">LoadAllTargets</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Backend</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NoBackend</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">getSessionDynFlags</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mkModuleName</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">ParsedModule</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">depanal</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mgModSummaries</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">parseModule</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">GhcException</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Panic</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">DynFlags</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">maxErrors</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">extensionFlags</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Paths</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">libdir</span></span><span class="hs-special">)</span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Driver.Session</span></span><span>
-</span><span id="line-6"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-identifier">DynFlags</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">ghcLink</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mainFunIs</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">mainModuleNameIs</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">backend</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
-</span><span id="line-7"></span><span>      </span><span class="annot"><span class="hs-identifier">GhcLink</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">NoLink</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">)</span><span>
-</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Plugins</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">msHsFilePath</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">throwGhcException</span></span><span class="hs-special">)</span><span>
-</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">find</span></span><span class="hs-special">)</span><span>
-</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Printf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">printf</span></span><span class="hs-special">)</span><span>
-</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">try</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">SomeException</span></span><span class="hs-special">)</span><span>
-</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.LanguageExtensions</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Extension</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">PartialTypeSignatures</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
-</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Data.EnumSet</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">insert</span></span><span class="hs-special">)</span><span>
-</span><span id="line-14"></span><span>
-</span><span id="line-15"></span><span class="hs-keyword">type</span><span> </span><span id="ErrorMessage"><span class="annot"><a href="Seminal.Compiler.Runner.html#ErrorMessage"><span class="hs-identifier hs-var">ErrorMessage</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
-</span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-comment">-- | Setup and run a GHC Session.</span><span>
-</span><span id="line-18"></span><span class="hs-comment">-- The file paths are the paths to the source files to load.</span><span>
-</span><span id="line-19"></span><span class="hs-comment">-- The action to run takes the list of loaded modules.</span><span>
-</span><span id="line-20"></span><span class="hs-comment">-- Upon error (file access, syntax, ...), throws</span><span>
-</span><span id="line-21"></span><span class="annot"><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-type">runCompiler</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679130241"><span class="annot"><a href="#local-6989586621679130241"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-operator">.</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="annot"><a href="#local-6989586621679130241"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.Runner.html#ErrorMessage"><span class="hs-identifier hs-type">ErrorMessage</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679130241"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-22"></span><span id="runCompiler"><span class="annot"><span class="annottext">runCompiler :: forall a.
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Compiler.API.html"><span class="hs-identifier">Seminal.Compiler.API</span></a></span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">GHC.Paths</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">libdir</span></span><span class="hs-special">)</span><span> </span><span class="hs-comment">--  We dont import is from wrapped API because it's not provided by GHC</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">find</span></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Text.Printf</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">printf</span></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Exception</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">try</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">SomeException</span></span><span class="hs-special">)</span><span>
+</span><span id="line-8"></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">type</span><span> </span><span id="ErrorMessage"><span class="annot"><a href="Seminal.Compiler.Runner.html#ErrorMessage"><span class="hs-identifier hs-var">ErrorMessage</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-10"></span><span>
+</span><span id="line-11"></span><span class="hs-comment">-- | Setup and run a GHC Session.</span><span>
+</span><span id="line-12"></span><span class="hs-comment">-- The file paths are the paths to the source files to load.</span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- The action to run takes the list of loaded modules.</span><span>
+</span><span id="line-14"></span><span class="hs-comment">-- Upon error (file access, syntax, ...), throws</span><span>
+</span><span id="line-15"></span><span class="annot"><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-type">runCompiler</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621679131070"><span class="annot"><a href="#local-6989586621679131070"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-operator">.</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">ParsedModule</span></span><span class="hs-special">)</span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Ghc</span></span><span> </span><span class="annot"><a href="#local-6989586621679131070"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><a href="Seminal.Compiler.Runner.html#ErrorMessage"><span class="hs-identifier hs-type">ErrorMessage</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679131070"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span id="runCompiler"><span class="annot"><span class="annottext">runCompiler :: forall a.
 [FilePath]
 -&gt; ([(FilePath, ParsedModule)] -&gt; Ghc a) -&gt; IO (Either FilePath a)
-</span><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-var hs-var">runCompiler</span></a></span></span><span> </span><span id="local-6989586621679130355"><span class="annot"><span class="annottext">[FilePath]
-</span><a href="#local-6989586621679130355"><span class="hs-identifier hs-var">filePaths</span></a></span></span><span> </span><span id="local-6989586621679130356"><span class="annot"><span class="annottext">[(FilePath, ParsedModule)] -&gt; Ghc a
-</span><a href="#local-6989586621679130356"><span class="hs-identifier hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-23"></span><span>    </span><span id="local-6989586621679130357"><span class="annot"><span class="annottext">Either SomeException a
-</span><a href="#local-6989586621679130357"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO a -&gt; IO (Either SomeException a)
+</span><a href="Seminal.Compiler.Runner.html#runCompiler"><span class="hs-identifier hs-var hs-var">runCompiler</span></a></span></span><span> </span><span id="local-6989586621679131160"><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679131160"><span class="hs-identifier hs-var">filePaths</span></a></span></span><span> </span><span id="local-6989586621679131161"><span class="annot"><span class="annottext">[(FilePath, ParsedModule)] -&gt; Ghc a
+</span><a href="#local-6989586621679131161"><span class="hs-identifier hs-var">action</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">do</span><span>
+</span><span id="line-17"></span><span>    </span><span id="local-6989586621679131162"><span class="annot"><span class="annottext">Either SomeException a
+</span><a href="#local-6989586621679131162"><span class="hs-identifier hs-var">res</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">IO a -&gt; IO (Either SomeException a)
 forall e a. Exception e =&gt; IO a -&gt; IO (Either e a)
 </span><span class="hs-identifier hs-var">try</span></span><span> </span><span class="annot"><span class="annottext">IO a
-</span><a href="#local-6989586621679130358"><span class="hs-identifier hs-var">session</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SomeException</span></span><span> </span><span class="annot"><a href="#local-6989586621679130241"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-24"></span><span>    </span><span class="annot"><span class="annottext">Either FilePath a -&gt; IO (Either FilePath a)
+</span><a href="#local-6989586621679131163"><span class="hs-identifier hs-var">session</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">SomeException</span></span><span> </span><span class="annot"><a href="#local-6989586621679131070"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span>    </span><span class="annot"><span class="annottext">Either FilePath a -&gt; IO (Either FilePath a)
 forall a. a -&gt; IO a
 forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
 </span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">(Either FilePath a -&gt; IO (Either FilePath a))
 -&gt; Either FilePath a -&gt; IO (Either FilePath a)
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Either SomeException a
-</span><a href="#local-6989586621679130357"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-25"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679130359"><span class="annot"><span class="annottext">SomeException
-</span><a href="#local-6989586621679130359"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Either FilePath a
+</span><a href="#local-6989586621679131162"><span class="hs-identifier hs-var">res</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-19"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Left</span></span><span> </span><span id="local-6989586621679131164"><span class="annot"><span class="annottext">SomeException
+</span><a href="#local-6989586621679131164"><span class="hs-identifier hs-var">e</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Either FilePath a
 forall a b. a -&gt; Either a b
 </span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Either FilePath a) -&gt; FilePath -&gt; Either FilePath a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">SomeException -&gt; FilePath
 forall a. Show a =&gt; a -&gt; FilePath
 </span><span class="hs-identifier hs-var">show</span></span><span> </span><span class="annot"><span class="annottext">SomeException
-</span><a href="#local-6989586621679130359"><span class="hs-identifier hs-var">e</span></a></span><span>
-</span><span id="line-26"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679130361"><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679130361"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either FilePath a
+</span><a href="#local-6989586621679131164"><span class="hs-identifier hs-var">e</span></a></span><span>
+</span><span id="line-20"></span><span>        </span><span class="annot"><span class="hs-identifier hs-type">Right</span></span><span> </span><span id="local-6989586621679131166"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679131166"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; Either FilePath a
 forall a b. b -&gt; Either a b
 </span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">a
-</span><a href="#local-6989586621679130361"><span class="hs-identifier hs-var">r</span></a></span><span>
-</span><span id="line-27"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-28"></span><span>        </span><span id="local-6989586621679130358"><span class="annot"><span class="annottext">session :: IO a
-</span><a href="#local-6989586621679130358"><span class="hs-identifier hs-var hs-var">session</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe FilePath -&gt; Ghc a -&gt; IO a
+</span><a href="#local-6989586621679131166"><span class="hs-identifier hs-var">r</span></a></span><span>
+</span><span id="line-21"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>        </span><span id="local-6989586621679131163"><span class="annot"><span class="annottext">session :: IO a
+</span><a href="#local-6989586621679131163"><span class="hs-identifier hs-var hs-var">session</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Maybe FilePath -&gt; Ghc a -&gt; IO a
 forall a. Maybe FilePath -&gt; Ghc a -&gt; IO a
 </span><span class="hs-identifier hs-var">runGhc</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; Maybe FilePath
 forall a. a -&gt; Maybe a
@@ -62,122 +56,122 @@ forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">libdir</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Ghc a -&gt; IO a) -&gt; Ghc a -&gt; IO a
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-keyword">do</span><span>
-</span><span id="line-29"></span><span>            </span><span id="local-6989586621679130388"><span class="annot"><span class="annottext">DynFlags
-</span><a href="#local-6989586621679130388"><span class="hs-identifier hs-var">flags</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ghc DynFlags
+</span><span id="line-23"></span><span>            </span><span id="local-6989586621679131194"><span class="annot"><span class="annottext">DynFlags
+</span><a href="#local-6989586621679131194"><span class="hs-identifier hs-var">flags</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">Ghc DynFlags
 forall (m :: * -&gt; *). GhcMonad m =&gt; m DynFlags
 </span><span class="hs-identifier hs-var">getSessionDynFlags</span></span><span>
-</span><span id="line-30"></span><span>            </span><span class="annot"><span class="annottext">DynFlags -&gt; Ghc ()
+</span><span id="line-24"></span><span>            </span><span class="annot"><span class="annottext">DynFlags -&gt; Ghc ()
 forall (m :: * -&gt; *).
 (HasCallStack, GhcMonad m) =&gt;
 DynFlags -&gt; m ()
 </span><span class="hs-identifier hs-var">setSessionDynFlags</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DynFlags
-</span><a href="#local-6989586621679130388"><span class="hs-identifier hs-var">flags</span></a></span><span> </span><span class="hs-special">{</span><span>
-</span><span id="line-31"></span><span>                </span><span class="annot"><span class="annottext">mainFunIs :: Maybe FilePath
+</span><a href="#local-6989586621679131194"><span class="hs-identifier hs-var">flags</span></a></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-25"></span><span>                </span><span class="annot"><span class="annottext">mainFunIs :: Maybe FilePath
 </span><span class="hs-identifier hs-var">mainFunIs</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Maybe FilePath
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;undefined&quot;</span></span><span class="hs-special">,</span><span>
-</span><span id="line-32"></span><span>                </span><span class="annot"><span class="annottext">mainModuleNameIs :: ModuleName
+</span><span id="line-26"></span><span>                </span><span class="annot"><span class="annottext">mainModuleNameIs :: ModuleName
 </span><span class="hs-identifier hs-var">mainModuleNameIs</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; ModuleName
 </span><span class="hs-identifier hs-var">mkModuleName</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;Prelude&quot;</span></span><span class="hs-special">,</span><span>
-</span><span id="line-33"></span><span>                </span><span class="annot"><span class="annottext">backend :: Backend
+</span><span id="line-27"></span><span>                </span><span class="annot"><span class="annottext">backend :: Backend
 </span><span class="hs-identifier hs-var">backend</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Backend
 </span><span class="hs-identifier hs-var">NoBackend</span></span><span class="hs-special">,</span><span>
-</span><span id="line-34"></span><span>                </span><span class="annot"><span class="annottext">ghcLink :: GhcLink
+</span><span id="line-28"></span><span>                </span><span class="annot"><span class="annottext">ghcLink :: GhcLink
 </span><span class="hs-identifier hs-var">ghcLink</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">GhcLink
 </span><span class="hs-identifier hs-var">NoLink</span></span><span class="hs-special">,</span><span>
-</span><span id="line-35"></span><span>                </span><span class="annot"><span class="annottext">maxErrors :: Maybe Int
+</span><span id="line-29"></span><span>                </span><span class="annot"><span class="annottext">maxErrors :: Maybe Int
 </span><span class="hs-identifier hs-var">maxErrors</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Maybe Int
 forall a. a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">Just</span></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">0</span></span><span class="hs-special">,</span><span>
-</span><span id="line-36"></span><span>                </span><span class="annot"><span class="annottext">extensionFlags :: EnumSet Extension
+</span><span id="line-30"></span><span>                </span><span class="annot"><span class="annottext">extensionFlags :: EnumSet Extension
 </span><span class="hs-identifier hs-var">extensionFlags</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Extension -&gt; EnumSet Extension -&gt; EnumSet Extension
 forall a. Enum a =&gt; a -&gt; EnumSet a -&gt; EnumSet a
 </span><span class="hs-identifier hs-var">insert</span></span><span> </span><span class="annot"><span class="annottext">Extension
 </span><span class="hs-identifier hs-var">PartialTypeSignatures</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">DynFlags -&gt; EnumSet Extension
 </span><span class="hs-identifier hs-var">extensionFlags</span></span><span> </span><span class="annot"><span class="annottext">DynFlags
-</span><a href="#local-6989586621679130388"><span class="hs-identifier hs-var">flags</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-37"></span><span>                </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
-</span><span id="line-38"></span><span>            </span><span id="local-6989586621679130389"><span class="annot"><span class="annottext">[Target]
-</span><a href="#local-6989586621679130389"><span class="hs-identifier hs-var">targets</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; Ghc [Target]
-</span><a href="#local-6989586621679130390"><span class="hs-identifier hs-var">guessTargets</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
-</span><a href="#local-6989586621679130355"><span class="hs-identifier hs-var">filePaths</span></a></span><span>
-</span><span id="line-39"></span><span>            </span><span class="annot"><span class="annottext">[Target] -&gt; Ghc ()
+</span><a href="#local-6989586621679131194"><span class="hs-identifier hs-var">flags</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-31"></span><span>                </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><span id="line-32"></span><span>            </span><span id="local-6989586621679131208"><span class="annot"><span class="annottext">[Target]
+</span><a href="#local-6989586621679131208"><span class="hs-identifier hs-var">targets</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[FilePath] -&gt; Ghc [Target]
+</span><a href="#local-6989586621679131209"><span class="hs-identifier hs-var">guessTargets</span></a></span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679131160"><span class="hs-identifier hs-var">filePaths</span></a></span><span>
+</span><span id="line-33"></span><span>            </span><span class="annot"><span class="annottext">[Target] -&gt; Ghc ()
 forall (m :: * -&gt; *). GhcMonad m =&gt; [Target] -&gt; m ()
 </span><span class="hs-identifier hs-var">setTargets</span></span><span> </span><span class="annot"><span class="annottext">[Target]
-</span><a href="#local-6989586621679130389"><span class="hs-identifier hs-var">targets</span></a></span><span>
-</span><span id="line-40"></span><span>            </span><span class="annot"><span class="annottext">SuccessFlag
+</span><a href="#local-6989586621679131208"><span class="hs-identifier hs-var">targets</span></a></span><span>
+</span><span id="line-34"></span><span>            </span><span class="annot"><span class="annottext">SuccessFlag
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">LoadHowMuch -&gt; Ghc SuccessFlag
 forall (f :: * -&gt; *). GhcMonad f =&gt; LoadHowMuch -&gt; f SuccessFlag
 </span><span class="hs-identifier hs-var">load</span></span><span> </span><span class="annot"><span class="annottext">LoadHowMuch
 </span><span class="hs-identifier hs-var">LoadAllTargets</span></span><span>
-</span><span id="line-41"></span><span>            </span><span id="local-6989586621679130391"><span class="annot"><span class="annottext">ModuleGraph
-</span><a href="#local-6989586621679130391"><span class="hs-identifier hs-var">modGraph</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ModuleName] -&gt; Bool -&gt; Ghc ModuleGraph
+</span><span id="line-35"></span><span>            </span><span id="local-6989586621679131213"><span class="annot"><span class="annottext">ModuleGraph
+</span><a href="#local-6989586621679131213"><span class="hs-identifier hs-var">modGraph</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">[ModuleName] -&gt; Bool -&gt; Ghc ModuleGraph
 forall (m :: * -&gt; *).
 GhcMonad m =&gt;
 [ModuleName] -&gt; Bool -&gt; m ModuleGraph
 </span><span class="hs-identifier hs-var">depanal</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">Bool
 </span><span class="hs-identifier hs-var">True</span></span><span>
-</span><span id="line-42"></span><span>            </span><span id="local-6989586621679130392"><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
-</span><a href="#local-6989586621679130392"><span class="hs-identifier hs-var">parseResults</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Ghc (FilePath, ParsedModule))
+</span><span id="line-36"></span><span>            </span><span id="local-6989586621679131215"><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
+</span><a href="#local-6989586621679131215"><span class="hs-identifier hs-var">parseResults</span></a></span></span><span> </span><span class="hs-glyph">&lt;-</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Ghc (FilePath, ParsedModule))
 -&gt; [FilePath] -&gt; Ghc [(FilePath, ParsedModule)]
 forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Traversable t, Monad m) =&gt;
 (a -&gt; m b) -&gt; t a -&gt; m (t b)
 forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; [a] -&gt; m [b]
-</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130394"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130394"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130394"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ParsedModule -&gt; (FilePath, ParsedModule))
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131217"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679131217"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679131217"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(ParsedModule -&gt; (FilePath, ParsedModule))
 -&gt; Ghc ParsedModule -&gt; Ghc (FilePath, ParsedModule)
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
 </span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">ModuleGraph -&gt; FilePath -&gt; Ghc ParsedModule
 forall {m :: * -&gt; *}.
 GhcMonad m =&gt;
 ModuleGraph -&gt; FilePath -&gt; m ParsedModule
-</span><a href="#local-6989586621679130396"><span class="hs-identifier hs-var">getModule</span></a></span><span> </span><span class="annot"><span class="annottext">ModuleGraph
-</span><a href="#local-6989586621679130391"><span class="hs-identifier hs-var">modGraph</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130394"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[FilePath]
-</span><a href="#local-6989586621679130355"><span class="hs-identifier hs-var">filePaths</span></a></span><span>
-</span><span id="line-43"></span><span>            </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule)] -&gt; Ghc a
-</span><a href="#local-6989586621679130356"><span class="hs-identifier hs-var">action</span></a></span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
-</span><a href="#local-6989586621679130392"><span class="hs-identifier hs-var">parseResults</span></a></span><span>
-</span><span id="line-44"></span><span>        </span><span id="local-6989586621679130390"><span class="annot"><span class="annottext">guessTargets :: [FilePath] -&gt; Ghc [Target]
-</span><a href="#local-6989586621679130390"><span class="hs-identifier hs-var hs-var">guessTargets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Ghc Target) -&gt; [FilePath] -&gt; Ghc [Target]
+</span><a href="#local-6989586621679131219"><span class="hs-identifier hs-var">getModule</span></a></span><span> </span><span class="annot"><span class="annottext">ModuleGraph
+</span><a href="#local-6989586621679131213"><span class="hs-identifier hs-var">modGraph</span></a></span><span> </span><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679131217"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[FilePath]
+</span><a href="#local-6989586621679131160"><span class="hs-identifier hs-var">filePaths</span></a></span><span>
+</span><span id="line-37"></span><span>            </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule)] -&gt; Ghc a
+</span><a href="#local-6989586621679131161"><span class="hs-identifier hs-var">action</span></a></span><span> </span><span class="annot"><span class="annottext">[(FilePath, ParsedModule)]
+</span><a href="#local-6989586621679131215"><span class="hs-identifier hs-var">parseResults</span></a></span><span>
+</span><span id="line-38"></span><span>        </span><span id="local-6989586621679131209"><span class="annot"><span class="annottext">guessTargets :: [FilePath] -&gt; Ghc [Target]
+</span><a href="#local-6989586621679131209"><span class="hs-identifier hs-var hs-var">guessTargets</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Ghc Target) -&gt; [FilePath] -&gt; Ghc [Target]
 forall (t :: * -&gt; *) (m :: * -&gt; *) a b.
 (Traversable t, Monad m) =&gt;
 (a -&gt; m b) -&gt; t a -&gt; m (t b)
 forall (m :: * -&gt; *) a b. Monad m =&gt; (a -&gt; m b) -&gt; [a] -&gt; m [b]
-</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679130440"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130440"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Maybe UnitId -&gt; Maybe Phase -&gt; Ghc Target
+</span><span class="hs-identifier hs-var">mapM</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131263"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679131263"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">FilePath -&gt; Maybe UnitId -&gt; Maybe Phase -&gt; Ghc Target
 forall (m :: * -&gt; *).
 GhcMonad m =&gt;
 FilePath -&gt; Maybe UnitId -&gt; Maybe Phase -&gt; m Target
 </span><span class="hs-identifier hs-var">guessTarget</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130440"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe UnitId
+</span><a href="#local-6989586621679131263"><span class="hs-identifier hs-var">t</span></a></span><span> </span><span class="annot"><span class="annottext">Maybe UnitId
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="annot"><span class="annottext">Maybe Phase
 forall a. Maybe a
 </span><span class="hs-identifier hs-var">Nothing</span></span><span class="hs-special">)</span><span>
-</span><span id="line-45"></span><span>        </span><span class="hs-comment">-- Retrieves the module of a file using its paths and the modgraph</span><span>
-</span><span id="line-46"></span><span>        </span><span id="local-6989586621679130396"><span class="annot"><span class="annottext">getModule :: ModuleGraph -&gt; FilePath -&gt; m ParsedModule
-</span><a href="#local-6989586621679130396"><span class="hs-identifier hs-var hs-var">getModule</span></a></span></span><span> </span><span id="local-6989586621679130499"><span class="annot"><span class="annottext">ModuleGraph
-</span><a href="#local-6989586621679130499"><span class="hs-identifier hs-var">modGraph</span></a></span></span><span> </span><span id="local-6989586621679130500"><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130500"><span class="hs-identifier hs-var">filePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(ModSummary -&gt; Bool) -&gt; [ModSummary] -&gt; Maybe ModSummary
+</span><span id="line-39"></span><span>        </span><span class="hs-comment">-- Retrieves the module of a file using its paths and the modgraph</span><span>
+</span><span id="line-40"></span><span>        </span><span id="local-6989586621679131219"><span class="annot"><span class="annottext">getModule :: ModuleGraph -&gt; FilePath -&gt; m ParsedModule
+</span><a href="#local-6989586621679131219"><span class="hs-identifier hs-var hs-var">getModule</span></a></span></span><span> </span><span id="local-6989586621679131323"><span class="annot"><span class="annottext">ModuleGraph
+</span><a href="#local-6989586621679131323"><span class="hs-identifier hs-var">modGraph</span></a></span></span><span> </span><span id="local-6989586621679131324"><span class="annot"><span class="annottext">FilePath
+</span><a href="#local-6989586621679131324"><span class="hs-identifier hs-var">filePath</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">(ModSummary -&gt; Bool) -&gt; [ModSummary] -&gt; Maybe ModSummary
 forall (t :: * -&gt; *) a. Foldable t =&gt; (a -&gt; Bool) -&gt; t a -&gt; Maybe a
 </span><span class="hs-identifier hs-var">find</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">FilePath -&gt; FilePath -&gt; Bool
 forall a. Eq a =&gt; a -&gt; a -&gt; Bool
 </span><span class="hs-operator hs-var">==</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130500"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Bool)
+</span><a href="#local-6989586621679131324"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(FilePath -&gt; Bool)
 -&gt; (ModSummary -&gt; FilePath) -&gt; ModSummary -&gt; Bool
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">ModSummary -&gt; FilePath
 </span><span class="hs-identifier hs-var">msHsFilePath</span></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ModuleGraph -&gt; [ModSummary]
 </span><span class="hs-identifier hs-var">mgModSummaries</span></span><span> </span><span class="annot"><span class="annottext">ModuleGraph
-</span><a href="#local-6989586621679130499"><span class="hs-identifier hs-var">modGraph</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-47"></span><span>            </span><span class="hs-comment">-- Do not worry, this should never happen.</span><span>
-</span><span id="line-48"></span><span>            </span><span class="annot"><span class="annottext">Maybe ModSummary
+</span><a href="#local-6989586621679131323"><span class="hs-identifier hs-var">modGraph</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-41"></span><span>            </span><span class="hs-comment">-- Do not worry, this should never happen.</span><span>
+</span><span id="line-42"></span><span>            </span><span class="annot"><span class="annottext">Maybe ModSummary
 </span><span class="hs-identifier hs-var">Nothing</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">GhcException -&gt; m ParsedModule
 forall a. GhcException -&gt; a
 </span><span class="hs-identifier hs-var">throwGhcException</span></span><span> </span><span class="annot"><span class="annottext">(GhcException -&gt; m ParsedModule) -&gt; GhcException -&gt; m ParsedModule
@@ -187,10 +181,10 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall r. PrintfType r =&gt; FilePath -&gt; r
 </span><span class="hs-identifier hs-var">printf</span></span><span> </span><span class="annot"><span class="annottext">FilePath
 </span><span class="hs-string">&quot;%s: Could not find module&quot;</span></span><span> </span><span class="annot"><span class="annottext">FilePath
-</span><a href="#local-6989586621679130500"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span>
-</span><span id="line-49"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679130502"><span class="annot"><span class="annottext">ModSummary
-</span><a href="#local-6989586621679130502"><span class="hs-identifier hs-var">modsum</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ModSummary -&gt; m ParsedModule
+</span><a href="#local-6989586621679131324"><span class="hs-identifier hs-var">filePath</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-43"></span><span>            </span><span class="annot"><span class="hs-identifier hs-type">Just</span></span><span> </span><span id="local-6989586621679131330"><span class="annot"><span class="annottext">ModSummary
+</span><a href="#local-6989586621679131330"><span class="hs-identifier hs-var">modsum</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">ModSummary -&gt; m ParsedModule
 forall (m :: * -&gt; *). GhcMonad m =&gt; ModSummary -&gt; m ParsedModule
 </span><span class="hs-identifier hs-var">parseModule</span></span><span> </span><span class="annot"><span class="annottext">ModSummary
-</span><a href="#local-6989586621679130502"><span class="hs-identifier hs-var">modsum</span></a></span><span>
-</span><span id="line-50"></span><span>        </span></pre></body></html>
+</span><a href="#local-6989586621679131330"><span class="hs-identifier hs-var">modsum</span></a></span><span>
+</span><span id="line-44"></span><span>        </span></pre></body></html>
