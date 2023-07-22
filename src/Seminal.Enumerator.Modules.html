@@ -8,25 +8,25 @@
 </span><span id="line-8"></span><span>
 </span><span id="line-9"></span><span class="annot"><a href="Seminal.Enumerator.Modules.html#enumerateChangesInModule"><span class="hs-identifier hs-type">enumerateChangesInModule</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">HsModule</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">HsModule</span></span><span class="hs-special">]</span><span>
 </span><span id="line-10"></span><span id="enumerateChangesInModule"><span class="annot"><span class="annottext">enumerateChangesInModule :: HsModule -&gt; [Change HsModule]
-</span><a href="Seminal.Enumerator.Modules.html#enumerateChangesInModule"><span class="hs-identifier hs-var hs-var">enumerateChangesInModule</span></a></span></span><span> </span><span id="local-6989586621679133400"><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679133400"><span class="hs-identifier hs-var">hsmod</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679133400"><span class="hs-identifier hs-var">hsmod</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="Seminal.Enumerator.Modules.html#enumerateChangesInModule"><span class="hs-identifier hs-var hs-var">enumerateChangesInModule</span></a></span></span><span> </span><span id="local-6989586621679133392"><span class="annot"><span class="annottext">HsModule
+</span><a href="#local-6989586621679133392"><span class="hs-identifier hs-var">hsmod</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsModule
+</span><a href="#local-6989586621679133392"><span class="hs-identifier hs-var">hsmod</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-11"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">HsModule</span></span><span> </span><span class="hs-special">{</span><span class="hs-special">}</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[LHsDecl GhcPs] -&gt; [Change [LHsDecl GhcPs]]
 </span><a href="Seminal.Enumerator.Modules.html#enumerateChangesAtModuleRoot"><span class="hs-identifier hs-var">enumerateChangesAtModuleRoot</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">HsModule -&gt; [LHsDecl GhcPs]
 </span><span class="hs-identifier hs-var">hsmodDecls</span></span><span> </span><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679133400"><span class="hs-identifier hs-var">hsmod</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133392"><span class="hs-identifier hs-var">hsmod</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-12"></span><span>        </span><span class="annot"><span class="annottext">[Change
    [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]
 -&gt; ([GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
     -&gt; HsModule)
 -&gt; [Change HsModule]
 forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
-</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133404"><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133404"><span class="hs-identifier hs-var">decls</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">HsModule
-</span><a href="#local-6989586621679133400"><span class="hs-identifier hs-var">hsmod</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">hsmodDecls :: [LHsDecl GhcPs]
+</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133396"><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133396"><span class="hs-identifier hs-var">decls</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">HsModule
+</span><a href="#local-6989586621679133392"><span class="hs-identifier hs-var">hsmod</span></a></span><span> </span><span class="hs-special">{</span><span> </span><span class="annot"><span class="annottext">hsmodDecls :: [LHsDecl GhcPs]
 </span><span class="hs-identifier hs-var">hsmodDecls</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[LHsDecl GhcPs]
 [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133404"><span class="hs-identifier hs-var">decls</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133396"><span class="hs-identifier hs-var">decls</span></a></span><span> </span><span class="hs-special">}</span><span class="hs-special">)</span><span>
 </span><span id="line-13"></span><span>    </span><span class="hs-comment">-- We do not need to consider extensions</span><span>
 </span><span id="line-14"></span><span>    </span><span class="hs-comment">-- (From 9.6.x)</span><span>
 </span><span id="line-15"></span><span>    </span><span class="hs-comment">-- _ -&gt; []</span><span>
@@ -34,8 +34,8 @@ forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
 </span><span id="line-17"></span><span class="annot"><span class="hs-comment">-- | Enumerate changes for the root declaration of a module</span></span><span>
 </span><span id="line-18"></span><span class="annot"><a href="Seminal.Enumerator.Modules.html#enumerateChangesAtModuleRoot"><span class="hs-identifier hs-type">enumerateChangesAtModuleRoot</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">LHsDecl</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="hs-identifier hs-type">LHsDecl</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">]</span><span class="hs-special">]</span><span>
 </span><span id="line-19"></span><span id="enumerateChangesAtModuleRoot"><span class="annot"><span class="annottext">enumerateChangesAtModuleRoot :: [LHsDecl GhcPs] -&gt; [Change [LHsDecl GhcPs]]
-</span><a href="Seminal.Enumerator.Modules.html#enumerateChangesAtModuleRoot"><span class="hs-identifier hs-var hs-var">enumerateChangesAtModuleRoot</span></a></span></span><span> </span><span id="local-6989586621679133405"><span class="annot"><span class="annottext">[LHsDecl GhcPs]
-</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">list</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Change [LHsDecl GhcPs]]] -&gt; [Change [LHsDecl GhcPs]]
+</span><a href="Seminal.Enumerator.Modules.html#enumerateChangesAtModuleRoot"><span class="hs-identifier hs-var hs-var">enumerateChangesAtModuleRoot</span></a></span></span><span> </span><span id="local-6989586621679133397"><span class="annot"><span class="annottext">[LHsDecl GhcPs]
+</span><a href="#local-6989586621679133397"><span class="hs-identifier hs-var">list</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Change [LHsDecl GhcPs]]] -&gt; [Change [LHsDecl GhcPs]]
 forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">([[Change [LHsDecl GhcPs]]] -&gt; [Change [LHsDecl GhcPs]])
 -&gt; [[Change [LHsDecl GhcPs]]] -&gt; [Change [LHsDecl GhcPs]]
@@ -47,7 +47,7 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 forall a. [a] -&gt; [([a], a, [a])]
 </span><span class="hs-identifier hs-var">splitEverywhere</span></span><span> </span><span class="annot"><span class="annottext">[LHsDecl GhcPs]
 [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">list</span></a></span><span> </span><span class="annot"><span class="annottext">[([GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)],
+</span><a href="#local-6989586621679133397"><span class="hs-identifier hs-var">list</span></a></span><span> </span><span class="annot"><span class="annottext">[([GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)],
   GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs),
   [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)])]
 -&gt; (([GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)],
@@ -58,29 +58,29 @@ forall a. [a] -&gt; [([a], a, [a])]
 -&gt; [[Change
        [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]]
 forall (f :: * -&gt; *) a b. Functor f =&gt; f a -&gt; (a -&gt; b) -&gt; f b
-</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679133407"><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679133409"><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679133410"><span class="annot"><span class="annottext">HsDecl GhcPs
-</span><a href="#local-6989586621679133410"><span class="hs-identifier hs-var">removed</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679133411"><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span>
+</span><span class="hs-operator hs-var">&lt;&amp;&gt;</span></span><span> </span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679133399"><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133399"><span class="hs-identifier hs-var">h</span></a></span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679133401"><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679133401"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span id="local-6989586621679133402"><span class="annot"><span class="annottext">HsDecl GhcPs
+</span><a href="#local-6989586621679133402"><span class="hs-identifier hs-var">removed</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679133403"><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133403"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">let</span><span>
 </span><span id="line-20"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">SrcSpanAnn</span></span><span> </span><span class="annot"><span class="annottext">EpAnn AnnListItem
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679133413"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">removedLoc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">l</span></a></span><span>
-</span><span id="line-21"></span><span>    </span><span id="local-6989586621679133414"><span class="annot"><span class="annottext">followups :: [Change
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621679133405"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">removedLoc</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679133401"><span class="hs-identifier hs-var">l</span></a></span><span>
+</span><span id="line-21"></span><span>    </span><span id="local-6989586621679133406"><span class="annot"><span class="annottext">followups :: [Change
    [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]
-</span><a href="#local-6989586621679133414"><span class="hs-identifier hs-var hs-var">followups</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsDecl GhcPs)
+</span><a href="#local-6989586621679133406"><span class="hs-identifier hs-var hs-var">followups</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsDecl GhcPs)
 </span><a href="Seminal.Enumerator.Declarations.html#enumerateChangesInDeclaration"><span class="hs-identifier hs-var">enumerateChangesInDeclaration</span></a></span><span> </span><span class="annot"><span class="annottext">HsDecl GhcPs
-</span><a href="#local-6989586621679133410"><span class="hs-identifier hs-var">removed</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">removedLoc</span></a></span><span> </span><span class="annot"><span class="annottext">[Change (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133402"><span class="hs-identifier hs-var">removed</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">removedLoc</span></a></span><span> </span><span class="annot"><span class="annottext">[Change (HsDecl GhcPs)]
 -&gt; (HsDecl GhcPs
     -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)])
 -&gt; [Change
       [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]
 forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
-</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133415"><span class="annot"><span class="annottext">HsDecl GhcPs
-</span><a href="#local-6989586621679133415"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133407"><span class="annot"><span class="annottext">HsDecl GhcPs
+</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">r</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133399"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
@@ -89,23 +89,23 @@ forall a. [a] -&gt; [a] -&gt; [a]
 -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
 forall l e. l -&gt; e -&gt; GenLocated l e
 </span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">HsDecl GhcPs
-</span><a href="#local-6989586621679133415"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133401"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">HsDecl GhcPs
+</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133403"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span>    </span><span class="hs-keyword">in</span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">HsDecl GhcPs
-</span><a href="#local-6989586621679133410"><span class="hs-identifier hs-var">removed</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><a href="#local-6989586621679133402"><span class="hs-identifier hs-var">removed</span></a></span><span> </span><span class="hs-keyword">of</span><span>
 </span><span id="line-23"></span><span>        </span><span class="hs-comment">-- | In the case of a variable, we do not try to remove it, as it may be accompanied by a type declaration,</span><span>
 </span><span id="line-24"></span><span>        </span><span class="hs-comment">-- And standalone type declaration are not allowed</span><span>
-</span><span id="line-25"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ValD</span></span><span> </span><span id="local-6989586621679133417"><span class="annot"><span class="annottext">XValD GhcPs
-</span><a href="#local-6989586621679133417"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FunBind</span></span><span> </span><span id="local-6989586621679133419"><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
-</span><a href="#local-6989586621679133419"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679133420"><span class="annot"><span class="annottext">LIdP GhcPs
-</span><a href="#local-6989586621679133420"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679133421"><span class="annot"><span class="annottext">MatchGroup GhcPs (LHsExpr GhcPs)
-</span><a href="#local-6989586621679133421"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679133422"><span class="annot"><span class="annottext">[CoreTickish]
-</span><a href="#local-6989586621679133422"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsBindLR GhcPs GhcPs)
+</span><span id="line-25"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ValD</span></span><span> </span><span id="local-6989586621679133409"><span class="annot"><span class="annottext">XValD GhcPs
+</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">v</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">FunBind</span></span><span> </span><span id="local-6989586621679133411"><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
+</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">a</span></a></span></span><span> </span><span id="local-6989586621679133412"><span class="annot"><span class="annottext">LIdP GhcPs
+</span><a href="#local-6989586621679133412"><span class="hs-identifier hs-var">b</span></a></span></span><span> </span><span id="local-6989586621679133413"><span class="annot"><span class="annottext">MatchGroup GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">c</span></a></span></span><span> </span><span id="local-6989586621679133414"><span class="annot"><span class="annottext">[CoreTickish]
+</span><a href="#local-6989586621679133414"><span class="hs-identifier hs-var">d</span></a></span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsBindLR GhcPs GhcPs)
 </span><a href="Seminal.Enumerator.Bindings.html#enumerateChangesInFuncBinding"><span class="hs-identifier hs-var">enumerateChangesInFuncBinding</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
 -&gt; LIdP GhcPs
 -&gt; MatchGroup GhcPs (LHsExpr GhcPs)
@@ -118,11 +118,11 @@ XFunBind idL idR
 -&gt; [CoreTickish]
 -&gt; HsBindLR idL idR
 </span><span class="hs-identifier hs-var">FunBind</span></span><span> </span><span class="annot"><span class="annottext">XFunBind GhcPs GhcPs
-</span><a href="#local-6989586621679133419"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">LIdP GhcPs
-</span><a href="#local-6989586621679133420"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">MatchGroup GhcPs (LHsExpr GhcPs)
-</span><a href="#local-6989586621679133421"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">[CoreTickish]
-</span><a href="#local-6989586621679133422"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">removedLoc</span></a></span><span>
+</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">a</span></a></span><span> </span><span class="annot"><span class="annottext">LIdP GhcPs
+</span><a href="#local-6989586621679133412"><span class="hs-identifier hs-var">b</span></a></span><span> </span><span class="annot"><span class="annottext">MatchGroup GhcPs (LHsExpr GhcPs)
+</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">c</span></a></span><span> </span><span class="annot"><span class="annottext">[CoreTickish]
+</span><a href="#local-6989586621679133414"><span class="hs-identifier hs-var">d</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">removedLoc</span></a></span><span>
 </span><span id="line-26"></span><span>            </span><span class="annot"><span class="annottext">[Change (HsBindLR GhcPs GhcPs)]
 -&gt; (HsBindLR GhcPs GhcPs
     -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs))
@@ -134,7 +134,7 @@ forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
 -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
 forall l e. l -&gt; e -&gt; GenLocated l e
 </span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(HsDecl GhcPs
+</span><a href="#local-6989586621679133401"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(HsDecl GhcPs
  -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs))
 -&gt; (HsBindLR GhcPs GhcPs -&gt; HsDecl GhcPs)
 -&gt; HsBindLR GhcPs GhcPs
@@ -143,7 +143,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">XValD GhcPs -&gt; HsBindLR GhcPs GhcPs -&gt; HsDecl GhcPs
 forall p. XValD p -&gt; HsBind p -&gt; HsDecl p
 </span><span class="hs-identifier hs-var">ValD</span></span><span> </span><span class="annot"><span class="annottext">XValD GhcPs
-</span><a href="#local-6989586621679133417"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">v</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-27"></span><span>            </span><span class="annot"><span class="annottext">[Change
    (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs))]
 -&gt; (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
@@ -151,25 +151,25 @@ forall p. XValD p -&gt; HsBind p -&gt; HsDecl p
 -&gt; [Change
       [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]
 forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
-</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133424"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
-</span><a href="#local-6989586621679133424"><span class="hs-identifier hs-var">change</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133416"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
+</span><a href="#local-6989586621679133416"><span class="hs-identifier hs-var">change</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133399"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
-</span><a href="#local-6989586621679133424"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133416"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-28"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TyClD</span></span><span> </span><span id="local-6989586621679133426"><span class="annot"><span class="annottext">XTyClD GhcPs
-</span><a href="#local-6989586621679133426"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679133427"><span class="annot"><span class="annottext">TyClDecl GhcPs
-</span><a href="#local-6989586621679133427"><span class="hs-identifier hs-var">typeDecl</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (TyClDecl GhcPs)
+</span><a href="#local-6989586621679133403"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>        </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">TyClD</span></span><span> </span><span id="local-6989586621679133418"><span class="annot"><span class="annottext">XTyClD GhcPs
+</span><a href="#local-6989586621679133418"><span class="hs-identifier hs-var">x</span></a></span></span><span> </span><span id="local-6989586621679133419"><span class="annot"><span class="annottext">TyClDecl GhcPs
+</span><a href="#local-6989586621679133419"><span class="hs-identifier hs-var">typeDecl</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (TyClDecl GhcPs)
 </span><a href="Seminal.Enumerator.Declarations.html#enumerateChangesInTypeDeclaration"><span class="hs-identifier hs-var">enumerateChangesInTypeDeclaration</span></a></span><span> </span><span class="annot"><span class="annottext">TyClDecl GhcPs
-</span><a href="#local-6989586621679133427"><span class="hs-identifier hs-var">typeDecl</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">removedLoc</span></a></span><span>
+</span><a href="#local-6989586621679133419"><span class="hs-identifier hs-var">typeDecl</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">removedLoc</span></a></span><span>
 </span><span id="line-29"></span><span>            </span><span class="annot"><span class="annottext">[Change (TyClDecl GhcPs)]
 -&gt; (TyClDecl GhcPs
     -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs))
@@ -181,7 +181,7 @@ forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
 -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
 forall l e. l -&gt; e -&gt; GenLocated l e
 </span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679133409"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(HsDecl GhcPs
+</span><a href="#local-6989586621679133401"><span class="hs-identifier hs-var">l</span></a></span><span> </span><span class="annot"><span class="annottext">(HsDecl GhcPs
  -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs))
 -&gt; (TyClDecl GhcPs -&gt; HsDecl GhcPs)
 -&gt; TyClDecl GhcPs
@@ -190,7 +190,7 @@ forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
 </span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">XTyClD GhcPs -&gt; TyClDecl GhcPs -&gt; HsDecl GhcPs
 forall p. XTyClD p -&gt; TyClDecl p -&gt; HsDecl p
 </span><span class="hs-identifier hs-var">TyClD</span></span><span> </span><span class="annot"><span class="annottext">XTyClD GhcPs
-</span><a href="#local-6989586621679133426"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133418"><span class="hs-identifier hs-var">x</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-30"></span><span>            </span><span class="annot"><span class="annottext">[Change
    (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs))]
 -&gt; (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
@@ -198,19 +198,19 @@ forall p. XTyClD p -&gt; TyClDecl p -&gt; HsDecl p
 -&gt; [Change
       [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]
 forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
-</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133428"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
-</span><a href="#local-6989586621679133428"><span class="hs-identifier hs-var">change</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679133420"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
+</span><a href="#local-6989586621679133420"><span class="hs-identifier hs-var">change</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133399"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)
-</span><a href="#local-6989586621679133428"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133420"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133403"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-31"></span><span>        </span><span class="annot"><span class="annottext">HsDecl GhcPs
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">ChangeNode
   [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
@@ -237,7 +237,7 @@ ChangeNode node
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">[LHsDecl GhcPs]
 [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">list</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133397"><span class="hs-identifier hs-var">list</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; ChangeNode
      [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
@@ -249,14 +249,14 @@ forall n. Outputable n =&gt; n -&gt; ChangeNode n
      [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133407"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
+</span><a href="#local-6989586621679133399"><span class="hs-identifier hs-var">h</span></a></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 -&gt; [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
 forall a. [a] -&gt; [a] -&gt; [a]
 </span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">[GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]
-</span><a href="#local-6989586621679133411"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679133413"><span class="hs-identifier hs-var">removedLoc</span></a></span><span> </span><span class="annot"><span class="annottext">[Change
+</span><a href="#local-6989586621679133403"><span class="hs-identifier hs-var">t</span></a></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679133405"><span class="hs-identifier hs-var">removedLoc</span></a></span><span> </span><span class="annot"><span class="annottext">[Change
    [GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (HsDecl GhcPs)]]
-</span><a href="#local-6989586621679133414"><span class="hs-identifier hs-var">followups</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679133406"><span class="hs-identifier hs-var">followups</span></a></span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;The removed expression does not type-check.&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Removal"><span class="hs-identifier hs-var">Removal</span></a></span><span class="hs-special">]</span></pre></body></html>

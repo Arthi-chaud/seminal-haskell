@@ -1,47 +1,53 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Seminal.Enumerator.Patterns</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier">enumerateChangesInPattern</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-2"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html"><span class="hs-identifier">Seminal.Enumerator.Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier">Enumerator</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Compiler.API.html"><span class="hs-identifier">Seminal.Compiler.API</span></a></span><span>
-</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Literals.html"><span class="hs-identifier">Seminal.Enumerator.Literals</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier">enumerateChangeInLiteral</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Change.html"><span class="hs-identifier">Seminal.Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier">Change</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#ChangeType"><span class="hs-identifier">ChangeType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Change.html#Wildcard"><span class="hs-identifier">Wildcard</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator">(&lt;&amp;&amp;&gt;)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#node"><span class="hs-identifier">node</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-6"></span><span>
-</span><span id="line-7"></span><span class="hs-comment">-- | Enumerate possible changes for patterns,</span><span>
-</span><span id="line-8"></span><span class="hs-comment">-- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Pat.html#t:Pat)</span><span>
-</span><span id="line-9"></span><span class="annot"><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-type">enumerateChangesInPattern</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Pat</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
-</span><span id="line-10"></span><span id="enumerateChangesInPattern"><span class="annot"><span class="annottext">enumerateChangesInPattern :: Enumerator (Pat GhcPs)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE CPP #-}</span><span>
+</span><span id="line-2"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Seminal.Enumerator.Patterns</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier">enumerateChangesInPattern</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-3"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html"><span class="hs-identifier">Seminal.Enumerator.Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier">Enumerator</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Compiler.API.html"><span class="hs-identifier">Seminal.Compiler.API</span></a></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Literals.html"><span class="hs-identifier">Seminal.Enumerator.Literals</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier">enumerateChangeInLiteral</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Seminal.Change.html"><span class="hs-identifier">Seminal.Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier">Change</span></a></span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#ChangeType"><span class="hs-identifier">ChangeType</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Seminal.Change.html#Wildcard"><span class="hs-identifier">Wildcard</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator">(&lt;&amp;&amp;&gt;)</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#node"><span class="hs-identifier">node</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-7"></span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- | Enumerate possible changes for patterns,</span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- See [API doc](https://hackage.haskell.org/package/ghc-9.6.1/docs/Language-Haskell-Syntax-Pat.html#t:Pat)</span><span>
+</span><span id="line-10"></span><span class="annot"><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-type">enumerateChangesInPattern</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Seminal.Enumerator.Enumerator.html#Enumerator"><span class="hs-identifier hs-type">Enumerator</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Pat</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">GhcPs</span></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span id="enumerateChangesInPattern"><span class="annot"><span class="annottext">enumerateChangesInPattern :: Enumerator (Pat GhcPs)
 </span><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-var hs-var">enumerateChangesInPattern</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">WildPat</span></span><span> </span><span class="annot"><span class="annottext">XWildPat GhcPs
 </span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">SrcSpan
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-11"></span><span class="annot"><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-var">enumerateChangesInPattern</span></a></span><span> </span><span id="local-6989586621679131716"><span class="annot"><span class="annottext">Pat GhcPs
-</span><a href="#local-6989586621679131716"><span class="hs-identifier hs-var">pat</span></a></span></span><span> </span><span id="local-6989586621679131717"><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679131717"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Change (Pat GhcPs)
-</span><a href="#local-6989586621679131718"><span class="hs-identifier hs-var">wildpatChange</span></a></span><span> </span><span class="annot"><span class="annottext">Change (Pat GhcPs) -&gt; [Change (Pat GhcPs)] -&gt; [Change (Pat GhcPs)]
+</span><span id="line-12"></span><span class="annot"><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-var">enumerateChangesInPattern</span></a></span><span> </span><span id="local-6989586621679131710"><span class="annot"><span class="annottext">Pat GhcPs
+</span><a href="#local-6989586621679131710"><span class="hs-identifier hs-var">pat</span></a></span></span><span> </span><span id="local-6989586621679131711"><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131711"><span class="hs-identifier hs-var">loc</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Change (Pat GhcPs)
+</span><a href="#local-6989586621679131712"><span class="hs-identifier hs-var">wildpatChange</span></a></span><span> </span><span class="annot"><span class="annottext">Change (Pat GhcPs) -&gt; [Change (Pat GhcPs)] -&gt; [Change (Pat GhcPs)]
 forall a. a -&gt; [a] -&gt; [a]
 </span><span class="hs-glyph hs-var">:</span></span><span> </span><span class="hs-keyword">case</span><span> </span><span class="annot"><span class="annottext">Pat GhcPs
-</span><a href="#local-6989586621679131716"><span class="hs-identifier hs-var">pat</span></a></span><span> </span><span class="hs-keyword">of</span><span>
-</span><span id="line-12"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">LitPat</span></span><span> </span><span id="local-6989586621679131720"><span class="annot"><span class="annottext">XLitPat GhcPs
-</span><a href="#local-6989586621679131720"><span class="hs-identifier hs-var">xlit</span></a></span></span><span> </span><span id="local-6989586621679131721"><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679131721"><span class="hs-identifier hs-var">litExpr</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsLit GhcPs)
+</span><a href="#local-6989586621679131710"><span class="hs-identifier hs-var">pat</span></a></span><span> </span><span class="hs-keyword">of</span><span>
+</span><span id="line-13"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">LitPat</span></span><span> </span><span id="local-6989586621679131714"><span class="annot"><span class="annottext">XLitPat GhcPs
+</span><a href="#local-6989586621679131714"><span class="hs-identifier hs-var">xlit</span></a></span></span><span> </span><span id="local-6989586621679131715"><span class="annot"><span class="annottext">HsLit GhcPs
+</span><a href="#local-6989586621679131715"><span class="hs-identifier hs-var">litExpr</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (HsLit GhcPs)
 </span><a href="Seminal.Enumerator.Literals.html#enumerateChangeInLiteral"><span class="hs-identifier hs-var">enumerateChangeInLiteral</span></a></span><span> </span><span class="annot"><span class="annottext">HsLit GhcPs
-</span><a href="#local-6989586621679131721"><span class="hs-identifier hs-var">litExpr</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679131717"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="annot"><span class="annottext">[Change (HsLit GhcPs)]
+</span><a href="#local-6989586621679131715"><span class="hs-identifier hs-var">litExpr</span></a></span><span> </span><span class="annot"><span class="annottext">SrcSpan
+</span><a href="#local-6989586621679131711"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="annot"><span class="annottext">[Change (HsLit GhcPs)]
 -&gt; (HsLit GhcPs -&gt; Pat GhcPs) -&gt; [Change (Pat GhcPs)]
 forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
 </span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">XLitPat GhcPs -&gt; HsLit GhcPs -&gt; Pat GhcPs
 forall p. XLitPat p -&gt; HsLit p -&gt; Pat p
 </span><span class="hs-identifier hs-var">LitPat</span></span><span> </span><span class="annot"><span class="annottext">XLitPat GhcPs
-</span><a href="#local-6989586621679131720"><span class="hs-identifier hs-var">xlit</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-13"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ParPat</span></span><span> </span><span id="local-6989586621679131723"><span class="annot"><span class="annottext">XParPat GhcPs
-</span><a href="#local-6989586621679131723"><span class="hs-identifier hs-var">xpar</span></a></span></span><span> </span><span id="local-6989586621679131724"><span class="annot"><span class="annottext">LHsToken &quot;(&quot; GhcPs
-</span><a href="#local-6989586621679131724"><span class="hs-identifier hs-var">openParTok</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679131726"><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679131726"><span class="hs-identifier hs-var">lpat</span></a></span></span><span> </span><span id="local-6989586621679131727"><span class="annot"><span class="annottext">Pat GhcPs
-</span><a href="#local-6989586621679131727"><span class="hs-identifier hs-var">subpat</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679131728"><span class="annot"><span class="annottext">LHsToken &quot;)&quot; GhcPs
-</span><a href="#local-6989586621679131728"><span class="hs-identifier hs-var">closeParTok</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Enumerator (Pat GhcPs)
+</span><a href="#local-6989586621679131714"><span class="hs-identifier hs-var">xlit</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+#if MIN_VERSION_ghc(9,4,1)
+</span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">ParPat</span></span><span> </span><span id="local-6989586621679131717"><span class="annot"><span class="annottext">XParPat GhcPs
+</span><a href="#local-6989586621679131717"><span class="hs-identifier hs-var">xpar</span></a></span></span><span> </span><span id="local-6989586621679131718"><span class="annot"><span class="annottext">LHsToken &quot;(&quot; GhcPs
+</span><a href="#local-6989586621679131718"><span class="hs-identifier hs-var">openParTok</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">L</span></span><span> </span><span id="local-6989586621679131720"><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
+</span><a href="#local-6989586621679131720"><span class="hs-identifier hs-var">lpat</span></a></span></span><span> </span><span id="local-6989586621679131721"><span class="annot"><span class="annottext">Pat GhcPs
+</span><a href="#local-6989586621679131721"><span class="hs-identifier hs-var">subpat</span></a></span></span><span class="hs-special">)</span><span> </span><span id="local-6989586621679131722"><span class="annot"><span class="annottext">LHsToken &quot;)&quot; GhcPs
+</span><a href="#local-6989586621679131722"><span class="hs-identifier hs-var">closeParTok</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span class="hs-cpp">
+#else
+</span><span>    </span><span class="hs-special">(</span><span class="hs-identifier">ParPat</span><span> </span><span class="hs-identifier">xpar</span><span> </span><span class="hs-special">(</span><span class="hs-identifier">L</span><span> </span><span class="hs-identifier">lpat</span><span> </span><span class="hs-identifier">subpat</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span class="hs-cpp">
+#endif
+</span><span>        </span><span class="annot"><span class="annottext">Enumerator (Pat GhcPs)
 </span><a href="Seminal.Enumerator.Patterns.html#enumerateChangesInPattern"><span class="hs-identifier hs-var">enumerateChangesInPattern</span></a></span><span> </span><span class="annot"><span class="annottext">Pat GhcPs
-</span><a href="#local-6989586621679131727"><span class="hs-identifier hs-var">subpat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem) -&gt; SrcSpan
+</span><a href="#local-6989586621679131721"><span class="hs-identifier hs-var">subpat</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem) -&gt; SrcSpan
 forall a. SrcSpanAnn' a -&gt; SrcSpan
 </span><span class="hs-identifier hs-var">locA</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679131726"><span class="hs-identifier hs-var">lpat</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-14"></span><span>        </span><span class="annot"><span class="annottext">[Change (Pat GhcPs)]
+</span><a href="#local-6989586621679131720"><span class="hs-identifier hs-var">lpat</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-20"></span><span>            </span><span class="annot"><span class="annottext">[Change (Pat GhcPs)]
 -&gt; (Pat GhcPs
     -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs))
 -&gt; [Change
@@ -52,14 +58,15 @@ forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
 -&gt; GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
 forall l e. l -&gt; e -&gt; GenLocated l e
 </span><span class="hs-identifier hs-var">L</span></span><span> </span><span class="annot"><span class="annottext">SrcSpanAnn' (EpAnn AnnListItem)
-</span><a href="#local-6989586621679131726"><span class="hs-identifier hs-var">lpat</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-15"></span><span>        </span><span class="annot"><span class="annottext">[Change (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs))]
+</span><a href="#local-6989586621679131720"><span class="hs-identifier hs-var">lpat</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+#if MIN_VERSION_ghc(9,4,1)
+</span><span>            </span><span class="annot"><span class="annottext">[Change (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs))]
 -&gt; (GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
     -&gt; Pat GhcPs)
 -&gt; [Change (Pat GhcPs)]
 forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
-</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131730"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
-</span><a href="#local-6989586621679131730"><span class="hs-identifier hs-var">newPat</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">XParPat GhcPs
+</span><a href="Seminal.Change.html#%3C%26%26%3E"><span class="hs-operator hs-var">&lt;&amp;&amp;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679131724"><span class="annot"><span class="annottext">GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
+</span><a href="#local-6989586621679131724"><span class="hs-identifier hs-var">newPat</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">XParPat GhcPs
 -&gt; LHsToken &quot;(&quot; GhcPs
 -&gt; LPat GhcPs
 -&gt; LHsToken &quot;)&quot; GhcPs
@@ -67,16 +74,19 @@ forall a b. [Change a] -&gt; (a -&gt; b) -&gt; [Change b]
 forall p.
 XParPat p -&gt; LHsToken &quot;(&quot; p -&gt; LPat p -&gt; LHsToken &quot;)&quot; p -&gt; Pat p
 </span><span class="hs-identifier hs-var">ParPat</span></span><span> </span><span class="annot"><span class="annottext">XParPat GhcPs
-</span><a href="#local-6989586621679131723"><span class="hs-identifier hs-var">xpar</span></a></span><span> </span><span class="annot"><span class="annottext">LHsToken &quot;(&quot; GhcPs
-</span><a href="#local-6989586621679131724"><span class="hs-identifier hs-var">openParTok</span></a></span><span> </span><span class="annot"><span class="annottext">LPat GhcPs
+</span><a href="#local-6989586621679131717"><span class="hs-identifier hs-var">xpar</span></a></span><span> </span><span class="annot"><span class="annottext">LHsToken &quot;(&quot; GhcPs
+</span><a href="#local-6989586621679131718"><span class="hs-identifier hs-var">openParTok</span></a></span><span> </span><span class="annot"><span class="annottext">LPat GhcPs
 GenLocated (SrcSpanAnn' (EpAnn AnnListItem)) (Pat GhcPs)
-</span><a href="#local-6989586621679131730"><span class="hs-identifier hs-var">newPat</span></a></span><span> </span><span class="annot"><span class="annottext">LHsToken &quot;)&quot; GhcPs
-</span><a href="#local-6989586621679131728"><span class="hs-identifier hs-var">closeParTok</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-16"></span><span>    </span><span class="annot"><span class="annottext">Pat GhcPs
+</span><a href="#local-6989586621679131724"><span class="hs-identifier hs-var">newPat</span></a></span><span> </span><span class="annot"><span class="annottext">LHsToken &quot;)&quot; GhcPs
+</span><a href="#local-6989586621679131722"><span class="hs-identifier hs-var">closeParTok</span></a></span><span class="hs-special">)</span><span class="hs-cpp">
+#else
+</span><span>            </span><span class="hs-operator">&lt;&amp;&amp;&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-identifier">ParPat</span><span> </span><span class="hs-identifier">xpar</span><span class="hs-special">)</span><span class="hs-cpp">
+#endif
+</span><span>    </span><span class="annot"><span class="annottext">Pat GhcPs
 </span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span>
-</span><span id="line-17"></span><span>    </span><span class="hs-keyword">where</span><span>
-</span><span id="line-18"></span><span>        </span><span id="local-6989586621679131718"><span class="annot"><span class="annottext">wildpatChange :: Change (Pat GhcPs)
-</span><a href="#local-6989586621679131718"><span class="hs-identifier hs-var hs-var">wildpatChange</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChangeNode (Pat GhcPs)
+</span><span id="line-27"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-28"></span><span>        </span><span id="local-6989586621679131712"><span class="annot"><span class="annottext">wildpatChange :: Change (Pat GhcPs)
+</span><a href="#local-6989586621679131712"><span class="hs-identifier hs-var hs-var">wildpatChange</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ChangeNode (Pat GhcPs)
 -&gt; [ChangeNode (Pat GhcPs)]
 -&gt; SrcSpan
 -&gt; [Change (Pat GhcPs)]
@@ -94,7 +104,7 @@ ChangeNode node
 </span><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-var">Change</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Pat GhcPs -&gt; ChangeNode (Pat GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">Pat GhcPs
-</span><a href="#local-6989586621679131716"><span class="hs-identifier hs-var">pat</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Pat GhcPs -&gt; ChangeNode (Pat GhcPs)
+</span><a href="#local-6989586621679131710"><span class="hs-identifier hs-var">pat</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">Pat GhcPs -&gt; ChangeNode (Pat GhcPs)
 forall n. Outputable n =&gt; n -&gt; ChangeNode n
 </span><a href="Seminal.Change.html#node"><span class="hs-identifier hs-var">node</span></a></span><span> </span><span class="annot"><span class="annottext">(Pat GhcPs -&gt; ChangeNode (Pat GhcPs))
 -&gt; Pat GhcPs -&gt; ChangeNode (Pat GhcPs)
@@ -104,6 +114,6 @@ forall p. XWildPat p -&gt; Pat p
 </span><span class="hs-identifier hs-var">WildPat</span></span><span> </span><span class="annot"><span class="annottext">XWildPat GhcPs
 NoExtField
 </span><span class="hs-identifier hs-var">NoExtField</span></span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">SrcSpan
-</span><a href="#local-6989586621679131717"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679131711"><span class="hs-identifier hs-var">loc</span></a></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span> </span><span class="annot"><span class="annottext">String
 </span><span class="hs-string">&quot;The pattern is invalid.&quot;</span></span><span> </span><span class="annot"><span class="annottext">ChangeType
 </span><a href="Seminal.Change.html#Wildcard"><span class="hs-identifier hs-var">Wildcard</span></a></span></pre></body></html>
