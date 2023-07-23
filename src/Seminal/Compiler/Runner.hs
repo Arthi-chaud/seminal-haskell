@@ -25,7 +25,7 @@ runCompiler filePaths action = do
             setSessionDynFlags (flags {
                 mainFunIs = Just "undefined",
                 mainModuleNameIs = mkModuleName "Prelude",
-                backend = NoBackend,
+                backend = noBackend,
                 ghcLink = NoLink,
                 maxErrors = Just 0,
                 extensionFlags = insert PartialTypeSignatures (extensionFlags flags)

@@ -6,6 +6,7 @@ import Test.Framework.Providers.HUnit (testCase)
 import Seminal (runSeminal, Status (..))
 import Seminal.Change (Change(..), ChangeNode(pretty))
 import Seminal.Options
+import GHC.Driver.Ppr (showPprUnsafe)
 
 buildAssetPath :: [Char] -> [Char]
 buildAssetPath filename = "test/assets/invalid/" ++ filename ++ ".hs"
@@ -27,8 +28,8 @@ testSeminal files name expectedSrc expectedExec index = do
     return $ testCase name $ case res of
         Result (_, [(_, _, changelist)]) -> let
             bestChange = changelist !! index in do
-            show (pretty (src bestChange)) @?= expectedSrc
-            show (pretty (head $ exec bestChange)) @?= expectedExec
+            showPprUnsafe (pretty (src bestChange)) @?= expectedSrc
+            showPprUnsafe (pretty (head $ exec bestChange)) @?= expectedExec
         _ -> assertFailure "Seminal Failed"
 
 testSuite :: Test

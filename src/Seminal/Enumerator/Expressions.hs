@@ -184,14 +184,24 @@ enumerateChangesInExpression' expr loc = case expr of
             enumRoot = let (L lroot root) = lrootExpr in enumerateChangesInExpression root (locA lroot)
                 <&&> (L lroot)
                 <&&> (\newRoot -> HsCase xcase newRoot lmatchExpr)
-            enumMatches = let (MG xmatch (L lmatches matches) origin) = lmatchExpr in concat (splitEverywhere matches
-                <&> (\(h, L lmatch match, t) -> enumerateChangesInMatch match (locA lmatch)
-                        <&&> (L lmatch)
-                        <&&> (\newMatch -> h ++ [newMatch] ++ t)
-                        <&&> (L lmatches)
-                        <&&> (\newMatches -> MG xmatch newMatches origin)
-                        <&&> (HsCase xcase lrootExpr)
-                ))
+            enumMatches = let
+#if MIN_VERSION_ghc(9,6,1)
+                (MG xmatch (L lmatches matches)) = lmatchExpr
+#else
+                (MG xmatch (L lmatches matches) origin) = lmatchExpr
+#endif
+                in concat (splitEverywhere matches
+                    <&> (\(h, L lmatch match, t) -> enumerateChangesInMatch match (locA lmatch)
+                            <&&> (L lmatch)
+                            <&&> (\newMatch -> h ++ [newMatch] ++ t)
+                            <&&> (L lmatches)
+#if MIN_VERSION_ghc(9,6,1)
+                            <&&> (MG xmatch)
+#else
+                            <&&> (\newMatches -> MG xmatch newMatches origin)
+#endif
+                            <&&> (HsCase xcase lrootExpr)
+                    ))
     (OpApp xapp lleftExpr lopExpr lrightExpr) -> enumLeft ++ enumOp ++ enumRight
         where
             enumLeft = let (L lleft leftExpr) = lleftExpr in enumerateChangesInExpression leftExpr (locA lleft)
