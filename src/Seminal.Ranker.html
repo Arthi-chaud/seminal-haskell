@@ -9,10 +9,10 @@
 </span><span id="line-9"></span><span class="hs-comment">-- | Takes the list of successful changes from the searcher.</span><span>
 </span><span id="line-10"></span><span class="hs-comment">-- It sorts changes based on their type and index</span><span>
 </span><span id="line-11"></span><span class="hs-comment">-- (The deeper &lt;=&gt; the left-most = the better)</span><span>
-</span><span id="line-12"></span><span id="local-6989586621679133436"><span class="annot"><a href="Seminal.Ranker.html#sortChanges"><span class="hs-identifier hs-type">sortChanges</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133436"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133436"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
+</span><span id="line-12"></span><span id="local-6989586621679133444"><span class="annot"><a href="Seminal.Ranker.html#sortChanges"><span class="hs-identifier hs-type">sortChanges</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133444"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133444"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span></span><span>
 </span><span id="line-13"></span><span id="sortChanges"><span class="annot"><span class="annottext">sortChanges :: forall a. [Change a] -&gt; [Change a]
-</span><a href="Seminal.Ranker.html#sortChanges"><span class="hs-identifier hs-var hs-var">sortChanges</span></a></span></span><span> </span><span id="local-6989586621679133485"><span class="annot"><span class="annottext">[Change a]
-</span><a href="#local-6989586621679133485"><span class="hs-identifier hs-var">list</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, Change a) -&gt; Change a
+</span><a href="Seminal.Ranker.html#sortChanges"><span class="hs-identifier hs-var hs-var">sortChanges</span></a></span></span><span> </span><span id="local-6989586621679133493"><span class="annot"><span class="annottext">[Change a]
+</span><a href="#local-6989586621679133493"><span class="hs-identifier hs-var">list</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(Int, Change a) -&gt; Change a
 forall a b. (a, b) -&gt; b
 </span><span class="hs-identifier hs-var">snd</span></span><span> </span><span class="annot"><span class="annottext">((Int, Change a) -&gt; Change a) -&gt; [(Int, Change a)] -&gt; [Change a]
 forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
@@ -22,40 +22,40 @@ forall b a. Ord b =&gt; (a -&gt; b) -&gt; [a] -&gt; [a]
 </span><span class="hs-identifier hs-var">sortOn</span></span><span> </span><span class="annot"><span class="annottext">(Int, Change a) -&gt; Down (ChangeType, RealSrcSpan, Int)
 forall {c} {node}.
 (c, Change node) -&gt; Down (ChangeType, RealSrcSpan, c)
-</span><a href="#local-6989586621679133488"><span class="hs-identifier hs-var">cmp</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Change a] -&gt; [(Int, Change a)]
+</span><a href="#local-6989586621679133496"><span class="hs-identifier hs-var">cmp</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Change a] -&gt; [(Int, Change a)]
 forall a. [Change a] -&gt; [(Int, Change a)]
-</span><a href="#local-6989586621679133489"><span class="hs-identifier hs-var">indexed</span></a></span><span> </span><span class="annot"><span class="annottext">[Change a]
-</span><a href="#local-6989586621679133485"><span class="hs-identifier hs-var">list</span></a></span><span class="hs-special">)</span><span>
+</span><a href="#local-6989586621679133497"><span class="hs-identifier hs-var">indexed</span></a></span><span> </span><span class="annot"><span class="annottext">[Change a]
+</span><a href="#local-6989586621679133493"><span class="hs-identifier hs-var">list</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-14"></span><span>    </span><span class="hs-keyword">where</span><span>
 </span><span id="line-15"></span><span>        </span><span class="hs-comment">-- The comparison sorts from best (left-most) to worse (right-most)</span><span>
 </span><span id="line-16"></span><span>        </span><span class="hs-comment">-- (Reverted using `Down`)</span><span>
-</span><span id="line-17"></span><span>        </span><span id="local-6989586621679133488"><span class="annot"><span class="annottext">cmp :: (c, Change node) -&gt; Down (ChangeType, RealSrcSpan, c)
-</span><a href="#local-6989586621679133488"><span class="hs-identifier hs-var hs-var">cmp</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679133490"><span class="annot"><span class="annottext">c
-</span><a href="#local-6989586621679133490"><span class="hs-identifier hs-var">index</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679133491"><span class="annot"><span class="annottext">Change node
-</span><a href="#local-6989586621679133491"><span class="hs-identifier hs-var">change</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ChangeType, RealSrcSpan, c) -&gt; Down (ChangeType, RealSrcSpan, c)
+</span><span id="line-17"></span><span>        </span><span id="local-6989586621679133496"><span class="annot"><span class="annottext">cmp :: (c, Change node) -&gt; Down (ChangeType, RealSrcSpan, c)
+</span><a href="#local-6989586621679133496"><span class="hs-identifier hs-var hs-var">cmp</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679133498"><span class="annot"><span class="annottext">c
+</span><a href="#local-6989586621679133498"><span class="hs-identifier hs-var">index</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679133499"><span class="annot"><span class="annottext">Change node
+</span><a href="#local-6989586621679133499"><span class="hs-identifier hs-var">change</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(ChangeType, RealSrcSpan, c) -&gt; Down (ChangeType, RealSrcSpan, c)
 forall a. a -&gt; Down a
 </span><span class="hs-identifier hs-var">Down</span></span><span> </span><span class="hs-special">(</span><span>
 </span><span id="line-18"></span><span>            </span><span class="hs-comment">-- | The change type is the most important to sort on</span><span>
 </span><span id="line-19"></span><span>            </span><span class="annot"><span class="annottext">Change node -&gt; ChangeType
 forall node. Change node -&gt; ChangeType
 </span><a href="Seminal.Change.html#category"><span class="hs-identifier hs-var">category</span></a></span><span> </span><span class="annot"><span class="annottext">Change node
-</span><a href="#local-6989586621679133491"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679133499"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-20"></span><span>            </span><span class="annot"><span class="annottext">SrcSpan -&gt; RealSrcSpan
 </span><span class="hs-identifier hs-var">realSrcSpan</span></span><span> </span><span class="annot"><span class="annottext">(SrcSpan -&gt; RealSrcSpan) -&gt; SrcSpan -&gt; RealSrcSpan
 forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Change node -&gt; SrcSpan
 forall node. Change node -&gt; SrcSpan
 </span><a href="Seminal.Change.html#location"><span class="hs-identifier hs-var">location</span></a></span><span> </span><span class="annot"><span class="annottext">Change node
-</span><a href="#local-6989586621679133491"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">,</span><span>
+</span><a href="#local-6989586621679133499"><span class="hs-identifier hs-var">change</span></a></span><span class="hs-special">,</span><span>
 </span><span id="line-21"></span><span>            </span><span class="hs-comment">-- | Then we order by 'when' the change was found</span><span>
 </span><span id="line-22"></span><span>            </span><span class="hs-comment">-- If we found it later, it was deeper in the AST =&gt; it's better</span><span>
 </span><span id="line-23"></span><span>            </span><span class="annot"><span class="annottext">c
-</span><a href="#local-6989586621679133490"><span class="hs-identifier hs-var">index</span></a></span><span>
+</span><a href="#local-6989586621679133498"><span class="hs-identifier hs-var">index</span></a></span><span>
 </span><span id="line-24"></span><span>            </span><span class="hs-special">)</span><span>
-</span><span id="line-25"></span><span>        </span><span id="local-6989586621679133455"><span class="annot"><a href="#local-6989586621679133489"><span class="hs-identifier hs-type">indexed</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133455"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133455"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span><span>
-</span><span id="line-26"></span><span>        </span><span id="local-6989586621679133489"><span class="annot"><span class="annottext">indexed :: forall a. [Change a] -&gt; [(Int, Change a)]
-</span><a href="#local-6989586621679133489"><span class="hs-identifier hs-var hs-var">indexed</span></a></span></span><span> </span><span id="local-6989586621679133501"><span class="annot"><span class="annottext">[Change a]
-</span><a href="#local-6989586621679133501"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Change a] -&gt; [(Int, Change a)]
+</span><span id="line-25"></span><span>        </span><span id="local-6989586621679133463"><span class="annot"><a href="#local-6989586621679133497"><span class="hs-identifier hs-type">indexed</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133463"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Seminal.Change.html#Change"><span class="hs-identifier hs-type">Change</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679133463"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span class="hs-special">]</span></span><span>
+</span><span id="line-26"></span><span>        </span><span id="local-6989586621679133497"><span class="annot"><span class="annottext">indexed :: forall a. [Change a] -&gt; [(Int, Change a)]
+</span><a href="#local-6989586621679133497"><span class="hs-identifier hs-var hs-var">indexed</span></a></span></span><span> </span><span id="local-6989586621679133509"><span class="annot"><span class="annottext">[Change a]
+</span><a href="#local-6989586621679133509"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[Int] -&gt; [Change a] -&gt; [(Int, Change a)]
 forall a b. [a] -&gt; [b] -&gt; [(a, b)]
 </span><span class="hs-identifier hs-var">zip</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Int, Int) -&gt; [Int]
 forall a. Ix a =&gt; (a, a) -&gt; [a]
@@ -64,5 +64,5 @@ forall a. Ix a =&gt; (a, a) -&gt; [a]
 forall a. [a] -&gt; Int
 forall (t :: * -&gt; *) a. Foldable t =&gt; t a -&gt; Int
 </span><span class="hs-identifier hs-var">length</span></span><span> </span><span class="annot"><span class="annottext">[Change a]
-</span><a href="#local-6989586621679133501"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Change a]
-</span><a href="#local-6989586621679133501"><span class="hs-identifier hs-var">l</span></a></span></pre></body></html>
+</span><a href="#local-6989586621679133509"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Change a]
+</span><a href="#local-6989586621679133509"><span class="hs-identifier hs-var">l</span></a></span></pre></body></html>
